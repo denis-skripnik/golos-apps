@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "cron": "^1.8.2",
+    "express": "^4.16.4",
+    "golos-classic-js": "^0.7.42",
+    "mongodb": "latest",
+    "sjcl": "^1.0.8",
+    "telebot": "^1.4.1"
+  }
+}

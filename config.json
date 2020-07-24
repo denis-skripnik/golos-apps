@@ -1,0 +1,12 @@
+{
+  "node": "wss://golos.lexai.host/ws",
+  "votes": {
+    "login": "golos-votes",
+    "posting_key": "5",
+    "vote_price": "20.000 GBG"
+  },
+  "stakebot": {
+      "admins": [1],
+  "bot_api_key": "x:y"
+    }
+}
