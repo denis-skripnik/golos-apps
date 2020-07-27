@@ -10,6 +10,7 @@ const rldb = require("../databases/referrerslistdb");
 const gudb = require("../databases/golos_usersdb");
 const votes = require("../databases/votesdb");
 const vadb = require("../databases/vadb");
+const asdb = require("../databases/asdb");
 const conf = require('../config.json');
 
 app.get('/golos-api/', async function (req, res) {
@@ -182,7 +183,14 @@ res.send(JSON.stringify(commentsArray));
     }
         } // isVote.            
     res.send(results);
-    }  
+    }
+} else if (service === 'activity_stats') {
+        let data = await asdb.findAllActivityStats();
+        if (data && data.length > 0) {
+            res.send(data);
+        } else {
+            res.send({});
+        }
 }
 });
 app.listen(3000, function () {

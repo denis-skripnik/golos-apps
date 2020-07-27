@@ -6,8 +6,10 @@ const refs = require("./js_modules/referrers");
 const top = require("./js_modules/golos_top");
 const votes = require("./js_modules/votes");
 const stakebot = require("./js_modules/stake_bot");
+const as = require("./js_modules/activity_stats");
 const helpers = require("./js_modules/helpers");
 const methods = require("./js_modules/methods");
+const asdb = require("./databases/asdb");
 const bdb = require("./databases/blocksdb");
 const LONG_DELAY = 12000;
 const SHORT_DELAY = 3000;
@@ -31,6 +33,12 @@ let ok_ops_count = 0;
             break;
             case "custom_json":
             ok_ops_count += await votes.customJsonOperation(op, opbody);
+            break;
+            case "comment":
+            ok_ops_count += await as.commentOperation(op, opbody);
+            break;
+            case "vote":
+            ok_ops_count += await as.voteOperation(op, opbody);
             break;
             default:
                     //неизвестная команда
@@ -90,5 +98,6 @@ getNullTransfers()
 new CronJob('0 30 * * * *', top.run, null, true);
 new CronJob('0 0 0 * * *', stakebot.run, null, true);
 new CronJob('0 0 12 * * *', stakebot.run, null, true);    
+new CronJob('0 0 0 * * *', asdb.removeactivityStats, null, true);    
 
 methods.updateAccount('votes');
