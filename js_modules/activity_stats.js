@@ -3,6 +3,8 @@ const methods = require("./methods");
 const udb = require("../databases/asdb");
 
 async function commentOperation(op, opbody) {
+    let content = await methods.getContent(opbody.author, opbody.permlink);
+    if (content && content.code !== -1 && content.created === opbody.created) {
     let user = await udb.getUser(opbody.author);
     let content_count = 1;
 let flags_count = 0;
@@ -17,6 +19,7 @@ all_flags_weight += user.all_flags_weight;
 all_upvotes_weight += user.all_upvotes_weight;
 }
 await udb.updateUser(opbody.author, content_count, flags_count, upvote_count, all_flags_weight, all_upvotes_weight);
+    }
 }
 
 async function voteOperation(op, opbody) {

@@ -46,9 +46,9 @@ let pk = '';
 try {
 let post = await golos.api.getContentAsync(author, permlink, 0);
 if (post.parent_author === '') {
-return {code: 1, title: post.title};
+return {code: 1, title: post.title, created: post.created};
 } else {
-    return {code: 2, title: post.title};
+    return {code: 2, title: post.title, created: post.created};
 }
 } catch(e) {
 return {code: -1, error: e};
