@@ -35,7 +35,7 @@ let ok_ops_count = 0;
             ok_ops_count += await votes.customJsonOperation(op, opbody);
             break;
             case "comment":
-            ok_ops_count += await as.commentOperation(op, opbody);
+            ok_ops_count += await as.commentOperation(op, opbody, tr.timestamp);
             break;
             case "vote":
             ok_ops_count += await as.voteOperation(op, opbody);

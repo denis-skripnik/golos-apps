@@ -2,9 +2,9 @@ const helpers = require("./helpers");
 const methods = require("./methods");
 const udb = require("../databases/asdb");
 
-async function commentOperation(op, opbody) {
+async function commentOperation(op, opbody, timestamp) {
     let content = await methods.getContent(opbody.author, opbody.permlink);
-    if (content && content.code !== -1 && content.created === opbody.created) {
+    if (content && content.created === timestamp) {
     let user = await udb.getUser(opbody.author);
     let content_count = 1;
 let flags_count = 0;
