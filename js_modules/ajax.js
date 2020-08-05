@@ -39,7 +39,7 @@ if (referrers && referrers.length > 0) {
     users.sort(helpers.compareDonators);
     let usersArray = [];
     for (let user of users) {
-        usersArray.push({link: `<a href="https://golos.id/@${user.login}" target="_blank">@${user.login}</a>`, golos_amount: user.golos_amount, gbg_amount: user.gbg_amount});
+        usersArray.push({link: `<a href="https://dpos.space/golos/profiles/${user.login}" target="_blank">@${user.login}</a>`, golos_amount: user.golos_amount, gbg_amount: user.gbg_amount});
     }
     res.send(JSON.stringify(usersArray));
     } else {
@@ -47,7 +47,7 @@ if (referrers && referrers.length > 0) {
     users.sort(helpers.compareDonators);
     let usersArray = [];
     for (let user of users) {
-        usersArray.push({link: `<a href="https://golos.id/@${user.login}" target="_blank">@${user.login}</a>`, golos_amount: user.golos_amount, gbg_amount: user.gbg_amount});
+        usersArray.push({link: `<a href="https://dpos.space/golos/profiles/${user.login}" target="_blank">@${user.login}</a>`, golos_amount: user.golos_amount, gbg_amount: user.gbg_amount});
     }
     res.send(JSON.stringify(usersArray));
     }
@@ -77,7 +77,7 @@ res.send(JSON.stringify(postsArray));
 comments.sort(helpers.comparePosts);
 let commentsArray = [];
 for (let comment of comments) {
-    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">${comment.title}</a>`, golos_amount: comment.golos_amount, gbg_amount: comment.gbg_amount});
+    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">@${comment.author}/${comment.permlink}</a>`, golos_amount: comment.golos_amount, gbg_amount: comment.gbg_amount});
 }
 res.send(JSON.stringify(commentsArray));
 } else {
@@ -85,7 +85,7 @@ res.send(JSON.stringify(commentsArray));
 comments.sort(helpers.comparePosts);
 let commentsArray = [];
 for (let comment of comments) {
-    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">${comment.title}</a>`, golos_amount: comment.golos_amount, gbg_amount: comment.gbg_amount});
+    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">@${comment.author}/${comment.permlink}</a>`, golos_amount: comment.golos_amount, gbg_amount: comment.gbg_amount});
 }
 res.send(JSON.stringify(commentsArray));
 }

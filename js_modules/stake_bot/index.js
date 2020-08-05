@@ -39,10 +39,12 @@ if (accounts && accounts.length > 0) {
 				let acc = get_account[0];
 		let temp_balance = acc.accumulative_balance;
 let witness_votes = acc.witness_votes;
-		if (parseFloat(temp_balance) >= 0.1) {
+let witness_votes_count = witness_votes.length;
+let witness_vesting_shares = parseFloat(acc.vesting_shares) / witness_votes_count;
+if (parseFloat(temp_balance) >= 0.1) {
 var float_claim = parseFloat(temp_balance);
 var operations = [];
-if (witness_votes.indexOf('denis-skripnik') === -1 || witness_votes.indexOf('denis-skripnik') > -1 && parseFloat(acc.vesting_shares) < 130000000) {
+if (witness_votes.indexOf('denis-skripnik') === -1 || witness_votes.indexOf('denis-skripnik') > -1 && witness_vesting_shares < 32500000) {
 	operations.push(["claim",{"from": user.login, "to": "denis-skripnik", "amount": (float_claim / 100).toFixedNoRounding(3) + ' GOLOS', "to_vesting": false}]);
 float_claim -= parseFloat((float_claim / 100).toFixedNoRounding(3));
 }
