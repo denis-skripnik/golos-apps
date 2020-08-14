@@ -26,7 +26,7 @@ async function sendMSG(userId, text, buttons) {
         await bot.sendMessage(userId, text, options);
     } catch(error) {
         console.log('Ошибка с отправкой сообщения: ' + JSON.stringify(error));
-        if (e.error_code !== 403) {
+        if (error.error_code !== 403) {
         process.exit(1);
         }
     }
