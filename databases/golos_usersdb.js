@@ -45,7 +45,7 @@ async function getTop(type, page) {
     }
 }
 
-async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, reputation) {
+async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, reputation) {
 
     const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
         .catch(err => { console.log(err); });
@@ -65,7 +65,7 @@ async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effect
             }
         });
 
-              let res = await collection.updateOne({name}, {$set: {name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, reputation}}, { upsert: true });
+              let res = await collection.updateOne({name}, {$set: {name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, reputation}}, { upsert: true });
 
 return res;
     } catch (err) {
