@@ -90,23 +90,30 @@ for (let comment of comments) {
 res.send(JSON.stringify(commentsArray));
 }
 }
-} else if (service === 'top' && type) {
+} else if (service === 'top' && type && page) {
         let data = await gudb.getTop(type, page);
         let users = [];
-    let users_count = 0;
-    for (let user of data) {
-            users[users_count] = {};
-            users[users_count]['name'] = user['name'];
-            users[users_count][type] = user[type];
-            users[users_count][type + '_percent'] = user[type + '_percent'];
-            for (let el in user) {
-    if (type !== el && el !== 'name' && el + '_percent' !== type + '_percent') {
-        users[users_count][el] = user[el];
-    }
-    }
-    users_count++;
-    }
-    res.send(users);
+        if (data && data.length > 0) {
+            let collums = {};
+            collums['gp'] = ['gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['delegated_gp'] = ['delegated_gp', 'gp', 'gp_percent', 'received_gp', 'effective_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['received_gp'] = ['received_gp', 'gp', 'gp_percent', 'delegated_gp', 'effective_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['effective_gp'] = ['effective_gp', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['tip_balance'] = ['tip_balance', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['golos'] = ['golos', 'golos_percent', 'gbg', 'gbg_percent', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'reputation'];
+            collums['gbg'] = ['gbg', 'gbg_percent', 'golos', 'golos_percent', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'reputation'];
+            collums['reputation'] = ['reputation', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent'];
+            let users_count = 0;
+            for (let user of data) {
+                    users[users_count] = {};
+                    users[users_count]['name'] = user['name'];
+for (let collum of collums[type]) {
+    users[users_count][collum] = user[collum];
+}
+            users_count++;
+            } // end for.
+        } // end if data.
+        res.send(users);
 } else if (service === 'votes') {
     if (type === 'list') {
         let allVotes = await votes.findVotes();
