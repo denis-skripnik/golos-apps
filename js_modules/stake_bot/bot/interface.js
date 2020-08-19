@@ -70,11 +70,11 @@ if (referer.referers.length > 0) {
     }
                 await udb.addUser(id, refs, '', '', 'start', id_hash);
             } else {
-                await udb.addUser(id, [], '', '', 'start', id_hash);
+                await udb.addUser(id, [524251903], '', '', 'start', id_hash);
             }
         }
         } else {
-            await udb.addUser(id, [], '', '', 'start', id_hash);
+            await udb.addUser(id, [524251903], '', '', 'start', id_hash);
         }
     } else {
         if (lng[user.lng] && message !== lng[user.lng].back) {            

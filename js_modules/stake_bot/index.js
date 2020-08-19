@@ -44,12 +44,8 @@ let witness_vesting_shares = parseFloat(acc.vesting_shares) / witness_votes_coun
 if (parseFloat(temp_balance) >= 0.1) {
 var float_claim = parseFloat(temp_balance);
 var operations = [];
-if (witness_votes.indexOf('denis-skripnik') === -1 || witness_votes.indexOf('denis-skripnik') > -1 && witness_vesting_shares < 32500000) {
-	operations.push(["claim",{"from": user.login, "to": "denis-skripnik", "amount": (float_claim / 100).toFixedNoRounding(3) + ' GOLOS', "to_vesting": false}]);
-float_claim -= parseFloat((float_claim / 100).toFixedNoRounding(3));
-}
 if (telegram_users[user.id] && telegram_users[user.id].length > 0) {
-	let id = 3;
+	let id = 2;
 	for (let r in telegram_users[user.id]) {
 		if (r === 1) {
 			id = 1;
