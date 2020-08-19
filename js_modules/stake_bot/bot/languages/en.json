@@ -1,7 +1,7 @@
 {
     "start": "Start",
     "home": "Home",
-    "home_message": "Welcome to @golos_stake_bot. This bot will receive tokens for you from claim balance to tip balance or Golos Power every 12 hours. Commission 1%. In addition, you can earn by attracting users: 3% from the first level, 1% from the second level. Your referer: ",
+    "home_message": "Welcome to @golos_stake_bot. This bot will receive tokens for you from claim balance to tip balance or Golos Power every 12 hours. In addition, you can earn by attracting users: 2% from the first level, 1% from the second level. Your referer: ",
     "news": "News",
     "referal_link": "Your referal link: ",
     "new_referal1": "A first-level referral has been registered using your link. Invite more and earn: ",
