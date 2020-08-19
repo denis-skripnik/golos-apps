@@ -38,9 +38,6 @@ if (accounts && accounts.length > 0) {
 				let get_account = await methods.getAccount(user.login);
 				let acc = get_account[0];
 		let temp_balance = acc.accumulative_balance;
-let witness_votes = acc.witness_votes;
-let witness_votes_count = witness_votes.length;
-let witness_vesting_shares = parseFloat(acc.vesting_shares) / witness_votes_count;
 if (parseFloat(temp_balance) >= 0.1) {
 var float_claim = parseFloat(temp_balance);
 var operations = [];
