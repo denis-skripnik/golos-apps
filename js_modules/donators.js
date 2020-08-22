@@ -102,14 +102,17 @@ async function donateOperation(op, opbody) {
     var ok_ops_count = 0;
     try {
         let arr = opbody.memo;
-        if (arr.app === 'golos-id' && arr.version === 1 && arr.target.permlink !== '') {
+        if (arr.app === 'golos-id' && arr.version === 1) {
         let donate = arr.target;
         let url;
-        if (opbody.to === donate.author) {
+        if (opbody.to === donate.author && donate.permlink !== '') {
         console.log('автор: ' + donate.author + ', Пермлинк: ' + donate.permlink);
         let result = await workingDonate(opbody.from, donate.author, donate.permlink, opbody.amount);
         ok_ops_count += result;
-        }     else {
+        } else if (opbody.to === donate.author && donate.permlink === '' && arr.comment !== '') {
+            let result = await workingDonateWithNoPost(opbody.from, opbody.amount);
+            ok_ops_count += result;
+    }     else {
         console.log('Получатель не совпадает с автором.');
         }
         } else {
