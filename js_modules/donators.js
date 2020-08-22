@@ -102,7 +102,7 @@ async function donateOperation(op, opbody) {
     var ok_ops_count = 0;
     try {
         let arr = opbody.memo;
-        if (arr.app === 'golos-id' && arr.version === 1) {
+        if (arr.app === 'golos-id' && arr.version === 1 && arr.target.permlink !== '') {
         let donate = arr.target;
         let url;
         if (opbody.to === donate.author) {
