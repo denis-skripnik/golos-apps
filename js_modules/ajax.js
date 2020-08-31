@@ -11,6 +11,7 @@ const gudb = require("../databases/golos_usersdb");
 const votes = require("../databases/votesdb");
 const vadb = require("../databases/vadb");
 const asdb = require("../databases/asdb");
+const prdb = require("../databases/prdb");
 const conf = require('../config.json');
 
 app.get('/golos-api/', async function (req, res) {
@@ -198,6 +199,13 @@ for (let collum of collums[type]) {
         } else {
             res.send({});
         }
+} else if (service === 'witnesses') {
+    let data = await prdb.findAllWitnesses();
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.send({});
+    }
 }
 });
 app.listen(3000, function () {

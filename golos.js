@@ -7,6 +7,7 @@ const top = require("./js_modules/golos_top");
 const votes = require("./js_modules/votes");
 const stakebot = require("./js_modules/stake_bot");
 const as = require("./js_modules/activity_stats");
+const wr = require("./js_modules/witness_rewards");
 const helpers = require("./js_modules/helpers");
 const methods = require("./js_modules/methods");
 const asdb = require("./databases/asdb");
@@ -15,7 +16,7 @@ const LONG_DELAY = 12000;
 const SHORT_DELAY = 3000;
 const SUPER_LONG_DELAY = 1000 * 60 * 15;
 
-async function processBlock(bn) {
+async function processBlock(bn, props) {
     const block = await methods.getOpsInBlock(bn);
 let ok_ops_count = 0;
     for(let tr of block) {
@@ -40,6 +41,9 @@ let ok_ops_count = 0;
             case "vote":
             ok_ops_count += await as.voteOperation(op, opbody);
             break;
+case "producer_reward":
+ok_ops_count += await wr.producerRewardOperation(opbody, props.total_vesting_fund_steem, props.total_vesting_shares, tr.timestamp);
+break;
             default:
                     //неизвестная команда
             }
@@ -66,7 +70,7 @@ while (true) {
             await helpers.sleep(delay);
             PROPS = await methods.getProps();
         } else {
-            if(0 < await processBlock(bn)) {
+            if(0 < await processBlock(bn, PROPS)) {
                 delay = SHORT_DELAY;
             } else {
                 delay = LONG_DELAY;
