@@ -77,7 +77,7 @@ async function findAllWitnesses() {
       let collection = db.collection('witnesses');
 
       const res = [];
-      let cursor = await collection.find({}).limit(500);
+      let cursor = await collection.find({}).sort({now_daily_profit: -1}).limit(500);
       let doc = null;
       while(null != (doc = await cursor.next())) {
           res.push(doc);
