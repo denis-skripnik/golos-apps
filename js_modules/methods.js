@@ -110,6 +110,10 @@ async function wifToPublic(key) {
     return golos.auth.wifToPublic(key);
 }
 
+async function donate(posting_key, account, donate_to, donate_amount, donate_memo) {
+    return golos.broadcast.donateAsync(posting_key, account, donate_to, donate_amount, {app: 'golos-stake-bot', version: 1, comment: donate_memo, target: {type: 'personal_donate'}}, []);
+}
+
       module.exports.getOpsInBlock = getOpsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
@@ -125,3 +129,4 @@ module.exports.getAccounts = getAccounts;
 module.exports.getReputation = getReputation;
 module.exports.send = send;
 module.exports.wifToPublic = wifToPublic;
+module.exports.donate = donate;

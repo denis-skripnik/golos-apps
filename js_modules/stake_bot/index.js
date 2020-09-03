@@ -4,6 +4,8 @@ const i = require("./bot/interface");
 const udb = require(process.cwd() + "/databases/golos_stakebot/usersdb");
 const adb = require(process.cwd() + "/databases/golos_stakebot/accountsdb");
 const helpers = require("../helpers");
+const conf = require(process.cwd() + '/config.json');
+
 var sjcl = require('sjcl');
 
 Number.prototype.toFixedNoRounding = function(n) {
@@ -30,14 +32,22 @@ for (let user of users) {
 if (accounts && accounts.length > 0) {
 	var members = {};
 	var referals = {};
+	let lotery = []; // Массив аккаунтов для участия в лотерее.
+	var admin_posting_key = '';
 	for (let user of accounts) {
 		console.log('claim для пользователя ' + user.login)
-		try {
+				try {
 			if (user.posting_key !== '') {
 				let posting = sjcl.decrypt(user.login + '_postingKey_stakebot', user.posting_key);
+				if (user.login === conf.stakebot.golos_login) {
+					admin_posting_key = posting;
+				}
 				let get_account = await methods.getAccount(user.login);
 				let acc = get_account[0];
-		let temp_balance = acc.accumulative_balance;
+		if (parseFloat(acc.vesting_shares) >= 50000000) {
+			lotery.push(user.login);
+		}
+				let temp_balance = acc.accumulative_balance;
 if (parseFloat(temp_balance) >= 0.1) {
 var float_claim = parseFloat(temp_balance);
 var operations = [];
@@ -92,6 +102,10 @@ await helpers.sleep(1000);
 	}
 }
 await i.sendClaimNotify(members, referals);
+await helpers.sleep(1000);
+// Выбор победителя лотереи.
+let winner = await helpers.getRandomInRange(0, lotery.length-1);
+await methods.donate(admin_posting_key, conf.stakebot.golos_login, lotery[winner], '100.000 GOLOS', 'Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуют в лотерее среди участников!');
 }
 }
 

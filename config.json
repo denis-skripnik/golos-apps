@@ -7,6 +7,7 @@
   },
   "stakebot": {
       "admins": [1],
-  "bot_api_key": "x:y"
+  "bot_api_key": "x:y",
+  "golos_login": ""
     }
 }
