@@ -105,7 +105,7 @@ await i.sendClaimNotify(members, referals);
 await helpers.sleep(1000);
 // Выбор победителя лотереи.
 let winner = await helpers.getRandomInRange(0, lotery.length-1);
-await methods.donate(admin_posting_key, conf.stakebot.golos_login, lotery[winner], '100.000 GOLOS', 'Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуют в лотерее среди участников!');
+await methods.donate(admin_posting_key, conf.stakebot.golos_login, lotery[winner], '100.000 GOLOS', 'Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее среди участников!');
 }
 }
 
