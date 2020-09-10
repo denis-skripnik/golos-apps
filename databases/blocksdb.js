@@ -2,10 +2,12 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
-async function getBlock(bn) {
+const client = await MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).catch(console.log);
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
+async function getBlock(bn) {
 
     if (!client) {
         return;
@@ -22,25 +24,22 @@ async function getBlock(bn) {
         let res = await collection.findOne(query);
 
         if (res) {
-return res;
-} else {
-  res = {};
-  res.last_block = bn;
-  return res;
-}
+            return res;
+        } else {
+            res = {};
+            res.last_block = bn;
+            return res;
+        }
     } catch (err) {
 
-return err;
+        return err;
     } finally {
 
-        client.close();
+
     }
 }
 
 async function updateBlock(id) {
-
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -52,16 +51,21 @@ async function updateBlock(id) {
 
         let collection = db.collection('blocks');
 
-        let res = await collection.updateOne({}, {$set: {last_block: id}}, { upsert: true });
+        let res = await collection.updateOne({}, {
+            $set: {
+                last_block: id
+            }
+        }, {
+            upsert: true
+        });
 
-return res;
+        return res;
     } catch (err) {
 
         console.log(err);
-    return err;
-      } finally {
+        return err;
+    } finally {
 
-        client.close();
     }
 }
 

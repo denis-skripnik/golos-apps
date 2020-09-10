@@ -2,10 +2,13 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+const client = await MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).catch(console.log);
+
 async function getPost(author, permlink, prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -29,14 +32,11 @@ return res;
     return err;
       } finally {
 
-        client.close();
     }
 }
 
 async function addPosts(posts, prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
   if (!client) {
       return;
@@ -58,14 +58,10 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function updatePost(author, permlink, title, golos_amount, gbg_amount, prefix) {
-
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
   if (!client) {
       return;
@@ -87,14 +83,11 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function removePosts(prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
   if (!client) {
       return;
@@ -116,13 +109,10 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function findAllPosts(prefix) {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
   if (!client) {
       return;
@@ -147,7 +137,6 @@ async function findAllPosts(prefix) {
   return err;
     } finally {
 
-      client.close();
   }
 }
 

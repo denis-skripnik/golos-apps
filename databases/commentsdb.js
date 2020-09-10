@@ -2,10 +2,14 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+const client = await MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).catch(console.log);
+
 async function getComment(author, permlink, prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
+  
 
     if (!client) {
         return;
@@ -29,14 +33,13 @@ return res;
     return err;
       } finally {
 
-        client.close();
+       
     }
 }
 
 async function addComments(comments, prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -58,14 +61,13 @@ return res;
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 
 async function updateComment(author, permlink, title, golos_amount, gbg_amount, prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+ 
 
   if (!client) {
       return;
@@ -87,14 +89,13 @@ return res;
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 
 async function removeComments(prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -116,13 +117,12 @@ return res;
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 
 async function findAllComments(prefix) {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -147,7 +147,6 @@ async function findAllComments(prefix) {
   return err;
     } finally {
 
-      client.close();
   }
 }
 

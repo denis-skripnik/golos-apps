@@ -2,10 +2,14 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+const client = await MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).catch(console.log);
+
 async function getUser(login, prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
+
 
     if (!client) {
         return;
@@ -29,14 +33,13 @@ return res;
     return err;
       } finally {
 
-        client.close();
+
     }
 }
 
 async function updateUser(login, golos_amount, gbg_amount, prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -58,14 +61,13 @@ return res;
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 
 async function removeUsers(prefix) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -87,13 +89,11 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function findAllUsers(prefix) {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -118,7 +118,7 @@ async function findAllUsers(prefix) {
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 
