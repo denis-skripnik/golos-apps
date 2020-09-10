@@ -2,9 +2,13 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
-const client = await MongoClient.connect(url, {
+let client = null
+
+MongoClient.connect(url, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
 }).catch(console.log);
 
 async function getPost(author, permlink, prefix) {
