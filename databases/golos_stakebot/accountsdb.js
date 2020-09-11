@@ -2,182 +2,194 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://127.0.0.1:27017';
 
+let client = null
+
+MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
+}).catch(console.log);
+
 async function getAccounts(id) {
-  const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-    .catch(err => { console.log(err); });
 
-if (!client) {
-    return;
-}
+	if (!client) {
+		return;
+	}
 
-try {
+	try {
 
-    const db = client.db("golos_stakebot");
+		const db = client.db("golos_stakebot");
 
-    let collection = db.collection('accounts');
+		let collection = db.collection('accounts');
 
-    const res = [];
-    let cursor = await collection.find({id}).limit(500);
-    let doc = null;
-    while(null != (doc = await cursor.next())) {
-        res.push(doc);
-    }
-return res;
-  } catch (err) {
+		const res = [];
+		let cursor = await collection.find({
+			id
+		}).limit(500);
+		let doc = null;
+		while (null != (doc = await cursor.next())) {
+			res.push(doc);
+		}
+		return res;
+	} catch (err) {
 
-    console.log(err);
-return err;
-  } finally {
+		console.log(err);
+		return err;
+	} finally {
 
-    client.close();
-}
+	}
 }
 
 async function getAccountsByRefererCode(referer_code) {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
-  
-  if (!client) {
-      return;
-  }
-  
-  try {
-  
-      const db = client.db("golos_stakebot");
-  
-      let collection = db.collection('accounts');
-  
-      const res = [];
-      let cursor = await collection.find({referer_code}).limit(500);
-      let doc = null;
-      while(null != (doc = await cursor.next())) {
-          res.push(doc);
-      }
-  return res;
-    } catch (err) {
-  
-      console.log(err);
-  return err;
-    } finally {
-  
-      client.close();
-  }
-  }
+
+	if (!client) {
+		return;
+	}
+
+	try {
+
+		const db = client.db("golos_stakebot");
+
+		let collection = db.collection('accounts');
+
+		const res = [];
+		let cursor = await collection.find({
+			referer_code
+		}).limit(500);
+		let doc = null;
+		while (null != (doc = await cursor.next())) {
+			res.push(doc);
+		}
+		return res;
+	} catch (err) {
+
+		console.log(err);
+		return err;
+	} finally {
+
+	}
+}
 
 async function getAccount(login) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
-    if (!client) {
-        return;
-    }
+	if (!client) {
+		return;
+	}
 
-    try {
+	try {
 
-        const db = client.db("golos_stakebot");
+		const db = client.db("golos_stakebot");
 
-        let collection = db.collection('accounts');
+		let collection = db.collection('accounts');
 
-        let res = await collection.findOne({login});
+		let res = await collection.findOne({
+			login
+		});
 
-return res;
-    } catch (err) {
+		return res;
+	} catch (err) {
 
-return err;
-    } finally {
+		return err;
+	} finally {
 
-        client.close();
-    }
+	}
 }
 
 async function updateAccount(id, referer_code, login, posting_key, to_vesting_shares) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
-  if (!client) {
-      return;
-  }
+	if (!client) {
+		return;
+	}
 
-  try {
+	try {
 
-      const db = client.db("golos_stakebot");
+		const db = client.db("golos_stakebot");
 
-      let collection = db.collection('accounts');
+		let collection = db.collection('accounts');
 
-      let res = await collection.updateOne({login}, {$set: {id, referer_code, login, posting_key, to_vesting_shares}}, {upsert:true});
+		let res = await collection.updateOne({
+			login
+		}, {
+			$set: {
+				id,
+				referer_code,
+				login,
+				posting_key,
+				to_vesting_shares
+			}
+		}, {
+			upsert: true
+		});
 
-return res;
+		return res;
 
-  } catch (err) {
+	} catch (err) {
 
-      console.log(err);
-  return err;
-    } finally {
+		console.log(err);
+		return err;
+	} finally {
 
-      client.close();
-  }
+	}
 }
 
 async function removeAccount(id, login) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
-  if (!client) {
-      return;
-  }
+	if (!client) {
+		return;
+	}
 
-  try {
+	try {
 
-      const db = client.db("golos_stakebot");
+		const db = client.db("golos_stakebot");
 
-      let collection = db.collection('accounts');
+		let collection = db.collection('accounts');
 
-      let res = await collection.deleteOne({id, login});
+		let res = await collection.deleteOne({
+			id,
+			login
+		});
 
-return res;
+		return res;
 
-  } catch (err) {
+	} catch (err) {
 
-      console.log(err);
-  return err;
-    } finally {
+		console.log(err);
+		return err;
+	} finally {
 
-      client.close();
-  }
+	}
 }
 
 async function findAllAccounts() {
-  const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-    .catch(err => { console.log(err); });
 
-if (!client) {
-    return;
-}
+	if (!client) {
+		return;
+	}
 
-try {
+	try {
 
-    const db = client.db("golos_stakebot");
+		const db = client.db("golos_stakebot");
 
-    let collection = db.collection('accounts');
+		let collection = db.collection('accounts');
 
-    const res = [];
-    let cursor = await collection.find({}).limit(500);
-    let doc = null;
-    while(null != (doc = await cursor.next())) {
-        res.push(doc);
-    }
-return res;
-  } catch (err) {
+		const res = [];
+		let cursor = await collection.find({}).limit(500);
+		let doc = null;
+		while (null != (doc = await cursor.next())) {
+			res.push(doc);
+		}
+		return res;
+	} catch (err) {
 
-    console.log(err);
-return err;
-  } finally {
+		console.log(err);
+		return err;
+	} finally {
 
-    client.close();
-}
+	}
 }
 
 module.exports.getAccounts = getAccounts;

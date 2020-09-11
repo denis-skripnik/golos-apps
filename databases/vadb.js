@@ -2,10 +2,18 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+
+let client = null
+
+MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
+}).catch(console.log);
+
 async function updateVa(vote_id, answer_id, login, gests) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
   if (!client) {
       return;
@@ -27,14 +35,12 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function removeVa(db_id) {
 
-  const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-    .catch(err => { console.log(err); });
+
 
 if (!client) {
     return;
@@ -56,13 +62,12 @@ return res;
 return err;
   } finally {
 
-    client.close();
+
 }
 }
 
 async function findVa(vote_id) {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -87,7 +92,6 @@ async function findVa(vote_id) {
   return err;
     } finally {
 
-      client.close();
   }
 }
 

@@ -2,10 +2,17 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+let client = null
+
+MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
+}).catch(console.log);
+
 async function getWitness(login) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -29,14 +36,12 @@ return res;
     return err;
       } finally {
 
-        client.close();
+
     }
 }
 
 async function updateWitness(login, old_monthly_profit, now_monthly_profit, old_daily_profit, now_daily_profit, timestamp) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
   if (!client) {
       return;
@@ -58,13 +63,11 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function findAllWitnesses() {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -89,7 +92,7 @@ async function findAllWitnesses() {
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 

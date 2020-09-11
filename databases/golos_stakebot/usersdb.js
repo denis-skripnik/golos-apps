@@ -2,10 +2,16 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://127.0.0.1:27017';
 
-async function getUser(id) {
+let client = null
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
+MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
+}).catch(console.log);
+
+async function getUser(id) {
 
     if (!client) {
         return;
@@ -25,14 +31,11 @@ return res;
 return err;
     } finally {
 
-        client.close();
     }
 }
 
 async function getUserByRefererCode(referer_code) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -52,14 +55,11 @@ return res;
 return err;
     } finally {
 
-        client.close();
     }
 }
 
 async function addUser(id, referers, lng, prev_status, status, referer_code) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -81,14 +81,12 @@ return res;
     return err;
       } finally {
 
-        client.close();
     }
 }
 
 async function updateUser(id, referers, lng, prev_status, status, referer_code) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -110,13 +108,11 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function findAllUsers() {
-  const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-    .catch(err => { console.log(err); });
+  
 
 if (!client) {
     return;
@@ -140,8 +136,6 @@ return res;
     console.log(err);
 return err;
   } finally {
-
-    client.close();
 }
 }
 

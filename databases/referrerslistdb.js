@@ -2,10 +2,18 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+let client = null
+
+MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
+}).catch(console.log);
+
 async function getReferrer(login) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
+
 
     if (!client) {
         return;
@@ -29,14 +37,13 @@ return res;
     return err;
       } finally {
 
-        client.close();
+
     }
 }
 
 async function updateReferrer(login, referals) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -58,13 +65,12 @@ return res;
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 
 async function findAllReferrers() {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -89,7 +95,7 @@ async function findAllReferrers() {
   return err;
     } finally {
 
-      client.close();
+
   }
 }
 

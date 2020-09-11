@@ -2,10 +2,17 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+let client = null
+
+MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
+}).catch(console.log);
+
 async function getTop(type, page) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -41,14 +48,12 @@ async function getTop(type, page) {
     return err;
       } finally {
   
-        client.close();
+
     }
 }
 
 async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, reputation) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -74,7 +79,6 @@ return res;
     return err;
       } finally {
 
-        client.close();
     }
 }
 

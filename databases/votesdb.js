@@ -2,10 +2,18 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
 
+
+let client = null
+
+MongoClient.connect(url, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(function(instance){
+	client = instance
+}).catch(console.log);
+
 async function getVote(_id) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -29,14 +37,12 @@ return res;
     return err;
       } finally {
 
-        client.close();
+
     }
 }
 
 async function getVoteByPermlink(permlink) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-        .catch(err => { console.log(err); });
 
     if (!client) {
         return;
@@ -60,14 +66,11 @@ return res;
     return err;
       } finally {
 
-        client.close();
     }
 }
 
 async function addVote(question, answers, permlink, consider, end_date) {
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
 
   if (!client) {
       return;
@@ -89,14 +92,11 @@ return res;
   return err;
     } finally {
 
-      client.close();
   }
 }
 
 async function removeVote(db_id) {
 
-  const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-    .catch(err => { console.log(err); });
 
 if (!client) {
     return;
@@ -118,13 +118,11 @@ return res;
 return err;
   } finally {
 
-    client.close();
 }
 }
 
 async function findVotes() {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true})
-      .catch(err => { console.log(err); });
+
 
   if (!client) {
       return;
@@ -149,7 +147,6 @@ async function findVotes() {
   return err;
     } finally {
 
-      client.close();
   }
 }
 
