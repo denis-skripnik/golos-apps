@@ -1,18 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const url = 'mongodb://localhost:27017';
-
-let client = null
-
-MongoClient.connect(url, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(function(instance){
-	client = instance
-}).catch(console.log);
+const pool = require('./@db.js')
 
 async function getUser(login) {
-
+    let client = await pool.getClient()
     if (!client) {
         return;
     }
@@ -41,7 +30,7 @@ async function getUser(login) {
 }
 
 async function updateUser(login, content, flags, upvotes, all_flags_weight, all_upvotes_weight) {
-
+    let client = await pool.getClient()
 
     if (!client) {
         return;
@@ -80,7 +69,7 @@ async function updateUser(login, content, flags, upvotes, all_flags_weight, all_
 }
 
 async function removeactivityStats() {
-
+    let client = await pool.getClient()
     if (!client) {
         return;
     }
@@ -105,7 +94,7 @@ async function removeactivityStats() {
 }
 
 async function findAllActivityStats() {
-
+    let client = await pool.getClient()
     if (!client) {
         return;
     }

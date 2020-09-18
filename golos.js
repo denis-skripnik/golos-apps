@@ -15,6 +15,15 @@ const bdb = require("./databases/blocksdb");
 const LONG_DELAY = 12000;
 const SHORT_DELAY = 3000;
 const SUPER_LONG_DELAY = 1000 * 60 * 15;
+const db = require('./databases/@db.js')
+
+db.initialize({
+    url: 'mongodb://localhost:27017',
+    poolSize: 15,
+    autoReconnect: true,
+    reconnectTries: 100,
+    reconnectInterval: 500
+})
 
 async function processBlock(bn, props) {
     const block = await methods.getOpsInBlock(bn);

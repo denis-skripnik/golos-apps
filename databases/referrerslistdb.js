@@ -1,20 +1,9 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const url = 'mongodb://localhost:27017';
-
-let client = null
-
-MongoClient.connect(url, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(function(instance){
-	client = instance
-}).catch(console.log);
+const pool = require('./@db.js')
 
 async function getReferrer(login) {
 
 
-
+  let client = await pool.getClient()
     if (!client) {
         return;
     }
@@ -43,7 +32,7 @@ return res;
 
 async function updateReferrer(login, referals) {
 
-
+  let client = await pool.getClient()
 
   if (!client) {
       return;
@@ -70,7 +59,7 @@ return res;
 }
 
 async function findAllReferrers() {
-
+  let client = await pool.getClient()
 
   if (!client) {
       return;

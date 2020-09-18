@@ -1,17 +1,8 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const url = 'mongodb://localhost:27017';
-
-let client = null
-
-MongoClient.connect(url, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(function(instance){
-	client = instance
-}).catch(console.log);
+const pool = require('./@db.js')
 
 async function getBlock(bn) {
+
+    let client = await pool.getClient()
 
     if (!client) {
         return;
@@ -44,6 +35,8 @@ async function getBlock(bn) {
 }
 
 async function updateBlock(id) {
+
+    let client = await pool.getClient()
 
     if (!client) {
         return;
