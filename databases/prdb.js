@@ -1,18 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const url = 'mongodb://localhost:27017';
-
-let client = null
-
-MongoClient.connect(url, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(function(instance){
-	client = instance
-}).catch(console.log);
+const pool = require('./@db.js')
 
 async function getWitness(login) {
-
+  let client = await pool.getClient()
 
     if (!client) {
         return;
@@ -41,7 +30,7 @@ return res;
 }
 
 async function updateWitness(login, old_monthly_profit, now_monthly_profit, old_daily_profit, now_daily_profit, timestamp) {
-
+  let client = await pool.getClient()
 
   if (!client) {
       return;
@@ -67,7 +56,7 @@ return res;
 }
 
 async function findAllWitnesses() {
-
+  let client = await pool.getClient()
 
   if (!client) {
       return;

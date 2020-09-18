@@ -1,19 +1,8 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const url = 'mongodb://localhost:27017';
-
-let client = null
-
-MongoClient.connect(url, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(function(instance){
-	client = instance
-}).catch(console.log);
+const pool = require('./@db.js')
 
 async function getTop(type, page) {
 
-
+    let client = await pool.getClient()
     if (!client) {
         return;
     }
@@ -54,7 +43,7 @@ async function getTop(type, page) {
 
 async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, reputation) {
 
-
+    let client = await pool.getClient()
     if (!client) {
         return;
     }

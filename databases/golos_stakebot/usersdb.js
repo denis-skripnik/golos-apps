@@ -1,18 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const url = 'mongodb://127.0.0.1:27017';
-
-let client = null
-
-MongoClient.connect(url, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(function(instance){
-	client = instance
-}).catch(console.log);
+const pool = require('././@db.js')
 
 async function getUser(id) {
-
+    let client = await pool.getClient()
     if (!client) {
         return;
     }
@@ -36,7 +25,7 @@ return err;
 
 async function getUserByRefererCode(referer_code) {
 
-
+    let client = await pool.getClient()
     if (!client) {
         return;
     }
@@ -59,7 +48,7 @@ return err;
 }
 
 async function addUser(id, referers, lng, prev_status, status, referer_code) {
-
+    let client = await pool.getClient()
 
     if (!client) {
         return;
@@ -86,7 +75,7 @@ return res;
 
 async function updateUser(id, referers, lng, prev_status, status, referer_code) {
 
-
+    let client = await pool.getClient()
 
   if (!client) {
       return;
@@ -112,7 +101,7 @@ return res;
 }
 
 async function findAllUsers() {
-  
+    let client = await pool.getClient()
 
 if (!client) {
     return;

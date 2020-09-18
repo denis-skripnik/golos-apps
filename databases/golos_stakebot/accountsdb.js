@@ -1,18 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const url = 'mongodb://127.0.0.1:27017';
-
-let client = null
-
-MongoClient.connect(url, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(function(instance){
-	client = instance
-}).catch(console.log);
+const pool = require('././@db.js')
 
 async function getAccounts(id) {
-
+	let client = await pool.getClient()
 	if (!client) {
 		return;
 	}
@@ -42,7 +31,7 @@ async function getAccounts(id) {
 }
 
 async function getAccountsByRefererCode(referer_code) {
-
+	let client = await pool.getClient()
 	if (!client) {
 		return;
 	}
@@ -72,7 +61,7 @@ async function getAccountsByRefererCode(referer_code) {
 }
 
 async function getAccount(login) {
-
+	let client = await pool.getClient()
 
 	if (!client) {
 		return;
@@ -99,7 +88,7 @@ async function getAccount(login) {
 
 async function updateAccount(id, referer_code, login, posting_key, to_vesting_shares) {
 
-
+	let client = await pool.getClient()
 	if (!client) {
 		return;
 	}
@@ -137,7 +126,7 @@ async function updateAccount(id, referer_code, login, posting_key, to_vesting_sh
 
 async function removeAccount(id, login) {
 
-
+	let client = await pool.getClient()
 	if (!client) {
 		return;
 	}
@@ -165,7 +154,7 @@ async function removeAccount(id, login) {
 }
 
 async function findAllAccounts() {
-
+	let client = await pool.getClient()
 	if (!client) {
 		return;
 	}
