@@ -1,46 +1,34 @@
-const MongoClient = require('mongodb').MongoClient
-
-const DEFAULT_URL = 'mongodb://localhost:27017'
-const DEFAULT_POOL_SIZE = 10
-const DEFAULT_AUTO_RECONNECT = true
-const DEFAULT_RECONNECT_TRIES = 60
-const DEFAULT_RECONNECT_INTERVAL = 500
-
-const LETS = {}
-
 const me = module.exports = {}
+const MongoClient = require('mongodb').MongoClient
+let clients
 
-me.getClient = async function(){
-    return LETS.poolClient
+me.url = 'mongodb://localhost:27017'
+me.poolSize = 15
+
+me.getClient = function(){
+    return clients
 }
 
-me.initialize = async function(args){
-
-    LETS.url = args.url || DEFAULT_URL
-    LETS.poolSize = args.poolSize || DEFAULT_POOL_SIZE
-    LETS.autoReconnect = args.autoReconnect || DEFAULT_AUTO_RECONNECT
-    LETS.reconnectTries = args.reconnectTries || DEFAULT_RECONNECT_TRIES
-    LETS.reconnectInterval = args.reconnectInterval || DEFAULT_RECONNECT_INTERVAL
-
-    let poolClient = await MongoClient.connect(LETS.url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        poolSize: LETS.poolSize,
-        autoReconnect: LETS.autoReconnect,
-        reconnectTries: LETS.reconnectTries,
-        reconnectInterval: LETS.reconnectInterval
-    }).catch(console.log)
-
-    if (poolClient) {
-        LETS.poolClient
+me.initialize = function(args){
+    try {
+        let { url, poolSize } = args
+        me.url = url || me.url
+        me.poolSize = poolSize || me.poolSize
+        clients = await MongoClient.connect(me.url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            poolSize: me.PoolSize,
+        }).catch(function(error){
+            console.log('mongodb at connect', error)
+            reconnect()
+        })
+        clients.on('close', reconnect)
+    } catch (error) {
+        console.log('mongodb in connect', error)
+        reconnect()
     }
-
 }
 
-me.finalize = async function(){
-
-    if (typeof LETS.poolClient === 'object') {
-        LETS.poolClient.close()
-    }
-
+const reconnect = function(){
+    setTimeout(me.initialize, 1000)
 }
