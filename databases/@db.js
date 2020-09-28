@@ -9,7 +9,7 @@ me.getClient = function(){
     return clients
 }
 
-me.initialize = function(args){
+me.initialize = async function(args){
     try {
         let { url, poolSize } = args
         me.url = url || me.url
