@@ -2,9 +2,10 @@ let express = require('express');
 let app = express();
 const helpers = require("./helpers");
 const methods = require("./methods");
-const pdb = require("../databases/postsdb");
-const cdb = require("../databases/commentsdb");
-const udb = require("../databases/usersdb");
+const pdb = require("../databases/donates/postsdb");
+const cdb = require("../databases/donates/commentsdb");
+const udb = require("../databases/donates/usersdb");
+const dcdb = require("../databases/donates/donators_contentdb");
 const rdb = require("../databases/referrersdb");
 const rldb = require("../databases/referrerslistdb");
 const gudb = require("../databases/golos_usersdb");
@@ -19,6 +20,10 @@ app.get('/golos-api/', async function (req, res) {
     let type = req.query.type;
     let page = req.query.page;
 let date = req.query.date; // получили параметр date из url
+let token = req.query.token; // получили параметр date из url
+if (token) {
+    token = token.toUpperCase();
+}
 let login = req.query.login; // получили параметр login из url
 let permlink = req.query.permlink; // получили параметр user из url
 if (service === 'referrers' && type === 'list') {
@@ -33,63 +38,74 @@ if (referrers && referrers.length > 0) {
         res.send(JSON.stringify(referals));
     }
 } else if (service === 'donates') {
-    if (type === 'donators') {
+    if (type === 'donators' && token) {
     if (!date) {
         date = new Date().getMonth()+1 + '_' + new Date().getFullYear();
-        let users = await udb.findAllUsers(date);
+        let users = await udb.findAllUsers(token, date);
     users.sort(helpers.compareDonators);
     let usersArray = [];
     for (let user of users) {
-        usersArray.push({link: `<a href="https://dpos.space/golos/profiles/${user.login}" target="_blank">@${user.login}</a>`, golos_amount: user.golos_amount, gbg_amount: user.gbg_amount});
+        usersArray.push({login: user.login, amount: user.amount});
     }
     res.send(JSON.stringify(usersArray));
     } else {
-        let users = await udb.findAllUsers(date);
+        let users = await udb.findAllUsers(token, date);
     users.sort(helpers.compareDonators);
     let usersArray = [];
     for (let user of users) {
-        usersArray.push({link: `<a href="https://dpos.space/golos/profiles/${user.login}" target="_blank">@${user.login}</a>`, golos_amount: user.golos_amount, gbg_amount: user.gbg_amount});
+        usersArray.push({login: user.login, amount: user.amount});
     }
     res.send(JSON.stringify(usersArray));
     }
 } else if (type === 'posts') {
     if (!date) {
         date = new Date().getMonth()+1 + '_' + new Date().getFullYear();
-    let posts = await pdb.findAllPosts(date);
+    let posts = await pdb.findAllPosts(token, date);
 posts.sort(helpers.comparePosts);
 let postsArray = [];
 for (let post of posts) {
-    postsArray.push({link: `<a href="https://golos.id/@${post.author}/${post.permlink}" target="_blank">${post.title}</a>`, golos_amount: post.golos_amount, gbg_amount: post.gbg_amount});
+    postsArray.push({link: `<a href="https://golos.id/@${post.author}/${post.permlink}" target="_blank">${post.title}</a>`, amount: post.amount});
 }
 res.send(JSON.stringify(postsArray));
 } else {
-    let posts = await pdb.findAllPosts(date);
+    let posts = await pdb.findAllPosts(token, date);
 posts.sort(helpers.comparePosts);
 let postsArray = [];
 for (let post of posts) {
-    postsArray.push({link: `<a href="https://golos.id/@${post.author}/${post.permlink}" target="_blank">${post.title}</a>`, golos_amount: post.golos_amount, gbg_amount: post.gbg_amount});
+    postsArray.push({link: `<a href="https://golos.id/@${post.author}/${post.permlink}" target="_blank">${post.title}</a>`, amount: post.amount});
 }
 res.send(JSON.stringify(postsArray));
 }
 } else if (type === 'comments') {
     if (!date) {
         date = new Date().getMonth()+1 + '_' + new Date().getFullYear();
-    let comments = await cdb.findAllComments(date);
+    let comments = await cdb.findAllComments(token, date);
 comments.sort(helpers.comparePosts);
 let commentsArray = [];
 for (let comment of comments) {
-    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">@${comment.author}/${comment.permlink}</a>`, golos_amount: comment.golos_amount, gbg_amount: comment.gbg_amount});
+    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">@${comment.author}/${comment.permlink}</a>`, amount: comment.amount});
 }
 res.send(JSON.stringify(commentsArray));
 } else {
-    let comments = await cdb.findAllComments(date);
+    let comments = await cdb.findAllComments(token, date);
 comments.sort(helpers.comparePosts);
 let commentsArray = [];
 for (let comment of comments) {
-    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">@${comment.author}/${comment.permlink}</a>`, golos_amount: comment.golos_amount, gbg_amount: comment.gbg_amount});
+    commentsArray.push({link: `<a href="https://golos.id/@${comment.author}/${comment.permlink}" target="_blank">@${comment.author}/${comment.permlink}</a>`, amount: comment.amount});
 }
 res.send(JSON.stringify(commentsArray));
 }
+} else if (type === 'donators-content' && login) {
+    if (!date) {
+        date = new Date().getMonth()+1 + '_' + new Date().getFullYear();
+    }
+        let content = await dcdb.findAllDonatorContent(login, token, date);
+content.sort(helpers.comparePosts);
+let contentArray = [];
+for (let el of content) {
+    contentArray.push({link: `<a href="https://golos.id/@${el.author}/${el.permlink}" target="_blank">@${el.author}/${el.permlink}</a>`, amount: el.amount});
+}
+res.send(JSON.stringify(contentArray));
 }
 } else if (service === 'top' && type && page) {
         let data = await gudb.getTop(type, page);

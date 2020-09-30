@@ -1,9 +1,8 @@
-const pool = require('./@db.js')
+const pool = require('../@db.js')
 
-async function getComment(author, permlink, prefix) {
+async function getPost(token, author, permlink, prefix) {
 
   let client = await pool.getClient()
-
     if (!client) {
         return;
     }
@@ -12,9 +11,9 @@ async function getComment(author, permlink, prefix) {
 
         const db = client.db("golos-donators");
 
-        let collection = db.collection('comments' + prefix);
+        let collection = db.collection('posts' + prefix);
 
-        let query = {author, permlink}
+        let query = {token, author, permlink}
 
         let res = await collection.findOne(query);
 
@@ -26,14 +25,12 @@ return res;
     return err;
       } finally {
 
-       
     }
 }
 
-async function addComments(comments, prefix) {
+async function addPosts(posts, prefix) {
 
   let client = await pool.getClient()
-
   if (!client) {
       return;
   }
@@ -42,9 +39,9 @@ async function addComments(comments, prefix) {
 
       const db = client.db("golos-donators");
 
-      let collection = db.collection('comments' + prefix);
+      let collection = db.collection('posts' + prefix);
 
-      let res = await collection.insertMany(comments);
+      let res = await collection.insertMany(posts);
 
 return res;
 
@@ -54,14 +51,11 @@ return res;
   return err;
     } finally {
 
-
   }
 }
 
-async function updateComment(author, permlink, title, golos_amount, gbg_amount, prefix) {
-
+async function updatePost(token, author, permlink, title, amount, prefix) {
   let client = await pool.getClient()
-
   if (!client) {
       return;
   }
@@ -70,9 +64,9 @@ async function updateComment(author, permlink, title, golos_amount, gbg_amount, 
 
       const db = client.db("golos-donators");
 
-      let collection = db.collection('comments' + prefix);
+      let collection = db.collection('posts' + prefix);
 
-      let res = await collection.updateOne({author, permlink}, {$set: {author, permlink, title, golos_amount, gbg_amount}}, { upsert: true });
+      let res = await collection.updateOne({token, author, permlink}, {$set: {token, author, permlink, title, amount}}, { upsert: true });
 console.log(JSON.stringify(res));
 return res;
 
@@ -82,12 +76,10 @@ return res;
   return err;
     } finally {
 
-
   }
 }
 
-async function removeComments(prefix) {
-
+async function removePosts(_id, prefix) {
   let client = await pool.getClient()
 
   if (!client) {
@@ -100,7 +92,7 @@ async function removeComments(prefix) {
 
       let collection = db.collection('posts' + prefix);
 
-      let res = await collection.drop();
+      let res = await collection.deleteOne({_id});
 
 return res;
 
@@ -110,13 +102,11 @@ return res;
   return err;
     } finally {
 
-
   }
 }
 
-async function findAllComments(prefix) {
+async function findAllPosts(token, prefix) {
   let client = await pool.getClient()
-
   if (!client) {
       return;
   }
@@ -125,10 +115,13 @@ async function findAllComments(prefix) {
 
       const db = client.db("golos-donators");
 
-      let collection = db.collection('comments' + prefix);
-
+      let collection = db.collection('posts' + prefix);
+let query = {};
+if (token !== '') {
+    query = {token};
+}
       const res = [];
-      let cursor = await collection.find({}).limit(500);
+      let cursor = await collection.find(query).limit(500);
       let doc = null;
       while(null != (doc = await cursor.next())) {
           res.push(doc);
@@ -143,7 +136,7 @@ async function findAllComments(prefix) {
   }
 }
 
-module.exports.getComment = getComment;
-module.exports.updateComment = updateComment;
-module.exports.removeComments = removeComments;
-module.exports.findAllComments = findAllComments;
+module.exports.getPost = getPost;
+module.exports.updatePost = updatePost;
+module.exports.removePosts = removePosts;
+module.exports.findAllPosts = findAllPosts;

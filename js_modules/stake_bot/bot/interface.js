@@ -36,7 +36,7 @@ async function main(id, my_name, message, status) {
         if (message.indexOf('r') > -1) {
             let ref_id = parseInt(message.split(' r')[1]);
             let referer = await udb.getUserByRefererCode(ref_id);
-        if (referer && ref_id !== user.referer_code) {
+        if (referer) {
             console.log('Реферер найден.');
             let text = lng[referer.lng].new_referal1 + `https://t.me/golos_stake_bot?start=r${ref_id}`;
             let btns = await keybord(referer.lng, 'home');

@@ -1,30 +1,22 @@
 const helpers = require("./helpers");
 const methods = require("./methods");
-const udb = require("../databases/usersdb");
-const pdb = require("../databases/postsdb");
-const cdb = require("../databases/commentsdb");
+const udb = require("../databases/donates/usersdb");
+const pdb = require("../databases/donates/postsdb");
+const cdb = require("../databases/donates/commentsdb");
+const dcdb = require("../databases/donates/donators_contentdb");
 
 async function workingDonateWithNoPost(from, fullAmount) {
     let prefix = new Date().getUTCMonth()+1 + '_' + new Date().getUTCFullYear();
     let donate = fullAmount.split(' ');
 let amount = parseFloat(donate[0]);
 let token = donate[1];
-let user = await udb.getUser(from, prefix);
-if (user && token === 'GBG') {
-    await udb.updateUser(from, user.golos_amount, user.gbg_amount+amount, prefix);
+let user = await udb.getUser(from, token, prefix);
+if (user) {
+    await udb.updateUser(from, token, user.amount+amount, prefix);
     return 1;    
-} else if (user && token === 'GOLOS') {
-    await udb.updateUser(from, user.golos_amount + amount, user.gbg_amount, prefix);
-    return 1;    
-} else if (!user && token === 'GBG') {
-        await udb.updateUser(from, 0, amount, prefix);
-        return 1;    
-    } else if (!user && token === 'GOLOS') {
-            await udb.updateUser(from, amount, 0, prefix);
-            return 1;    
         } else {
-console.log('Условию не соответствует: ' + JSON.stringify(user));
-return 0;
+            await udb.updateUser(from, token, amount, prefix);
+            return 1;    
             }
 
 }
@@ -32,70 +24,62 @@ return 0;
 async function workingDonate(from, author, permlink, fullAmount) {
     let prefix = new Date().getUTCMonth()+1 + '_' + new Date().getUTCFullYear();
     let content = await methods.getContent(author, permlink);
-    if (content.code === 1) {
-    let donate = fullAmount.split(' ');
-let amount = parseFloat(donate[0]);
-let token = donate[1];
-console.log('Донатер: ' + from);
-let user = await udb.getUser(from, prefix);
-console.log('Пользователь: ' + JSON.stringify(user));
-if (user && token === 'GBG') {
-    await udb.updateUser(from, user.golos_amount, user.gbg_amount+amount, prefix);
-} else if (user && token === 'GOLOS') {
-    await udb.updateUser(from, user.golos_amount + amount, user.gbg_amount, prefix);
-    } else if (!user && token === 'GBG') {
-        await udb.updateUser(from, 0, amount, prefix);
-        } else if (!user && token === 'GOLOS') {
-            await udb.updateUser(from, amount, 0, prefix);
-            } else {
-console.log('Условию не соответствует: ' + JSON.stringify(user));
-            }
-
-let post = await pdb.getPost(author, permlink, prefix);
-if (post && token === 'GBG') {
-await pdb.updatePost(author, permlink, content.title, post.golos_amount, post.gbg_amount + amount, prefix);
-} else if (post && token === 'GOLOS') {
-    await pdb.updatePost(author, permlink, content.title, post.golos_amount + amount, post.gbg_amount, prefix);
-} else if (!post && token === 'GBG') {
-    await pdb.updatePost(author, permlink, content.title, 0, amount, prefix);
-} else if (!post && token === 'GOLOS') {
-    await pdb.updatePost(author, permlink, content.title, amount, 0, prefix);
-}
-return 1;    
-    } else if (content.code === 2) {
+    if (content) {
         let donate = fullAmount.split(' ');
-    let amount = parseFloat(donate[0]);
-    let token = donate[1];
-    console.log('Донатер: ' + from);
-    let user = await udb.getUser(from, prefix);
-    console.log('Пользователь: ' + JSON.stringify(user));
-    if (user && token === 'GBG') {
-        await udb.updateUser(from, user.golos_amount, user.gbg_amount+amount, prefix);
-    } else if (user && token === 'GOLOS') {
-        await udb.updateUser(from, user.golos_amount + amount, user.gbg_amount, prefix);
-        } else if (!user && token === 'GBG') {
-            await udb.updateUser(from, 0, amount, prefix);
-            } else if (!user && token === 'GOLOS') {
-                await udb.updateUser(from, amount, 0, prefix);
-                } else {
-    console.log('Условию не соответствует: ' + JSON.stringify(user));
-                }
-    
-    let comment = await cdb.getComment(author, permlink, prefix);
-    if (comment && token === 'GBG') {
-    await cdb.updateComment(author, permlink, content.title, comment.golos_amount, comment.gbg_amount + amount, prefix);
-    } else if (comment && token === 'GOLOS') {
-        await cdb.updateComment(author, permlink, content.title, comment.golos_amount + amount, comment.gbg_amount, prefix);
-    } else if (!comment && token === 'GBG') {
-        await cdb.updateComment(author, permlink, content.title, 0, amount, prefix);
-    } else if (!comment && token === 'GOLOS') {
-        await cdb.updateComment(author, permlink, content.title, amount, 0, prefix);
+        let amount = parseFloat(donate[0]);
+        let token = donate[1];
+        console.log('Донатер: ' + from);
+        let gdoc = await dcdb.getDonatorsOneContent(token, from, author, permlink, prefix)
+    if (gdoc) {
+        await dcdb.updateDonatorsOneContent(token, from, author, permlink, gdoc.amount+amount, prefix);
+    } else {
+        await dcdb.updateDonatorsOneContent(token, from, author, permlink, amount, prefix);
     }
-    return 1;    
-} else {
-console.log('Пост не найден.');
-return 0;    
-}        
+
+    if (content.code === 1) {
+        let user = await udb.getUser(from, token, prefix);
+        console.log('Пользователь: ' + JSON.stringify(user));
+        if (user) {
+            await udb.updateUser(from, token, user.amount+amount, prefix);
+                    } else {
+                        await udb.updateUser(from, token, amount, prefix);
+                    }
+        
+        let post = await pdb.getPost(token, author, permlink, prefix);
+        if (post) {
+        await pdb.updatePost(token, author, permlink, content.title, post.amount + amount, prefix);
+        } else {
+            await pdb.updatePost(token, author, permlink, content.title, amount, prefix);
+        }
+        return 1;    
+            } else if (content.code === 2) {
+                let donate = fullAmount.split(' ');
+            let amount = parseFloat(donate[0]);
+            let token = donate[1];
+            console.log('Донатер: ' + from);
+            let user = await udb.getUser(from, token, prefix);
+            console.log('Пользователь: ' + JSON.stringify(user));
+            if (user) {
+                await udb.updateUser(from, token, user.amount+amount, prefix);
+                        } else {
+                            await udb.updateUser(from, token, amount, prefix);
+                        }
+            
+            let comment = await cdb.getComment(token, author, permlink, prefix);
+            if (comment) {
+            await cdb.updateComment(token, author, permlink, content.title, comment.amount + amount, prefix);
+            } else {
+                await cdb.updateComment(token, author, permlink, content.title, amount, prefix);
+            }
+            return 1;    
+        } else {
+        console.log('Это не пост и не комментарий.');
+        return 0;    
+        } // End content types.
+    } else {
+        console.log('Пост или комментарий не найден.');
+        return 0;    
+    }
 }
 
 async function donateOperation(op, opbody) {

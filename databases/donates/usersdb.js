@@ -1,6 +1,6 @@
-const pool = require('./@db.js')
+const pool = require('../@db.js')
 
-async function getUser(login, prefix) {
+async function getUser(login, token, prefix) {
 
   let client = await pool.getClient()
 
@@ -14,7 +14,7 @@ async function getUser(login, prefix) {
 
         let collection = db.collection('users' + prefix);
 
-        let query = {login}
+        let query = {login, token}
 
         let res = await collection.findOne(query);
 console.log(JSON.stringify(res));
@@ -30,7 +30,7 @@ return res;
     }
 }
 
-async function updateUser(login, golos_amount, gbg_amount, prefix) {
+async function updateUser(login, token, amount, prefix) {
 
 
   let client = await pool.getClient()
@@ -44,7 +44,7 @@ async function updateUser(login, golos_amount, gbg_amount, prefix) {
 
       let collection = db.collection('users' + prefix);
 
-      let res = await collection.updateOne({login}, {$set: {login, golos_amount, gbg_amount}}, { upsert: true });
+      let res = await collection.updateOne({login, token}, {$set: {login, token, amount}}, { upsert: true });
 console.log(JSON.stringify(res));
 return res;
 
@@ -58,7 +58,7 @@ return res;
   }
 }
 
-async function removeUsers(prefix) {
+async function removeUsers(_id, prefix) {
 
   let client = await pool.getClient()
 
@@ -72,7 +72,7 @@ async function removeUsers(prefix) {
 
       let collection = db.collection('users' + prefix);
 
-      let res = await collection.drop();
+      let res = await collection.deleteOne({_id});
 
 return res;
 
@@ -85,7 +85,7 @@ return res;
   }
 }
 
-async function findAllUsers(prefix) {
+async function findAllUsers(token, prefix) {
   let client = await pool.getClient()
 
   if (!client) {
@@ -97,9 +97,13 @@ async function findAllUsers(prefix) {
       const db = client.db("golos-donators");
 
       let collection = db.collection('users' + prefix);
-
-      const res = [];
-      let cursor = await collection.find({}).limit(500);
+let query = {};
+if (token !== '') {
+    query = {token};
+}
+console.log(query);      
+const res = [];
+      let cursor = await collection.find(query).limit(500);
       let doc = null;
       while(null != (doc = await cursor.next())) {
           res.push(doc);

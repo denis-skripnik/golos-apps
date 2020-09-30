@@ -31,7 +31,7 @@ else{
 
 function compareDonators(a, b)
 {
-	if(a.golos_amount > b.golos_amount)
+	if(a.amount > b.amount)
 	{
 		return -1;
 	}
@@ -42,7 +42,7 @@ else{
 
 function comparePosts(a, b)
 {
-	if(a.golos_amount > b.golos_amount)
+	if(a.amount > b.amount)
 	{
 		return -1;
 	}
