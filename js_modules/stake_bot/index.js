@@ -44,7 +44,7 @@ if (accounts && accounts.length > 0) {
 				}
 				let get_account = await methods.getAccount(user.login);
 				let acc = get_account[0];
-		if (parseFloat(acc.vesting_shares) >= 50000000) {
+		if (parseFloat(acc.vesting_shares) >= 50000000 && user.login !== conf.stakebot.golos_login) {
 			lotery.push(user.login);
 		}
 				let temp_balance = acc.accumulative_balance;
