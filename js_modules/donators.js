@@ -4,12 +4,18 @@ const udb = require("../databases/donates/usersdb");
 const pdb = require("../databases/donates/postsdb");
 const cdb = require("../databases/donates/commentsdb");
 const dcdb = require("../databases/donates/donators_contentdb");
+const tdb = require("../databases/donates/tokensdb");
 
 async function workingDonateWithNoPost(from, fullAmount) {
     let prefix = new Date().getUTCMonth()+1 + '_' + new Date().getUTCFullYear();
     let donate = fullAmount.split(' ');
 let amount = parseFloat(donate[0]);
 let token = donate[1];
+let get_token = await tdb.get_token(token);
+if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
+    await tdb.updateTokens(token)
+}
+
 let user = await udb.getUser(from, token, prefix);
 if (user) {
     await udb.updateUser(from, token, user.amount+amount, prefix);
@@ -28,7 +34,12 @@ async function workingDonate(from, author, permlink, fullAmount) {
         let donate = fullAmount.split(' ');
         let amount = parseFloat(donate[0]);
         let token = donate[1];
-        console.log('Донатер: ' + from);
+        let get_token = await tdb.getToken(token);
+if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
+    await tdb.updateTokens(token)
+}
+        
+console.log('Донатер: ' + from);
         let gdoc = await dcdb.getDonatorsOneContent(token, from, author, permlink, prefix)
     if (gdoc) {
         await dcdb.updateDonatorsOneContent(token, from, author, permlink, gdoc.amount+amount, prefix);
@@ -56,6 +67,11 @@ async function workingDonate(from, author, permlink, fullAmount) {
                 let donate = fullAmount.split(' ');
             let amount = parseFloat(donate[0]);
             let token = donate[1];
+            let get_token = await tdb.get_token(token);
+if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
+    await tdb.updateTokens(token)
+}
+            
             console.log('Донатер: ' + from);
             let user = await udb.getUser(from, token, prefix);
             console.log('Пользователь: ' + JSON.stringify(user));

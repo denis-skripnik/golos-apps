@@ -6,6 +6,7 @@ const pdb = require("../databases/donates/postsdb");
 const cdb = require("../databases/donates/commentsdb");
 const udb = require("../databases/donates/usersdb");
 const dcdb = require("../databases/donates/donators_contentdb");
+const dtdb = require("../databases/donates/tokensdb");
 const rdb = require("../databases/referrersdb");
 const rldb = require("../databases/referrerslistdb");
 const gudb = require("../databases/golos_usersdb");
@@ -14,6 +15,7 @@ const vadb = require("../databases/vadb");
 const asdb = require("../databases/asdb");
 const prdb = require("../databases/prdb");
 const conf = require('../config.json');
+
 
 app.get('/golos-api/', async function (req, res) {
     let service = req.query.service;
@@ -57,7 +59,7 @@ if (referrers && referrers.length > 0) {
     }
     res.send(JSON.stringify(usersArray));
     }
-} else if (type === 'posts') {
+} else if (type === 'posts' && token) {
     if (!date) {
         date = new Date().getMonth()+1 + '_' + new Date().getFullYear();
     let posts = await pdb.findAllPosts(token, date);
@@ -76,7 +78,7 @@ for (let post of posts) {
 }
 res.send(JSON.stringify(postsArray));
 }
-} else if (type === 'comments') {
+} else if (type === 'comments' && token) {
     if (!date) {
         date = new Date().getMonth()+1 + '_' + new Date().getFullYear();
     let comments = await cdb.findAllComments(token, date);
@@ -95,7 +97,7 @@ for (let comment of comments) {
 }
 res.send(JSON.stringify(commentsArray));
 }
-} else if (type === 'donators-content' && login) {
+} else if (type === 'donators-content' && login && token) {
     if (!date) {
         date = new Date().getMonth()+1 + '_' + new Date().getFullYear();
     }
@@ -106,6 +108,9 @@ for (let el of content) {
     contentArray.push({link: `<a href="https://golos.id/@${el.author}/${el.permlink}" target="_blank">@${el.author}/${el.permlink}</a>`, amount: el.amount});
 }
 res.send(JSON.stringify(contentArray));
+} else if (type === 'tokens') {
+let data = await dtdb.findAllTokens();
+res.send(data);
 }
 } else if (service === 'top' && type && page) {
         let data = await gudb.getTop(type, page);
