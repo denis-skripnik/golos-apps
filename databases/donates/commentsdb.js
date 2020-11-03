@@ -131,7 +131,7 @@ async function findAllComments(token, prefix) {
           query = {token};
       }
       const res = [];
-      let cursor = await collection.find().limit(500);
+      let cursor = await collection.find(query).limit(500);
       let doc = null;
       while(null != (doc = await cursor.next())) {
           res.push(doc);
