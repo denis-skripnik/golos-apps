@@ -43,7 +43,7 @@ async function updateWitness(login, old_monthly_profit, now_monthly_profit, old_
       let collection = db.collection('witnesses');
 
       let res = await collection.updateOne({login}, {$set: {login, old_monthly_profit, now_monthly_profit, old_daily_profit, now_daily_profit, timestamp}}, { upsert: true });
-console.log(JSON.stringify(res));
+
 return res;
 
   } catch (err) {
