@@ -1,6 +1,9 @@
 var conf = require('../config.json');
 var golos = require('golos-classic-js');
 golos.config.set('websocket',conf.node);
+let keccak = require("keccak");
+let BigI = require("big-integer");
+const { start } = require('repl');
 
 async function getOpsInBlock(bn) {
     return await golos.api.getOpsInBlockAsync(bn, false);
@@ -114,6 +117,25 @@ async function donate(posting_key, account, donate_to, donate_amount, donate_mem
     return golos.broadcast.donateAsync(posting_key, account, donate_to, donate_amount, {app: 'golos-stake-bot', version: 1, comment: donate_memo, target: {type: 'personal_donate'}}, []);
 }
 
+async function getBlockSignature(block) {
+    var b = await golos.api.getBlockAsync(block);
+    if(b && b.witness_signature) {
+        return b.witness_signature;
+    } 
+    throw "unable to retrieve signature for block " + block;
+}
+
+async function randomGenerator(start_block, end_block, maximum_number) {
+    let hasher = new keccak("keccak256");
+    let sig = await getBlockSignature(end_block);
+    let prevSig = await getBlockSignature(start_block);
+    hasher.update(prevSig + sig);
+    let sha3 = hasher.digest().toString("hex");
+    let random = BigI(sha3, 16).mod(maximum_number);
+    random = parseInt(random);
+return random;
+}
+
       module.exports.getOpsInBlock = getOpsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
@@ -130,3 +152,4 @@ module.exports.getReputation = getReputation;
 module.exports.send = send;
 module.exports.wifToPublic = wifToPublic;
 module.exports.donate = donate;
+module.exports.randomGenerator = randomGenerator;

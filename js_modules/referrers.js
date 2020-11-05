@@ -31,4 +31,34 @@ ok_ops_count += 1;
         return ok_ops_count;
 }
 
+async function accountCreateWithInviteOperation(op, opbody) {
+    var ok_ops_count = 0;
+    try {
+        let acc = await methods.getAccount(opbody.new_account_name);
+                if (acc) {
+                    let referrer = acc.referrer_account;
+let data = await rdb.getReferrer(referrer);
+let counter = 1;
+if (data) {
+counter += data.count;
+}
+await rdb.updateReferrer(referrer, counter);
+let list = await rldb.getReferrer(referrer);
+let referals = [];
+if (list) {
+referals = list.referals;
+referals.push(opbody.new_account_name);
+} else {
+referals.push(opbody.new_account_name);
+}
+await rldb.updateReferrer(referrer, referals);
+}
+ok_ops_count += 1;
+} catch(e) {
+            console.log(JSON.stringify(e));
+                }                        
+        return ok_ops_count;
+}
+
 module.exports.accountCreateWithDelegationOperation = accountCreateWithDelegationOperation;
+module.exports.accountCreateWithInviteOperation = accountCreateWithInviteOperation;

@@ -11,7 +11,7 @@ async function workingDonateWithNoPost(from, fullAmount) {
     let donate = fullAmount.split(' ');
 let amount = parseFloat(donate[0]);
 let token = donate[1];
-let get_token = await tdb.get_token(token);
+let get_token = await tdb.getToken(token);
 if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
     await tdb.updateTokens(token)
 }
@@ -67,7 +67,7 @@ console.log('Донатер: ' + from);
                 let donate = fullAmount.split(' ');
             let amount = parseFloat(donate[0]);
             let token = donate[1];
-            let get_token = await tdb.get_token(token);
+            let get_token = await tdb.getToken(token);
 if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
     await tdb.updateTokens(token)
 }

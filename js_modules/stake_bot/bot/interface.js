@@ -17,9 +17,9 @@ if (variant === 'lng') {
         buttons = [[lng[lang].add_account, lng[lang].accounts], [lng[lang].help, lng[lang].lang]];
     } else if (variant === 'to_vesting') {
         buttons = [[lng[lang].on, lng[lang].off, lng[lang].back, lng[lang].home]];
-    } else if (variant.indexOf('change ') > -1) {
-        let login = variant.split(' ')[1];
-        buttons = [[lng[lang].change_posting + '@' + login, lng[lang].change_vesting_mode + '@' + login], [lng[lang].delete + '@' + login, lng[lang].back, lng[lang].home]];
+    } else if (variant.indexOf('@') > -1) {
+        let login = variant.split('@')[1];
+        buttons = [[lng[lang].change_posting, lng[lang].change_vesting_mode], [lng[lang].delete, lng[lang].back, lng[lang].home]];
     }     else if (variant === 'back') {
     buttons = [[lng[lang].back, lng[lang].home]];
 }     else if (variant === 'cancel') {
@@ -125,7 +125,6 @@ if (referer.referers.length > 0) {
             await udb.updateUser(id, user.referers, user.lng, user.prev_status, user.status, user.referer_code);
         }        
     }
-
     if (message.indexOf('start') > -1 || user && user.lng && message.indexOf(lng[user.lng].lang) > -1) {
 let text = '';
 let btns;
@@ -171,15 +170,15 @@ if (user.referers.length > 0) {
                                 if (accs && accs.length > 0) {
                                     for (let acc of accs) {
                                 text += `
-change ${acc.login}`;
+@${acc.login}`;
                                     }
                                 } else {
                                     text += lng[user.lng].account_list_is_empty;
                                 }
                                                                 let btns = await keybord(user.lng, 'back');
                                                                             await botjs.sendMSG(id, text, btns);    
-                                                                        } else if (user && user.lng && message.indexOf(lng[user.lng].delete + '@') > -1) {
-                                                                            let login = message.split('@')[1];
+                                                                        } else if (user && user.lng && message === lng[user.lng].delete && user.status.indexOf('@') > -1) {
+                                                                            let login = user.status.split('@')[1];
                                                                             if (message.split('@')[2]) {
                                                                                 login += '@' + message.split('@')[2];
                                                                                     }
@@ -187,12 +186,12 @@ change ${acc.login}`;
                                                                             let text = lng[user.lng].delete_conferm + login;
                                                     let btns = await keybord(user.lng, 'to_vesting');
                                                     await botjs.sendMSG(id, text, btns);
-                                                                        } else if (message.indexOf('change ') > -1) {
-                                                                            let text = lng[user.lng].change_account;
+                                                                        } else if (message.indexOf('@') > -1) {
+                                                                            let text = lng[user.lng].change_account + message;
                                                                     let btns = await keybord(user.lng, message);
                                                                                         await botjs.sendMSG(id, text, btns);
-                                                                                    } else if (user && user.lng && message.indexOf(lng[user.lng].change_posting + '@') > -1) {
-                                                                                        let login = message.split('@')[1];
+                                                                                    } else if (user && user.lng && message === lng[user.lng].change_posting && user.status.indexOf('@') > -1) {
+                                                                                        let login = user.status.split('@')[1];
                                                                                         let my_acc = await adb.getAccount(login);
                                                                                         let text = '';
                                                                                         let btns;
@@ -217,8 +216,8 @@ change ${acc.login}`;
                                                                                         btns = await keybord(user.lng, 'home');
                                                                                     }
                                                                                         await botjs.sendMSG(id, text, btns);
-                                                                                    } else if (user && user.lng && message.indexOf(lng[user.lng].change_vesting_mode + '@') > -1) {
-                                                                                        let login = message.split('@')[1];
+                                                                                    } else if (user && user.lng && message === lng[user.lng].change_vesting_mode && user.status.indexOf('@') > -1) {
+                                                                                        let login = user.status.split('@')[1];
                                                                                         await udb.updateUser(id, user.referers, user.lng, user.status, 'posting_' + login, user.referer_code);
                                                                                         let text = lng[user.lng].to_vesting;
                                                                 let btns = await keybord(user.lng, 'to_vesting');
