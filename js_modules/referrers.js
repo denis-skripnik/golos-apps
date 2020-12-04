@@ -34,8 +34,9 @@ ok_ops_count += 1;
 async function accountCreateWithInviteOperation(op, opbody) {
     var ok_ops_count = 0;
     try {
-        let acc = await methods.getAccount(opbody.new_account_name);
-                if (acc) {
+        let accounts = await methods.getAccount(opbody.new_account_name);
+                if (accounts && accounts.length > 0) {
+                    let acc = accounts[0];
                     let referrer = acc.referrer_account;
 let data = await rdb.getReferrer(referrer);
 let counter = 1;

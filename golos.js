@@ -37,6 +37,9 @@ let ok_ops_count = 0;
             case "account_create_with_delegation":
             ok_ops_count += await refs.accountCreateWithDelegationOperation(op, opbody);
             break;
+            case "account_create_with_invite":
+            ok_ops_count += await refs.accountCreateWithInviteOperation(op, opbody);
+            break;
             case "custom_json":
             ok_ops_count += await votes.customJsonOperation(op, opbody);
             break;
@@ -107,6 +110,7 @@ getNullTransfers()
 new CronJob('0 30 * * * *', top.run, null, true);
 new CronJob('0 0 0 * * *', stakebot.run, null, true);
 new CronJob('0 0 12 * * *', stakebot.run, null, true);    
+new CronJob('0 0 18 * * *', stakebot.selectBid, null, true);
 new CronJob('0 0 0 * * *', asdb.removeactivityStats, null, true);    
 
 methods.updateAccount('votes');

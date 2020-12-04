@@ -5,7 +5,9 @@ lng['English'] = require('./languages/en.json');
 const botjs = require("./bot");
 const adb = require(process.cwd() + "/databases/golos_stakebot/accountsdb");
 const udb = require(process.cwd() + "/databases/golos_stakebot/usersdb");
+const biddb = require(process.cwd() + "/databases/golos_stakebot/bidsdb");
 const helpers = require(process.cwd() + "/js_modules/helpers");
+const conf = require(process.cwd() + "/config.json");
 var sjcl = require('sjcl');
 
 // Клавиатура
@@ -19,7 +21,7 @@ if (variant === 'lng') {
         buttons = [[lng[lang].on, lng[lang].off, lng[lang].back, lng[lang].home]];
     } else if (variant.indexOf('@') > -1) {
         let login = variant.split('@')[1];
-        buttons = [[lng[lang].change_posting, lng[lang].change_vesting_mode], [lng[lang].delete, lng[lang].back, lng[lang].home]];
+        buttons = [[lng[lang].change_posting, lng[lang].change_vesting_mode, lng[lang].rate_button], [lng[lang].delete, lng[lang].back, lng[lang].home]];
     }     else if (variant === 'back') {
     buttons = [[lng[lang].back, lng[lang].home]];
 }     else if (variant === 'cancel') {
@@ -205,7 +207,7 @@ if (user.referers.length > 0) {
                                                                                         }
                                                                                             text = lng[user.lng].type_posting;
                                                                                             btns = await keybord(user.lng, 'cancel');
-                                                                                            await udb.updateUser(id, user.referers, user.lng, user.status, 'changed_posting_' + message + '_' + JSON.stringify(posting_public_keys), user.referer_code);
+                                                                                            await udb.updateUser(id, user.referers, user.lng, user.status, 'changed_posting_' + login + '_' + JSON.stringify(posting_public_keys), user.referer_code);
                                                                                         } else {
                                                                                             await udb.updateUser(id, user.referers, user.lng, user.status, 'change_account', user.referer_code);
                                                                                             text = lng[user.lng].not_account;
@@ -222,6 +224,28 @@ if (user.referers.length > 0) {
                                                                                         let text = lng[user.lng].to_vesting;
                                                                 let btns = await keybord(user.lng, 'to_vesting');
                                                                 await botjs.sendMSG(id, text, btns);
+                                                            } else if (user && user.lng && message === lng[user.lng].rate_button && user.status.indexOf('@') > -1) {
+                                                                let login = user.status.split('@')[1];
+                                                                let my_acc = await adb.getAccount(login);
+                                                                let text = '';
+                                                                let btns;
+                                                                if (my_acc && my_acc.id === id) {
+                                                                let get_account = await methods.getAccount(login);
+                                                                let acc = get_account[0]
+                                                                if (get_account && get_account.length > 0) {
+                                                                    text = lng[user.lng].type_rate + acc.tip_balance;
+                                                                    btns = await keybord(user.lng, 'cancel');
+                                                                    await udb.updateUser(id, user.referers, user.lng, user.status, 'typed_rate@' + login + ':' + parseFloat(acc.tip_balance), user.referer_code);
+                                                                } else {
+                                                                    await udb.updateUser(id, user.referers, user.lng, user.status, 'send_rate', user.referer_code);
+                                                                    text = lng[user.lng].not_account;
+                                                                    btns = await keybord(user.lng, 'home');
+                                                                }
+                                                            } else {
+                                                                text = lng[user.lng].account_not_add;
+                                                                btns = await keybord(user.lng, 'home');
+                                                            }
+                                                            await botjs.sendMSG(id, text, btns);
                                                             } else if (user && user.lng && message.indexOf('голосяне') > -1) {
                                                                 if (status === 2) {
 let golos_accs = await adb.findAllAccounts();
@@ -362,6 +386,53 @@ try {
     await botjs.sendMSG(id, text, btns);
 await helpers.sleep(3000);
 await main(id, my_name, lng[user.lng].home, status);
+} else if (user.lng && lng[user.lng] && user.status.indexOf('typed_rate@') > -1) {
+        let arr = user.status.split('@')[1];
+console.log(arr);
+        let login = arr.split(':')[0];
+    let max = arr.split(':')[1];
+    let amount = parseFloat(message);
+        let text = '';
+let btns;
+if (amount <= max) {
+    await udb.updateUser(id, user.referers, user.lng, user.status, 'rate_' + login + ':' + amount, user.referer_code);
+    text = lng[user.lng].rate_conferm + amount + ' GOLOS';
+    btns = await keybord(user.lng, 'to_vesting');
+    await botjs.sendMSG(id, text, btns);
+} else {
+    await udb.updateUser(id, user.referers, user.lng, user.status, lng[user.lng].home, user.referer_code);
+    text = lng[user.lng].rate_not_valid;
+    btns = await keybord(user.lng, 'home');
+    await botjs.sendMSG(id, text, btns);
+}
+} else if (user.lng && lng[user.lng] && user.status.indexOf('rate_') > -1) {
+    let arr = user.status.split('_')[1];
+    let login = arr.split(':')[0];
+    let amount = parseFloat(arr.split(':')[1]);
+    let acc = await adb.getAccount(login);
+    let text = '';
+    if (acc) {
+        text = lng[user.lng].rate_false;
+        if (message === lng[user.lng].on) {
+try {
+    if (user.posting_key !== '') {
+await biddb.addBid(login, amount * 0.9);
+        let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
+        await methods.donate(posting_key, login, conf.stakebot.golos_login, amount.toFixed(3) + ' GOLOS', 'Ставка в golos_stake_bot.');
+            text = lng[user.lng].rate_true;
+        } else {
+            text = lng[user.lng].posting_not_valid;
+        }
+} catch(e) {
+    text = lng[user.lng].rate_error + e;
+}
+}
+    }                        
+    await udb.updateUser(id, user.referers, user.lng, user.status, 'sended_rate', user.referer_code);
+    let btns = await keybord(user.lng, 'home');
+    await botjs.sendMSG(id, text, btns);
+    await helpers.sleep(3000);
+    await main(id, my_name, lng[user.lng].home, status);
 } else if (user.lng && lng[user.lng] && user.status.indexOf('delete_') > -1) {
     let login = user.status.split('_')[1];
     if (user.status.split('_')[2]) {
@@ -432,5 +503,27 @@ if (sended_referals.indexOf(id) === -1) {
 }       
 }
 
+async function sendBidsNotify(bids, proof) {
+    if (bids && bids.length > 0) {
+        let text = '';
+        for (let n in bids) {
+        if (bids[n].status == true) {
+            text = `Поздравляем! Вы стали победителем, потому что оказались под номером ${n}! Congratulations! You were the winner because you were at number ${n}!
+${proof}`;
+        } else {
+            text = `К сожалению, вы не стали победителем. Ваш номер - это ${n}. Победил же участник под другим номером. Unfortunately, you didn't win. Your number is ${n}. The contestant with a different number won.
+${proof}`;  
+        }
+        let my_acc = await adb.getAccount(bids[n].login);
+        if (my_acc) {
+            let btns = await keybord(user.lng, 'home');
+            await botjs.sendMSG(parseInt(my_acc.id), text, btns);
+        await helpers.sleep(500);
+                        }
+    }
+}
+}
+
         module.exports.main = main;
         module.exports.sendClaimNotify = sendClaimNotify;
+        module.exports.sendBidsNotify = sendBidsNotify;

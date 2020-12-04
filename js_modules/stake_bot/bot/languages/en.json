@@ -38,6 +38,13 @@
     "enter_login": "Enter your Golos account login without @",
     "auth": "Auth",
 "add_account": "Add account",
+"rate_button": "Rate",
+"type_rate": "Enter the bid, 10% Commission. Maximum: ",
+"rate_not_valid": "The bid is invalid or higher than the maximum.",
+"rate_conferm": "Do you really want to place a bet? Amount: ",
+"rate_false": "You canceled sending the bid.",
+"rate_true": "The bid was sent successfully. Wait for the result at 18:00 Moscow time. You can view your bid number here: https://dpos.space/golos/stakebot",
+"rate_error": "Bid submission error: ",
 "help": "Help",
 "help_text": "Overview of the bot in Russian: https://golos.id/ru--golos/@lllll1ll/rukovodstvo-po-podklyucheniyu-k-stake-bot. If you have any questions or problems, write to the chat @dpos_space or personal to @denis_skripnik"
 }
