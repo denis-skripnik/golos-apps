@@ -136,6 +136,20 @@ async function randomGenerator(start_block, end_block, maximum_number) {
 return random;
 }
 
+async function getBalances(accounts) {
+    try {
+        let assets = await golos.api.getAccountsBalancesAsync(accounts);
+if (assets && assets.length > 0) {
+return assets;
+} else {
+    return false;
+}
+        } catch(e) {
+        console.log('Uia error: ' + e);
+    return false;
+    }
+                }
+
       module.exports.getOpsInBlock = getOpsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
@@ -153,3 +167,4 @@ module.exports.send = send;
 module.exports.wifToPublic = wifToPublic;
 module.exports.donate = donate;
 module.exports.randomGenerator = randomGenerator;
+module.exports.getBalances = getBalances;

@@ -9,11 +9,13 @@ const dcdb = require("../databases/donates/donators_contentdb");
 const dtdb = require("../databases/donates/tokensdb");
 const rdb = require("../databases/referrersdb");
 const rldb = require("../databases/referrerslistdb");
-const gudb = require("../databases/golos_usersdb");
+const gudb = require("../databases/users-top/golos_usersdb");
+const uiadb = require("../databases/users-top/uiadb");
 const votes = require("../databases/votesdb");
 const vadb = require("../databases/vadb");
 const asdb = require("../databases/asdb");
 const prdb = require("../databases/prdb");
+const bidsdb = require("../databases/golos_stakebot/bidsdb");
 const conf = require('../config.json');
 
 
@@ -136,7 +138,15 @@ for (let collum of collums[type]) {
             } // end for.
         } // end if data.
         res.send(users);
-} else if (service === 'votes') {
+    } else if (service === 'uia-top' && token && page) {
+        let data = await uiadb.getTop(token, page);
+        if (data && data.length > 0) {
+            res.send(data);
+        } // end if data.
+else {
+    res.send([]);
+}
+    } else if (service === 'votes') {
     if (type === 'list') {
         let allVotes = await votes.findVotes();
     let data = [];
@@ -222,6 +232,13 @@ for (let collum of collums[type]) {
         }
 } else if (service === 'witnesses') {
     let data = await prdb.findAllWitnesses();
+    if (data && data.length > 0) {
+        res.send(data);
+    } else {
+        res.send({});
+    }
+} else if (service === 'stakebot') {
+    let data = await bidsdb.findAllBids();
     if (data && data.length > 0) {
         res.send(data);
     } else {

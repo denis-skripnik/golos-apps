@@ -1,5 +1,6 @@
 const methods = require("./methods");
-const udb = require("../databases/golos_usersdb");
+const udb = require("../databases/users-top/golos_usersdb");
+const uiadb = require("../databases/users-top/uiadb");
 
 async function run() {
 try {
@@ -30,6 +31,18 @@ console.log("Golos curr", curr_acc, Object.keys(gests).length);
 		const vpg = total_vests / total_golos;
 const all_golos = parseFloat(current_supply) - parseFloat(total_vesting_fund_steem) - parseFloat(accumulative_balance) - parseFloat(total_reward_fund_steem);
 
+let uias = await methods.getBalances(accs);
+
+for(let b of uias) {
+for (let uia in b) {
+	let data = b[uia];
+	let summ_balance = parseFloat(data.balance) + parseFloat(data.tip_balance);
+	if (summ_balance > 0) {
+		await uiadb.updateTop(data.account, uia, summ_balance, parseFloat(data.balance), parseFloat(data.tip_balance));
+	}
+}
+								}
+	
 		let balances = await methods.getAccounts(accs);
 
 		for(let b of balances) {
@@ -38,7 +51,8 @@ reputation = parseFloat(reputation);
 			await udb.updateTop(b.name, (parseFloat(b.vesting_shares.split(" ")[0]) / vpg), (parseFloat(b.vesting_shares.split(" ")[0]) / parseFloat(total_vests) * 100).toFixed(3), (parseFloat(b.delegated_vesting_shares.split(" ")[0]) / vpg), (parseFloat(b.received_vesting_shares.split(" ")[0]) / vpg), ((parseFloat(b.vesting_shares.split(" ")[0]) / vpg) - (parseFloat(b.delegated_vesting_shares.split(" ")[0]) / vpg) + (parseFloat(b.received_vesting_shares.split(" ")[0]) / vpg)), parseFloat(b.balance.split(" ")[0]), parseFloat(b.balance.split(" ")[0]) / parseFloat(all_golos) * 100, parseFloat(b.sbd_balance.split(" ")[0]), parseFloat(b.sbd_balance.split(" ")[0]) / parseFloat(current_sbd_supply) * 100, parseFloat(b.tip_balance.split(" ")[0]), reputation);
 			curr_acc = b.name;
 				}
-	}
+
+			}
 } catch (e) {
 console.error(e);
 process.exit(1);

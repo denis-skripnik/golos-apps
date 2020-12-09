@@ -1,4 +1,4 @@
-const pool = require('./@db.js')
+const pool = require('./../@db.js')
 
 async function getTop(type, page) {
 
