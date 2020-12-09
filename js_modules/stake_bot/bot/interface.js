@@ -188,7 +188,7 @@ if (user.referers.length > 0) {
                                                                             let text = lng[user.lng].delete_conferm + login;
                                                     let btns = await keybord(user.lng, 'to_vesting');
                                                     await botjs.sendMSG(id, text, btns);
-                                                                        } else if (message.indexOf('@') > -1) {
+                                                                        } else if (message.indexOf('@') > -1 && message.indexOf(lng[user.lng].news) == -1) {
                                                                             let text = lng[user.lng].change_account + message;
                                                                     let btns = await keybord(user.lng, message);
                                                                                         await botjs.sendMSG(id, text, btns);
@@ -503,20 +503,24 @@ if (sended_referals.indexOf(id) === -1) {
 }       
 }
 
-async function sendBidsNotify(bids, proof) {
+async function sendBidsNotify(bids, proof, winner) {
     if (bids && bids.length > 0) {
         let text = '';
         for (let n in bids) {
         if (bids[n].status == true) {
-            text = `Поздравляем! Вы стали победителем, потому что оказались под номером ${n}! Congratulations! You were the winner because you were at number ${n}!
+            text = `Поздравляем! Ваш пользователь Голоса ${bids[n].login} стал победителем, потому что оказался под номером ${parseInt(n)+1}! Congratulations! Your Golos user ${bids[n].login} was the winner because it was numbered ${parseInt(n)+1}!
 ${proof}`;
         } else {
-            text = `К сожалению, вы не стали победителем. Ваш номер - это ${n}. Победил же участник под другим номером. Unfortunately, you didn't win. Your number is ${n}. The contestant with a different number won.
+            text = `К сожалению, вы не стали победителем. Ваш номер - это ${parseInt(n)+1}. Победил же участник под номером ${winner}. Unfortunately, you didn't win. Your number is ${parseInt(n)+1}. The winner was the participant with the number ${winner}.
 ${proof}`;  
         }
         let my_acc = await adb.getAccount(bids[n].login);
         if (my_acc) {
-            let btns = await keybord(user.lng, 'home');
+            let user = await udb.getUser(parseInt(my_acc.id));
+            let btns = await keybord('English', 'home');
+            if (user) {
+                btns = await keybord(user.lng, 'home');
+            }
             await botjs.sendMSG(parseInt(my_acc.id), text, btns);
         await helpers.sleep(500);
                         }
