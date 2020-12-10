@@ -45,6 +45,15 @@
 "rate_false": "You canceled sending the bid.",
 "rate_true": "The bid was sent successfully. Wait for the result at 18:00 Moscow time. You can view your bid number here: https://dpos.space/golos/stakebot",
 "rate_error": "Bid submission error: ",
+"rate_msg1": "Congratulations! Your Golos user",
+"rate_msg2": "was the winner because it was numbered",
+"rate_msg3": "Unfortunately, you didn't win. Your number is",
+"rate_msg4": "The winner was the participant with the number",
+"jackpot_msg1": "Congratulations! Your Golos user",
+"jackpot_msg2": "Got the jackpot because it was a number",
+"jackpot_msg3": "unfortunately, you didn't get the jackpot. Your number is",
+"jackpot_msg4": "the participant Received it under the number",
+"proof": "Proof",
 "help": "Help",
 "help_text": "Overview of the bot in Russian: https://golos.id/ru--golos/@lllll1ll/rukovodstvo-po-podklyucheniyu-k-stake-bot. If you have any questions or problems, write to the chat @dpos_space or personal to @denis_skripnik"
 }

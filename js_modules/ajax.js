@@ -16,8 +16,8 @@ const vadb = require("../databases/vadb");
 const asdb = require("../databases/asdb");
 const prdb = require("../databases/prdb");
 const bidsdb = require("../databases/golos_stakebot/bidsdb");
+const jdb = require("../databases/golos_stakebot/jdb");
 const conf = require('../config.json');
-
 
 app.get('/golos-api/', async function (req, res) {
     let service = req.query.service;
@@ -238,12 +238,22 @@ else {
         res.send({});
     }
 } else if (service === 'stakebot') {
+if (type === 'bids') {
     let data = await bidsdb.findAllBids();
     if (data && data.length > 0) {
         res.send(data);
     } else {
         res.send({});
     }
+} else if (type === 'jackpot') {
+    let data = await jdb.getJackpot();
+    let amount = data.reduce(function(p,c){return p+c.amount;},0);
+    if (data && data.length > 0) {
+        res.send({amount, data});
+    } else {
+        res.send({});
+    }
+}
 }
 });
 app.listen(3000, function () {

@@ -4,6 +4,7 @@ const i = require("./bot/interface");
 const udb = require(process.cwd() + "/databases/golos_stakebot/usersdb");
 const adb = require(process.cwd() + "/databases/golos_stakebot/accountsdb");
 const bidsdb = require(process.cwd() + "/databases/golos_stakebot/bidsdb");
+const jdb = require(process.cwd() + "/databases/golos_stakebot/jdb");
 const bdb = require(process.cwd() + "/databases/blocksdb");
 const helpers = require("../helpers");
 const conf = require(process.cwd() + '/config.json');
@@ -115,7 +116,7 @@ await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login,
 
 async function selectBid() {
 	let bids = await bidsdb.findAllBids();
-if (bids && bids.length > 0) {
+if (bids && bids.length > 1) {
 try {
 	const get_block = await bdb.getBlock(1);
 	const end_block = get_block.last_block;
@@ -133,7 +134,7 @@ let members = [];
 	members.push({login: bids[n].user, status: false});
 }
 }
-	let proof = `Доказательство: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}. The proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}`;
+	let proof = `https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}`;
 await i.sendBidsNotify(members, proof, parseInt(winner)+1);
 await helpers.sleep(1000);
 await bidsdb.removeBids();
@@ -143,7 +144,38 @@ await bidsdb.removeBids();
 		}
 	}
 
-botjs.allCommands();
+async function selectJackpotWinner() {
+	let j = await jdb.getJackpot();
+if (j && j.length > 0) {
+try {
+	const get_block = await bdb.getBlock(1);
+	const end_block = get_block.last_block;
+	const start_block = end_block - 1;
+	let winner = await methods.randomGenerator(start_block, end_block, j.length);
+	console.log('Победитель: ' + winner);
+	let amount = j.reduce(function(p,c){return p+c.amount;},0);
+	amount = amount.toFixed(3) + ' GOLOS';
+	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, j[winner].user, amount, `Поздравляем! Вы получили джекпот https://t.me/golos_stake_bot! Пользуйтесь ботом, привлекайте друзей и делайте ставки, чтоб получить шанс выиграть джекпот. Участников: ${j.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${j.length}. Congratulations! You got the jackpot https://t.me/golos_stake_bot! Use the bot, attract friends and place bets to get a chance to win the jackpot. Participants: ${j.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${j.length}`);
+let members = [];
+	for (let n in j) {
+		if (parseInt(n) === parseInt(winner)) {
+	members.push({login: j[n].user, status: true});
+} else {
+	members.push({login: j[n].user, status: false});
+}
+}
+	let proof = `https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${j.length}`;
+await i.sendJackpotNotify(members, proof, parseInt(winner)+1);
+await helpers.sleep(1000);
+await jdb.removeJackpot();
+} catch(e) {
+	console.log('Ошибка в ставках: ' + e);
+}
+		}
+	}
+
+	botjs.allCommands();
 
 module.exports.run = run;
 module.exports.selectBid = selectBid;
+module.exports.selectJackpotWinner = selectJackpotWinner;

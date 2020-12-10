@@ -111,6 +111,7 @@ new CronJob('0 30 * * * *', top.run, null, true);
 new CronJob('0 0 0 * * *', stakebot.run, null, true);
 new CronJob('0 0 12 * * *', stakebot.run, null, true);    
 new CronJob('0 0 18 * * *', stakebot.selectBid, null, true);
+new CronJob('0 0 3 1 * *', stakebot.selectJackpotWinner, null, true);
 new CronJob('0 0 0 * * *', asdb.removeactivityStats, null, true);    
 
 methods.updateAccount('votes');

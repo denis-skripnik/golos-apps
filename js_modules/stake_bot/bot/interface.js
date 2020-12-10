@@ -6,6 +6,7 @@ const botjs = require("./bot");
 const adb = require(process.cwd() + "/databases/golos_stakebot/accountsdb");
 const udb = require(process.cwd() + "/databases/golos_stakebot/usersdb");
 const biddb = require(process.cwd() + "/databases/golos_stakebot/bidsdb");
+const jdb = require(process.cwd() + "/databases/golos_stakebot/jdb");
 const helpers = require(process.cwd() + "/js_modules/helpers");
 const conf = require(process.cwd() + "/config.json");
 var sjcl = require('sjcl');
@@ -417,7 +418,17 @@ if (amount <= max) {
 try {
     if (user.posting_key !== '') {
 await biddb.addBid(login, amount * 0.9);
-        let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
+
+let ju = await jdb.getJackpotUser(login);
+let jamount = amount * 0.05;
+jamount = jamount.toFixed(3);
+jamount = parseFloat(jamount);
+if (ju) {
+jamount += ju.amount;
+}
+await jdb.updateJackpot(login, jamount);
+
+let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
         await methods.donate(posting_key, login, conf.stakebot.golos_login, amount.toFixed(3) + ' GOLOS', 'Ставка в golos_stake_bot.');
             text = lng[user.lng].rate_true;
         } else {
@@ -507,22 +518,45 @@ async function sendBidsNotify(bids, proof, winner) {
     if (bids && bids.length > 0) {
         let text = '';
         for (let n in bids) {
-        if (bids[n].status == true) {
-            text = `Поздравляем! Ваш пользователь Голоса ${bids[n].login} стал победителем, потому что оказался под номером ${parseInt(n)+1}! Congratulations! Your Golos user ${bids[n].login} was the winner because it was numbered ${parseInt(n)+1}!
-${proof}`;
+            let my_acc = await adb.getAccount(bids[n].login);
+            if (my_acc) {
+                let user = await udb.getUser(parseInt(my_acc.id));
+                if (user) {
+                if (bids[n].status == true) {
+            text = `${lng[user.lng].rate_msg1} ${bids[n].login} ${lng[user.lng].rate_msg2} ${parseInt(n)+1}!
+${lng[user.lng].proof}: ${proof}`;
         } else {
-            text = `К сожалению, вы не стали победителем. Ваш номер - это ${parseInt(n)+1}. Победил же участник под номером ${winner}. Unfortunately, you didn't win. Your number is ${parseInt(n)+1}. The winner was the participant with the number ${winner}.
-${proof}`;  
+            text = `${lng[user.lng].rate_msg3} ${parseInt(n)+1}. ${lng[user.lng].rate_msg4} ${winner}.
+            ${lng[user.lng].proof}: ${proof}`;
         }
-        let my_acc = await adb.getAccount(bids[n].login);
-        if (my_acc) {
-            let user = await udb.getUser(parseInt(my_acc.id));
-            let btns = await keybord('English', 'home');
-            if (user) {
-                btns = await keybord(user.lng, 'home');
-            }
-            await botjs.sendMSG(parseInt(my_acc.id), text, btns);
-        await helpers.sleep(500);
+                let btns = await keybord(user.lng, 'home');
+                        await botjs.sendMSG(parseInt(my_acc.id), text, btns);
+    }
+                        await helpers.sleep(500);
+                        }
+    }
+}
+}
+
+async function sendJackpotNotify(users, proof, winner) {
+    if (users && users.length > 0) {
+        let text = '';
+        for (let n in users) {
+            let my_acc = await adb.getAccount(users[n].login);
+            if (my_acc) {
+                let user = await udb.getUser(parseInt(my_acc.id));
+                if (user) {
+                if (users[n].status == true) {
+            text = `${lng[user.lng].jackpot_msg1} ${users[n].login} ${lng[user.lng].jackpot_msg2} ${parseInt(n)+1}!
+            ${lng[user.lng].proof}: ${proof}`;
+        } else {
+            text = `${lng[user.lng].jackpot_msg3} ${parseInt(n)+1}. ${lng[user.lng].jackpot_msg4} ${winner}.
+            ${lng[user.lng].proof}: ${proof}`;
+        }
+                let btns = await keybord(user.lng, 'home');
+                        await botjs.sendMSG(parseInt(my_acc.id), text, btns);
+    }
+                        await helpers.sleep(500);
                         }
     }
 }
@@ -531,3 +565,4 @@ ${proof}`;
         module.exports.main = main;
         module.exports.sendClaimNotify = sendClaimNotify;
         module.exports.sendBidsNotify = sendBidsNotify;
+        module.exports.sendJackpotNotify = sendJackpotNotify;
