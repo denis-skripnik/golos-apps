@@ -28,7 +28,9 @@ let ok_ops_count = 0;
         const [op, opbody] = tr.op;
         switch(op) {
             case "donate":    
-            ok_ops_count += await d.donateOperation(op, opbody);
+if (opbody.to !== 'ecurrex-t2g') {
+    ok_ops_count += await d.donateOperation(op, opbody);
+}
             break;
             case "transfer":
             ok_ops_count += await d.transferOperation(op, opbody);
