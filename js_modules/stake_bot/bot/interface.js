@@ -189,7 +189,7 @@ if (user.referers.length > 0) {
                                                                             let text = lng[user.lng].delete_conferm + login;
                                                     let btns = await keybord(user.lng, 'to_vesting');
                                                     await botjs.sendMSG(id, text, btns);
-                                                                        } else if (message.indexOf('@') > -1 && message.indexOf(lng[user.lng].news) == -1) {
+                                                                        } else if (message.indexOf('@') > -1 && message.indexOf(lng[user.lng].news) === -1) {
                                                                             let text = lng[user.lng].change_account + message;
                                                                     let btns = await keybord(user.lng, message);
                                                                                         await botjs.sendMSG(id, text, btns);
