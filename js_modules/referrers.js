@@ -38,21 +38,23 @@ async function accountCreateWithInviteOperation(op, opbody) {
                 if (accounts && accounts.length > 0) {
                     let acc = accounts[0];
                     let referrer = acc.referrer_account;
-let data = await rdb.getReferrer(referrer);
-let counter = 1;
-if (data) {
-counter += data.count;
+if (referrer && referrer !== '') {
+    let data = await rdb.getReferrer(referrer);
+    let counter = 1;
+    if (data) {
+    counter += data.count;
+    }
+    await rdb.updateReferrer(referrer, counter);
+    let list = await rldb.getReferrer(referrer);
+    let referals = [];
+    if (list) {
+    referals = list.referals;
+    referals.push(opbody.new_account_name);
+    } else {
+    referals.push(opbody.new_account_name);
+    }
+    await rldb.updateReferrer(referrer, referals);
 }
-await rdb.updateReferrer(referrer, counter);
-let list = await rldb.getReferrer(referrer);
-let referals = [];
-if (list) {
-referals = list.referals;
-referals.push(opbody.new_account_name);
-} else {
-referals.push(opbody.new_account_name);
-}
-await rldb.updateReferrer(referrer, referals);
 }
 ok_ops_count += 1;
 } catch(e) {
