@@ -190,9 +190,12 @@ if (user.referers.length > 0) {
                                                     let btns = await keybord(user.lng, 'to_vesting');
                                                     await botjs.sendMSG(id, text, btns);
                                                                         } else if (message.indexOf('@') > -1 && message.indexOf(lng[user.lng].news) === -1) {
-                                                                            let text = lng[user.lng].change_account + message;
-                                                                    let btns = await keybord(user.lng, message);
-                                                                                        await botjs.sendMSG(id, text, btns);
+                                                                            let acc = await adb.getAccount(message.split('@')[1]);
+                                                                            if (acc && acc.id === id) {
+                                                                                let text = lng[user.lng].change_account + message;
+                                                                                let btns = await keybord(user.lng, message);
+                                                                                                    await botjs.sendMSG(id, text, btns);
+                                                                            }
                                                                                     } else if (user && user.lng && message === lng[user.lng].change_posting && user.status.indexOf('@') > -1) {
                                                                                         let login = user.status.split('@')[1];
                                                                                         let my_acc = await adb.getAccount(login);
