@@ -37,9 +37,7 @@ for(let b of uias) {
 for (let uia in b) {
 	let data = b[uia];
 	let summ_balance = parseFloat(data.balance) + parseFloat(data.tip_balance);
-	if (summ_balance > 0) {
 		await uiadb.updateTop(data.account, uia, summ_balance, parseFloat(data.balance), parseFloat(data.tip_balance));
-	}
 }
 								}
 	
