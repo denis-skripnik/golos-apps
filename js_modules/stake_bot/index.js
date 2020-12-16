@@ -125,17 +125,17 @@ try {
 	console.log('Победитель: ' + winner);
 	let amount = bids.reduce(function(p,c){return p+c.amount;},0);
 	amount = amount.toFixed(3) + ' GOLOS';
-	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, bids[winner].user, amount, `Поздравляем! Вы выиграли в ставках https://t.me/golos_stake_bot. Пользуйтесь ботом, привлекайте друзей и делайте ставки! Участников: ${bids.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}. Congratulations! You won in the bets https://t.me/golos_stake_bot. Use a bot, get your friends and place your bets! Participants: ${bids.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}`);
+	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, bids[winner-1].user, amount, `Поздравляем! Вы выиграли в ставках https://t.me/golos_stake_bot. Пользуйтесь ботом, привлекайте друзей и делайте ставки! Участников: ${bids.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}. Congratulations! You won in the bets https://t.me/golos_stake_bot. Use a bot, get your friends and place your bets! Participants: ${bids.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}`);
 let members = [];
 	for (let n in bids) {
-		if (parseInt(n) === parseInt(winner)) {
+		if (parseInt(n) === parseInt(winner-1)) {
 	members.push({login: bids[n].user, status: true});
 } else {
 	members.push({login: bids[n].user, status: false});
 }
 }
 	let proof = `https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}`;
-await i.sendBidsNotify(members, proof, parseInt(winner)+1);
+await i.sendBidsNotify(members, proof, parseInt(winner));
 await helpers.sleep(1000);
 await bidsdb.removeBids();
 } catch(e) {
