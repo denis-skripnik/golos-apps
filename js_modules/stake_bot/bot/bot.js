@@ -12,17 +12,34 @@ async function ids(uid) {
     }
 }
 
-async function keybord(btn_list) {
-    let replyMarkup = bot.keyboard(btn_list, {resize: true});
+async function keybord(btn_list, inline) {
+    let replyMarkup;
+    if (inline == true) {
+        let btns = [];
+        for (let row in btn_list) {
+    if (typeof btn_list[row] == 'function') {
+        continue;
+    }
+            btns[row] = [];
+            for (let btn of btn_list[row]) {
+    btns[row].push(bot.inlineButton(btn, {callback: btn}));
+    }
+        }
+        
+        replyMarkup = bot.inlineKeyboard(btns);
+    } else {
+        replyMarkup = bot.keyboard(btn_list, {resize: true});
+    }
     var buttons = {
-        parseMode: 'Html',
+        parseMode: 'HTML',
+        disable_web_page_preview: true,
         replyMarkup};
         return buttons;
     }
 
-async function sendMSG(userId, text, buttons) {
+async function sendMSG(userId, text, buttons, inline) {
     try {
-    let options = await keybord(buttons);
+    let options = await keybord(buttons, inline);
         await bot.sendMessage(userId, text, options);
     } catch(error) {
         console.log('Ошибка с отправкой сообщения: ' + JSON.stringify(error));
@@ -32,12 +49,19 @@ async function sendMSG(userId, text, buttons) {
     }
     }
 
+   
 async function allCommands() {
     try {
     bot.on('text', async (msg) => {
         var uid = await ids(msg.from.id);
         var my_name = msg.from.first_name + ' ' + msg.from.last_name;
             await i.main(uid.id, my_name, msg.text, uid.status);
+    });
+
+    bot.on('callbackQuery', async (msg) => {
+        var uid = await ids(msg.from.id);
+        var my_name = msg.from.first_name + ' ' + msg.from.last_name;
+            return await i.main(uid.id, my_name, msg.data, uid.status);
     });
 } catch(err) {
     console.log('Ошибка с получением сообщения: ' + JSON.stringify(err));
