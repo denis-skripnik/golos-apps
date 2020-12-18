@@ -132,8 +132,7 @@ async function randomGenerator(start_block, end_block, maximum_number) {
     hasher.update(prevSig + sig);
     let sha3 = hasher.digest().toString("hex");
     let random = BigI(sha3, 16).mod(maximum_number);
-    random = parseInt(random);
-return random+1;
+    return random;
 }
 
 async function getBalances(accounts) {
