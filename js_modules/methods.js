@@ -130,7 +130,7 @@ async function randomGenerator(start_block, end_block, maximum_number) {
     let sig = await getBlockSignature(end_block);
     let prevSig = await getBlockSignature(start_block);
     hasher.update(prevSig + sig);
-    let sha3 = hasher.digest().toString("hex");
+        let sha3 = hasher.digest().toString("hex");
     let random = BigI(sha3, 16).mod(maximum_number);
     return random;
 }
