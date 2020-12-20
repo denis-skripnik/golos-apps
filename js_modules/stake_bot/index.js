@@ -110,7 +110,7 @@ const get_block = await bdb.getBlock(1);
 const end_block = get_block.last_block;
 const start_block = end_block - 1;
 let winner = await methods.randomGenerator(start_block, end_block, lotery.length);
-await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, lotery[winner], '20.000 GOLOS', `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Участников: ${lotery.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Participants: ${lotery.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${lotery.length}`);
+await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, lotery[winner], '20.000 GOLOS', `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Участников: ${lotery.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Participants: ${lotery.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}`);
 }
 }
 
@@ -125,7 +125,7 @@ try {
 	console.log('Победитель: ' + winner);
 	let amount = bids.reduce(function(p,c){return p+c.amount;},0);
 	amount = amount.toFixed(3) + ' GOLOS';
-	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, bids[winner].user, amount, `Поздравляем! Вы выиграли в ставках https://t.me/golos_stake_bot. Пользуйтесь ботом, привлекайте друзей и делайте ставки! Участников: ${bids.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}. Congratulations! You won in the bets https://t.me/golos_stake_bot. Use a bot, get your friends and place your bets! Participants: ${bids.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${bids.length}`);
+	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, bids[winner].user, amount, `Поздравляем! Вы выиграли в ставках https://t.me/golos_stake_bot. Пользуйтесь ботом, привлекайте друзей и делайте ставки! Участников: ${bids.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}. Congratulations! You won in the bets https://t.me/golos_stake_bot. Use a bot, get your friends and place your bets! Participants: ${bids.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}`);
 let members = [];
 	for (let n in bids) {
 		if (parseInt(n) === parseInt(winner)) {
