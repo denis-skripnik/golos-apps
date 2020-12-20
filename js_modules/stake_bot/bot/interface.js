@@ -407,13 +407,12 @@ await helpers.sleep(3000);
 await main(id, my_name, lng[user.lng].home, status);
 } else if (user.lng && lng[user.lng] && user.status.indexOf('typed_rate@') > -1) {
         let arr = user.status.split('@')[1];
-console.log(arr);
         let login = arr.split(':')[0];
     let max = arr.split(':')[1];
     let amount = parseFloat(message);
         let text = '';
 let btns;
-if (amount <= max) {
+if (amount <= max && amount >= 0.1) {
     await udb.updateUser(id, user.referers, user.lng, user.status, 'rate_' + login + ':' + amount, user.referer_code);
     text = lng[user.lng].rate_conferm + amount + ' GOLOS';
     btns = await keybord(user.lng, 'to_vesting');
