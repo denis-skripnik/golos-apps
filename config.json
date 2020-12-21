@@ -3,7 +3,7 @@
   "votes": {
     "login": "golos-votes",
     "posting_key": "5",
-    "vote_price": "20.000 GBG"
+    "vote_price": "2.000 GBG"
   },
   "stakebot": {
       "admins": [1],

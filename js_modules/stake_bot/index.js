@@ -119,8 +119,8 @@ async function selectBid() {
 if (bids && bids.length > 1) {
 try {
 	const get_block = await bdb.getBlock(1);
-	const start_block = get_block.last_block;
-	const end_block =start_block - 1;
+	const end_block = get_block.last_block;
+	const start_block = end_block - 1;
 	let winner = await methods.randomGenerator(start_block, end_block, bids.length);
 	console.log('Победитель: ' + winner);
 	let amount = bids.reduce(function(p,c){return p+c.amount;},0);
