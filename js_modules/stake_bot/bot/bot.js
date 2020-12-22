@@ -32,7 +32,7 @@ async function keybord(btn_list, inline) {
     }
     var buttons = {
         parseMode: 'HTML',
-        disable_web_page_preview: true,
+        webPreview: false,
         replyMarkup};
         return buttons;
     }
