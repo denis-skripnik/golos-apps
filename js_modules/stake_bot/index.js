@@ -106,8 +106,8 @@ await helpers.sleep(1000);
 await i.sendClaimNotify(members, referals);
 await helpers.sleep(1000);
 // Выбор победителя лотереи.
-const get_block = await bdb.getBlock(1);
-const end_block = get_block.last_block;
+const get_block = await methods.getProps();
+const end_block = get_block.head_block_number;
 const start_block = end_block - 1;
 let winner = await methods.randomGenerator(start_block, end_block, lotery.length);
 await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, lotery[winner], '20.000 GOLOS', `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Участников: ${lotery.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Participants: ${lotery.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}`);
@@ -118,8 +118,8 @@ async function selectBid() {
 	let bids = await bidsdb.findAllBids();
 if (bids && bids.length > 1) {
 try {
-	const get_block = await bdb.getBlock(1);
-	const end_block = get_block.last_block;
+	const get_block = await methods.getProps();
+	const end_block = get_block.head_block_number;
 	const start_block = end_block - 1;
 	let winner = await methods.randomGenerator(start_block, end_block, bids.length);
 	console.log('Победитель: ' + winner);
