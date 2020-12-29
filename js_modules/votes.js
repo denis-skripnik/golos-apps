@@ -4,7 +4,7 @@ const votes = require("../databases/votesdb");
 const vadb = require("../databases/vadb");
 const conf = require('../config.json');
 
-async function transferOperation(op, opbody) {
+async function transferOperation(timestamp, op, opbody) {
         opbody.memo = opbody.memo.replace(/\s+/g, ' ').trim();
         let ok_ops_count = 0;
         try {
@@ -13,10 +13,11 @@ if (isJson.approve === true && opbody.to === 'null' && opbody.amount.indexOf('GB
 let arr = isJson.data;
 if (arr.contractAction === 'createVote' && arr.contractPayload && arr.contractPayload.question && arr.contractPayload.answers && typeof arr.contractPayload.consider != undefined) {
     if (!arr.contractPayload.end_date) {
+        let nowUnixTime = await helpers.unixTime();
         arr.contractPayload.end_date = nowUnixTime + 432000;
     }
                 try {
-    let permlink = 'survey-' + parseInt(new Date(tr.timestamp).getTime()/1000);
+    let permlink = 'survey-' + parseInt(new Date(timestamp).getTime()/1000);
 let status = await votes.addVote(arr.contractPayload.question, arr.contractPayload.answers, permlink, arr.contractPayload.consider, arr.contractPayload.end_date);
 let title = 'Вопрос: ' + arr.contractPayload.question;
 let answers_list = '';
@@ -45,7 +46,8 @@ return ok_ops_count;
         try {
             let arr = JSON.parse(opbody.json);
     if (opbody.id === 'golos-votes' && arr.contractAction === 'voteing' && arr.contractPayload && arr.contractPayload.votePermlink && arr.contractPayload.answerId) {
-    let isVote = await votes.getVoteByPermlink(arr.contractPayload.votePermlink);
+let nowUnixTime = await helpers.unixTime();
+        let isVote = await votes.getVoteByPermlink(arr.contractPayload.votePermlink);
     if (isVote && isVote.end_date > nowUnixTime && isVote.answers.length-1 >= arr.contractPayload.answerId) {
     let acc = await methods.getAccount(opbody.required_posting_auths[0]);
     let gests = 0;

@@ -185,8 +185,8 @@ else {
         gests_str = 'При расчёте результатов учитывается только личная СГ';
     }
     
-    let variants = [];
-    let voters = [];
+    let variants = {};
+    let voters = {};
     for (let vote of voteRes) {
     all_gests += vote.gests;
     if (!variants[vote.answer_id]) {
@@ -201,7 +201,7 @@ else {
         voters[vote.answer_id].push({login: vote.login, gests: vote.gests});
     }
     }
-    let percents = [];
+    let percents = {};
     for (let n in variants) {
     percents[n] = ((variants[n] / all_gests) * 100).toFixed(2);
     }
@@ -211,15 +211,15 @@ else {
     results.type = gests_str;
     results.variants = [];
     results.voters = [];
-        for (let num in percents) {
-            voters[num].sort(helpers.compareGests);
-            let list_str = '';
-            for (let voter of voters[num]) {
-                list_str += `<a href="https://dpos.space/golos/profiles/${voter.login}" target="_blank">${voter.login}</a>, `;
-                }
-                list_str = list_str.replace(/,\s*$/, "");
-            results.variants.push({answer: isVote.answers[num], percent: percents[num], gests: variants[num], voters: list_str});
-    }
+            for (let num in percents) {
+                voters[num].sort(helpers.compareGests);
+                let list_str = '';
+                for (let voter of voters[num]) {
+                    list_str += `<a href="https://dpos.space/golos/profiles/${voter.login}" target="_blank">${voter.login}</a>, `;
+                    }
+                    list_str = list_str.replace(/,\s*$/, "");
+                results.variants.push({answer: isVote.answers[num], percent: percents[num], gests: variants[num], voters: list_str});
+        }
         } // isVote.            
     res.send(results);
     }
