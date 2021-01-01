@@ -148,9 +148,9 @@ async function selectJackpotWinner() {
 	let j = await jdb.getJackpot();
 if (j && j.length > 0) {
 try {
-	const get_block = await bdb.getBlock(1);
-	const start_block = get_block.last_block;
-	const end_block =start_block - 1;
+	const get_block = await methods.getProps();
+	const end_block = get_block.head_block_number;
+	const start_block = end_block - 1;
 	let winner = await methods.randomGenerator(start_block, end_block, j.length);
 	console.log('Победитель: ' + winner);
 	let amount = j.reduce(function(p,c){return p+c.amount;},0);
