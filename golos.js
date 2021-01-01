@@ -34,7 +34,7 @@ if (opbody.to !== 'ecurrex-t2g' && opbody.to !== 'tiptok') {
             break;
             case "transfer":
             ok_ops_count += await d.transferOperation(op, opbody);
-            ok_ops_count += await votes.transferOperation(op, opbody);
+            ok_ops_count += await votes.transferOperation(tr.timestamp, op, opbody);
             break;
             case "account_create_with_delegation":
             ok_ops_count += await refs.accountCreateWithDelegationOperation(op, opbody);
