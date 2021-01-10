@@ -34,4 +34,29 @@ async function producerRewardOperation(opbody, tvfs, tvsh, timestamp) {
     }
     }
 
+    async function producersMonth() {
+    let witnesses = await prdb.findAllWitnesses();
+    if (witnesses && witnesses.length > 0) {
+        for (let witness of witnesses) {
+let now_daily_profit = 0;
+let now_monthly_profit = 0;
+let timestamp = new Date().toISOString().split('.')[0];
+            await prdb.updateWitness(witness.login, witness.old_monthly_profit, now_monthly_profit, witness.old_daily_profit, now_daily_profit, timestamp);
+        }
+    }
+}
+
+async function producersDay() {
+    let witnesses = await prdb.findAllWitnesses();
+    if (witnesses && witnesses.length > 0) {
+        for (let witness of witnesses) {
+let now_daily_profit = 0;
+let timestamp = new Date().toISOString().split('.')[0];
+            await prdb.updateWitness(witness.login, witness.old_monthly_profit, witness.now_monthly_profit, witness.old_daily_profit, now_daily_profit, timestamp);
+        }
+    }
+}
+
 module.exports.producerRewardOperation = producerRewardOperation;
+module.exports.producersMonth = producersMonth;
+module.exports.producersDay = producersDay;

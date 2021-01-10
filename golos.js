@@ -115,5 +115,7 @@ new CronJob('0 0 12 * * *', stakebot.run, null, true);
 new CronJob('0 0 18 * * *', stakebot.selectBid, null, true);
 new CronJob('0 0 3 1 * *', stakebot.selectJackpotWinner, null, true);
 new CronJob('0 0 0 * * *', asdb.removeactivityStats, null, true);    
+new CronJob('0 0 3 * * *', wr.producersDay, null, true);    
+new CronJob('0 0 3 1 * *', wr.producersMonth, null, true);
 
 methods.updateAccount('votes');
