@@ -155,7 +155,7 @@ try {
 	console.log('Победитель: ' + winner);
 	let amount = j.reduce(function(p,c){return p+c.amount;},0);
 	amount = amount.toFixed(3) + ' GOLOS';
-	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, j[winner].user, amount, `Поздравляем! Вы получили джекпот https://t.me/golos_stake_bot! Пользуйтесь ботом, привлекайте друзей и делайте ставки, чтоб получить шанс выиграть джекпот. Участников: ${j.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${j.length}. Congratulations! You got the jackpot https://t.me/golos_stake_bot! Use the bot, attract friends and place bets to get a chance to win the jackpot. Participants: ${j.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${j.length}`);
+	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, j[winner].user, amount, `Поздравляем! Вы получили джекпот https://t.me/golos_stake_bot! Пользуйтесь ботом, привлекайте друзей и делайте ставки, чтоб получить шанс выиграть джекпот. Участников: ${j.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${j.length}. Congratulations! You got the jackpot https://t.me/golos_stake_bot! Use the bot, attract friends and place bets to get a chance to win the jackpot. Participants: ${j.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${j.length}`);
 let members = [];
 	for (let n in j) {
 		if (parseInt(n) === parseInt(winner)) {
@@ -164,7 +164,7 @@ let members = [];
 	members.push({login: j[n].user, status: false});
 }
 }
-	let proof = `https://dpos.space/golos/randomblockchain/?block1=${end_block}&block2=${start_block}&participants=${j.length}`;
+	let proof = `https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${j.length}`;
 await i.sendJackpotNotify(members, proof, parseInt(winner)+1);
 await helpers.sleep(1000);
 await jdb.removeJackpot();
