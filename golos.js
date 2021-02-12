@@ -11,6 +11,7 @@ const refs = require("./js_modules/referrers");
 const top = require("./js_modules/golos_top");
 const votes = require("./js_modules/votes");
 const stakebot = require("./js_modules/stake_bot");
+const feed_bot = require("./js_modules/feed_bot");
 const as = require("./js_modules/activity_stats");
 const wr = require("./js_modules/witness_rewards");
 const helpers = require("./js_modules/helpers");
@@ -22,6 +23,8 @@ const SHORT_DELAY = 3000;
 const SUPER_LONG_DELAY = 1000 * 60 * 15;
 
 async function processBlock(bn, props) {
+    if (bn%14400 == 0) await feed_bot.run();
+
     const block = await methods.getOpsInBlock(bn);
 let ok_ops_count = 0;
     for(let tr of block) {
