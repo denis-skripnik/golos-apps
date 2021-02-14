@@ -27,5 +27,9 @@
 "help": "Help",
 "help_text": "The bot sends news every 12 hours. To work with the bot, use the menu. Isn't there one? Enter /start. If you have any questions or problems, write to the chat @dpos_space or the personal account @denis_skripnik",
 "feed_name": "Feed",
-"reblog_by": "Repost from "
+"reblog_by": "Repost from ",
+"from": "from",
+"show_reblogs": "Show reposts",
+"show_reblogs_false": "Receiving reposts is disabled for the account ",
+"show_reblogs_true": "Receiving reposts is enabled for the account "
 }

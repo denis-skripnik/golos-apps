@@ -18,7 +18,7 @@ if (variant === 'lng') {
         buttons = [[lng[lang].on, lng[lang].off, lng[lang].back, lng[lang].home]];
     } else if (variant.indexOf('@') > -1 && variant.indexOf('accounts_buttons') === -1) {
         let login = variant.split('@')[1];
-        buttons = [[lng[lang].delete, lng[lang].back, lng[lang].home]];
+        buttons = [[lng[lang].show_reblogs, lng[lang].delete], [lng[lang].back, lng[lang].home]];
     } else if (variant.indexOf('accounts_buttons') > -1) {
         buttons = JSON.parse(variant.split('accounts_buttons')[1]);
     }     else if (variant === 'back') {
@@ -106,7 +106,22 @@ await botjs.sendMSG(id, text, btns, true);
                                                                                 let btns = await keybord(user.lng, message);
                                                                                                     await botjs.sendMSG(id, text, btns, false);
                                                                             }
-                                                                        } else if (user && user.lng && message.indexOf(lng[user.lng].news) > -1) {
+
+                                                                        } else if (user && user.lng && message === lng[user.lng].show_reblogs && user.status.indexOf('@') > -1) {
+                                                                            let acc = await adb.getAccount(user.status.split('@')[1]);
+                                                                            let text = '';
+                                                                            if (acc && acc.id === id && acc.show_reblogs == true) {
+                                                                                text = lng[user.lng].show_reblogs_false + user.status;
+                                                                                await adb.updateAccount(acc.id, acc.login, acc.lng, acc.last_post, false);
+                                                                            } else if (acc && acc.id === id && acc.show_reblogs == false) {
+                                                                                text = lng[user.lng].show_reblogs_true + user.status;
+                                                                                await adb.updateAccount(acc.id, acc.login, acc.lng, acc.last_post, true);
+                                                                            }
+                                                                                let btns = await keybord(user.lng, user.status);
+                                                                                                    await botjs.sendMSG(id, text, btns, false);
+                                                                                                                                                    await helpers.sleep(1000);
+                                                                                                                                                    await main(id, my_name, user.status, status);
+                                                                                                } else if (user && user.lng && message.indexOf(lng[user.lng].news) > -1) {
                                                                             if (status === 2) {
                                                                                 let text = lng[user.lng].type_news;
                                                                                 let btns = await keybord(user.lng, 'cancel');
@@ -132,7 +147,7 @@ let text = '';
 let btns;
 if (get_account && get_account.length > 0) {
     text = lng[user.lng].saved_true;
-    await adb.updateAccount(id, message, user.lng, -1);
+    await adb.updateAccount(id, message, user.lng, -1, false);
     btns = await keybord(user.lng, 'home');
     await udb.updateUser(id, user.lng, user.status, 'login_' + message);
 } else {
@@ -181,24 +196,40 @@ async function notify() {
     let accounts = await adb.findAllAccounts();
     if (accounts && accounts.length > 0) {
             for (let acc of accounts) {
-            let posts = await methods.getFeed(acc.login, acc.last_post);
-            let last_post = posts[0].comment.id;
-        let feed = `${lng[acc.lng].feed_name} <a href="https://dpos.space/golos/profiles/${acc.login}">${acc.login}</a>`;
-    let posts_counter = 0;
-    for (let post of posts) {
-    if (post.comment.id !== acc.last_post) {
-        posts_counter++;
-        let reblog_by = post.comment.reblog_by;
-        let reblog_by_str = '';
-        if (reblog_by.length > 0) reblog_by_str = ` ${lng[acc.lng].reblog_by} ${reblog_by.join(',')}`;
-        feed += `
-    ${posts_counter}. <a href="https://golos.id/${post.comment.parent_permlink}/@${post.comment.author}/${post.comment.permlink}">${post.comment.title}</a>${reblog_by_str}`;
-    } // end if this last_post.
-    } // end for
-        if (posts_counter > 0) {
-            let btns = await keybord(acc.lng, 'home');
-            await botjs.sendMSG(id, feed, btns, false);            
-        }
+try {
+    let posts = await methods.getFeed(acc.login, acc.last_post);
+    let last_post = posts[0].entry_id;
+let feed = [];
+    feed[0] = `${lng[acc.lng].feed_name} <a href="https://dpos.space/golos/profiles/${acc.login}">${acc.login}</a>`;
+let posts_counter = 0;
+let msg_counter = 0;
+for (let post of posts) {
+if (post.entry_id === acc.last_post) break;
+posts_counter++;
+let reblog_by_str = '';
+if (post.reblog_by) {
+let reblog_by = post.reblog_by;
+if (reblog_by.length > 0 && acc.show_reblogs == false) continue;
+if (reblog_by.length > 0) reblog_by_str = ` (${lng[acc.lng].reblog_by} ${reblog_by.join(',')})`;
+}
+let chunk = `
+${posts_counter}. <a href="https://golos.id/${post.comment.parent_permlink}/@${post.comment.author}/${post.comment.permlink}">${post.comment.title}</a> ${lng[acc.lng].from} <a href="https://dpos.space/golos/profiles/${post.comment.author}">@${post.comment.author}</a>${reblog_by_str}`;
+if (feed[msg_counter].length + chunk.length >= 4096) {
+msg_counter++;
+feed[msg_counter] = '';
+}
+feed[msg_counter] += chunk;
+} // end for
+if (posts_counter > 0) {
+    let btns = await keybord(acc.lng, 'home');
+for (let text of feed) {
+await botjs.sendMSG(acc.id, text, btns, false);            
+}
+}
+await adb.updateAccount(acc.id, acc.login, acc.lng, last_post, acc.show_reblogs);
+} catch(error) {
+    console.log('Ошибка у аккаунта: ' + error);
+}
     }
     }
 }
