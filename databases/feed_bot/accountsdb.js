@@ -56,7 +56,7 @@ async function getAccount(login) {
 	}
 }
 
-async function updateAccount(id, login, lng, last_post) {
+async function updateAccount(id, login, lng, last_post, show_reblogs) {
 
 	let client = await pool.getClient()
 	if (!client) {
@@ -76,7 +76,8 @@ async function updateAccount(id, login, lng, last_post) {
 				id,
 				login,
 				lng,
-				last_post
+				last_post,
+				show_reblogs
 			}
 		}, {
 			upsert: true

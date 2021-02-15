@@ -195,23 +195,21 @@ await helpers.sleep(1000);
 async function notify() {
     let accounts = await adb.findAllAccounts();
     if (accounts && accounts.length > 0) {
-            for (let acc of accounts) {
-try {
-    let posts = await methods.getFeed(acc.login, acc.last_post);
+        for (let acc of accounts) {
+                try {
+                    let posts = await methods.getFeed(acc.login, -1);
     let last_post = posts[0].entry_id;
 let feed = [];
     feed[0] = `${lng[acc.lng].feed_name} <a href="https://dpos.space/golos/profiles/${acc.login}">${acc.login}</a>`;
 let posts_counter = 0;
 let msg_counter = 0;
 for (let post of posts) {
-if (post.entry_id === acc.last_post) break;
+    if (post.entry_id === acc.last_post) break;
 posts_counter++;
 let reblog_by_str = '';
-if (post.reblog_by) {
 let reblog_by = post.reblog_by;
 if (reblog_by.length > 0 && acc.show_reblogs == false) continue;
 if (reblog_by.length > 0) reblog_by_str = ` (${lng[acc.lng].reblog_by} ${reblog_by.join(',')})`;
-}
 let chunk = `
 ${posts_counter}. <a href="https://golos.id/${post.comment.parent_permlink}/@${post.comment.author}/${post.comment.permlink}">${post.comment.title}</a> ${lng[acc.lng].from} <a href="https://dpos.space/golos/profiles/${post.comment.author}">@${post.comment.author}</a>${reblog_by_str}`;
 if (feed[msg_counter].length + chunk.length >= 4096) {
