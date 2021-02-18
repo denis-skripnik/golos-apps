@@ -1,7 +1,7 @@
 {
     "start": "Start",
     "home": "Home",
-    "home_message": "Welcome to @golos_feed_bot. This bot will send new posts from your feeds every 12 hours.",
+    "home_message": "Welcome to @golos_feed_bot. This bot will send new posts from your feeds every 6 hours.",
     "news": "News",
     "lang": "Select language",
     "selected_language": "Selected language: English.",
@@ -25,7 +25,7 @@
 "add_account": "Add account",
 "type_news": "Enter a news item",
 "help": "Help",
-"help_text": "The bot sends news every 12 hours. To work with the bot, use the menu. Isn't there one? Enter /start. If you have any questions or problems, write to the chat @dpos_space or the personal account @denis_skripnik",
+"help_text": "The bot sends news every 6 hours. To work with the bot, use the menu. Isn't there one? Enter /start. If you have any questions or problems, write to the chat @dpos_space or the personal account @denis_skripnik",
 "feed_name": "Feed",
 "reblog_by": "Repost from ",
 "from": "from",
