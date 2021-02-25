@@ -13,7 +13,7 @@ async function keybord(lang, variant) {
 if (variant === 'lng') {
         buttons = [["English", "Русский"]];
     } else if (variant === 'home') {
-        buttons = [[lng[lang].add_account, lng[lang].accounts], [lng[lang].help, lng[lang].lang]];
+        buttons = [[lng[lang].add_account, lng[lang].accounts, lng[lang].change_tags], [lng[lang].help, lng[lang].lang]];
     } else if (variant === 'conferm') {
         buttons = [[lng[lang].on, lng[lang].off, lng[lang].back, lng[lang].home]];
     } else if (variant.indexOf('@') > -1 && variant.indexOf('accounts_buttons') === -1) {
@@ -33,9 +33,9 @@ if (variant === 'lng') {
 async function main(id, my_name, message, status) {
     let user = await udb.getUser(id);
     if (!user) {
-            await udb.addUser(id, '', '', 'start');
+            await udb.addUser(id, '', '', 'start', '');
         } else {
-                await udb.updateUser(id, user.lng, user.status, message);
+                await udb.updateUser(id, user.lng, user.status, message, user.tags);
     }
     
     if (message.indexOf('start') > -1 || user && user.lng && message.indexOf(lng[user.lng].lang) > -1) {
@@ -95,11 +95,15 @@ await botjs.sendMSG(id, text, btns, true);
                                                                             if (message.split('@')[2]) {
                                                                                 login += '@' + message.split('@')[2];
                                                                                     }
-                                                                            await udb.updateUser(id, user.lng, user.status, 'delete_' + login);
+                                                                            await udb.updateUser(id, user.lng, user.status, 'delete_' + login, user.tags);
                                                                             let text = lng[user.lng].delete_conferm + login;
                                                     let btns = await keybord(user.lng, 'conferm');
                                                     await botjs.sendMSG(id, text, btns, false);
-                                                                        } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1) {
+                                                } else if (user && user.lng && message.indexOf(lng[user.lng].change_tags) > -1) {
+                                                    let text = lng[user.lng].enter_tags + user.tags;
+                                                    let btns = await keybord(user.lng, 'cancel');
+                                                    await botjs.sendMSG(id, text, btns, false);
+                                                } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1) {
                                                                             let acc = await adb.getAccount(message.split('@')[1]);
                                                                             if (acc && acc.id === id) {
                                                                                 let text = lng[user.lng].change_account + message;
@@ -134,7 +138,7 @@ await botjs.sendMSG(id, text, btns, true);
                                                             } else if (typeof lng[message] !== "undefined") {
                         let text = lng[message].selected_language;
         let btns = await keybord(message, '');
-                    await udb.updateUser(id, message, user.status, message);
+                    await udb.updateUser(id, message, user.status, message, user.tags);
                     await botjs.sendMSG(id, text, btns, false);
                     await helpers.sleep(3000);
                     await main(id, my_name, lng[message].add_account, status);
@@ -149,9 +153,9 @@ if (get_account && get_account.length > 0) {
     text = lng[user.lng].saved_true;
     await adb.updateAccount(id, message, user.lng, -1, false);
     btns = await keybord(user.lng, 'home');
-    await udb.updateUser(id, user.lng, user.status, 'login_' + message);
+    await udb.updateUser(id, user.lng, user.status, 'login_' + message, user.tags);
 } else {
-    await udb.updateUser(id, user.lng, user.status, 'add_account');
+    await udb.updateUser(id, user.lng, user.status, 'add_account', user.tags);
     text = lng[user.lng].not_account;
     btns = await keybord(user.lng, 'home');
 }
@@ -172,12 +176,17 @@ login += ' @' + user.status.split('_')[2];
 console.log('Результат: ' + JSON.stringify(res));
 }
     }                        
-    await udb.updateUser(id, user.lng, user.status, 'delet_account');
+    await udb.updateUser(id, user.lng, user.status, 'delet_account', user.tags);
     let btns = await keybord(user.lng, 'home');
     await botjs.sendMSG(id, text, btns, false);
     await helpers.sleep(3000);
     await main(id, my_name, lng[user.lng].home, status);
-} else if (user.lng && lng[user.lng] && user.status.indexOf(lng[user.lng].news) > -1 && status === 2) {
+} else if (user.lng && lng[user.lng] && user.status === lng[user.lng].change_tags) {
+    await udb.updateUser(id, user.lng, user.status, lng[user.lng].home, message);
+    let text = lng[user.lng].tags_changed;
+            let btns = await keybord(user.lng, 'home');
+                await botjs.sendMSG(id, text, btns, false);
+        } else if (user.lng && lng[user.lng] && user.status.indexOf(lng[user.lng].news) > -1 && status === 2) {
     let btns = await keybord(user.lng, 'home');
 let all_users = await udb.findAllUsers();
 for (let one_user of all_users) {
@@ -232,5 +241,31 @@ await adb.updateAccount(acc.id, acc.login, acc.lng, last_post, acc.show_reblogs)
     }
 }
 
+async function commentOperation(op, opbody, timestamp) {
+    let ok = 0;
+    let content = await methods.getContent(opbody.author, opbody.permlink);
+    let users = await udb.findAllUsers();
+    if (content && content.code === 1 && content.created === timestamp && users && users.length > 0 && opbody.json_metadata) {
+        let metadata = JSON.parse(opbody.json_metadata);
+        if (metadata && metadata.tags && metadata.tags.length > 0) {
+    let tags = metadata.tags;
+    for (let user of users) {
+        if (user.tags && user.tags !== '') {
+            let user_tags = user.tags.split(',');
+            if (user_tags && tags.some(item => user_tags.includes(item))) {
+                let text = `${lng[user.lng].post_from_tag} <a href="https://dpos.space/golos/profiles/${opbody.author}">${opbody.author}</a>
+    <a href="https://golos.id/${opbody.parent_permlink}/@${opbody.author}/${opbody.permlink}">${opbody.title}</a>`;
+                           let btns = await keybord(user.lng, 'home');
+                await botjs.sendMSG(user.id, text, btns, false);            
+            ok += 1;
+            }
+        }
+}
+}
+    }
+return ok;
+}
+
 module.exports.main = main;
 module.exports.notify = notify;
+module.exports.commentOperation = commentOperation;

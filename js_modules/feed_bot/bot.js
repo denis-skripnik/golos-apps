@@ -5,7 +5,7 @@ bot.start();
 const i = require("./interface");
 
 async function ids(uid) {
-    if (conf.stakebot.admins.indexOf(uid) > -1) {
+    if (conf.feed_bot.admins.indexOf(uid) > -1) {
         return {status: 2, id: uid};
     } else {
         return {status: 1, id: uid};
@@ -72,3 +72,4 @@ async function keybord(btn_list, inline) {
 module.exports.sendMSG = sendMSG;
 module.exports.allCommands = allCommands;
 module.exports.notify = i.notify;
+module.exports.commentOperation = i.commentOperation;

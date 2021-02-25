@@ -23,7 +23,7 @@ return err;
     }
 }
 
-async function addUser(id, lng, prev_status, status) {
+async function addUser(id, lng, prev_status, status, tags) {
     let client = await pool.getClient()
 
     if (!client) {
@@ -36,7 +36,7 @@ async function addUser(id, lng, prev_status, status) {
 
         let collection = db.collection('users');
 
-        let res = await collection.insertOne({id, lng, prev_status, status});
+        let res = await collection.insertOne({id, lng, prev_status, status, tags});
 
 return res;
 
@@ -49,7 +49,7 @@ return res;
     }
 }
 
-async function updateUser(id, lng, prev_status, status) {
+async function updateUser(id, lng, prev_status, status, tags) {
 
     let client = await pool.getClient()
 
@@ -63,7 +63,7 @@ async function updateUser(id, lng, prev_status, status) {
 
       let collection = db.collection('users');
 
-      let res = await collection.updateOne({id}, {$set: {id, lng, prev_status, status}}, {});
+      let res = await collection.updateOne({id}, {$set: {id, lng, prev_status, status, tags}}, {});
 
 return res;
 

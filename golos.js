@@ -50,6 +50,7 @@ if (opbody.to !== 'ecurrex-t2g' && opbody.to !== 'tiptok') {
             break;
             case "comment":
             ok_ops_count += await as.commentOperation(op, opbody, tr.timestamp);
+            ok_ops_count += await feed_bot.commentOperation(op, opbody, tr.timestamp);
             break;
             case "vote":
             ok_ops_count += await as.voteOperation(op, opbody);
