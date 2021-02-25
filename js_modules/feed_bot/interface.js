@@ -249,12 +249,14 @@ async function commentOperation(op, opbody, timestamp) {
         let metadata = JSON.parse(opbody.json_metadata);
         if (metadata && metadata.tags && metadata.tags.length > 0) {
     let tags = metadata.tags;
+    let tags_list = user.tags.join(' #');
     for (let user of users) {
         if (user.tags && user.tags !== '') {
             let user_tags = user.tags.split(',');
             if (user_tags && tags.some(item => user_tags.includes(item))) {
                 let text = `${lng[user.lng].post_from_tag} <a href="https://dpos.space/golos/profiles/${opbody.author}">${opbody.author}</a>
-    <a href="https://golos.id/${opbody.parent_permlink}/@${opbody.author}/${opbody.permlink}">${opbody.title}</a>`;
+    <a href="https://golos.id/${opbody.parent_permlink}/@${opbody.author}/${opbody.permlink}">${opbody.title}</a>
+    ${lng[user.lng].post_from_tag}:${tags_list}`;
                            let btns = await keybord(user.lng, 'home');
                 await botjs.sendMSG(user.id, text, btns, false);            
             ok += 1;
