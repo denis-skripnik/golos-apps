@@ -249,8 +249,8 @@ async function commentOperation(op, opbody, timestamp) {
         let metadata = JSON.parse(opbody.json_metadata);
         if (metadata && metadata.tags && metadata.tags.length > 0) {
     let tags = metadata.tags;
-    let tags_list = user.tags.join(' #');
     for (let user of users) {
+        let tags_list = user.tags.join(' #');
         if (user.tags && user.tags !== '') {
             let user_tags = user.tags.split(',');
             if (user_tags && tags.some(item => user_tags.includes(item))) {
