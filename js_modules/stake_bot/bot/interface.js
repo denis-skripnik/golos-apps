@@ -6,7 +6,6 @@ const botjs = require("./bot");
 const adb = require(process.cwd() + "/databases/golos_stakebot/accountsdb");
 const udb = require(process.cwd() + "/databases/golos_stakebot/usersdb");
 const biddb = require(process.cwd() + "/databases/golos_stakebot/bidsdb");
-const jdb = require(process.cwd() + "/databases/golos_stakebot/jdb");
 const helpers = require(process.cwd() + "/js_modules/helpers");
 const conf = require(process.cwd() + "/config.json");
 var sjcl = require('sjcl');
@@ -434,16 +433,7 @@ if (amount <= max && amount >= 0.1) {
         if (message === lng[user.lng].on) {
 try {
     if (user.posting_key !== '') {
-await biddb.addBid(login, amount * 0.9);
-
-let ju = await jdb.getJackpotUser(login);
-let jamount = amount * 0.05;
-jamount = jamount.toFixed(3);
-jamount = parseFloat(jamount);
-if (ju) {
-jamount += ju.amount;
-}
-await jdb.updateJackpot(login, jamount);
+await biddb.addBid(login, amount);
 
 let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
         await methods.donate(posting_key, login, conf.stakebot.golos_login, amount.toFixed(3) + ' GOLOS', 'Ставка в golos_stake_bot.');

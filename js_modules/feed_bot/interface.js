@@ -260,6 +260,12 @@ async function commentOperation(op, opbody, timestamp) {
                            let btns = await keybord(user.lng, 'home');
                 await botjs.sendMSG(user.id, text, btns, false);            
             ok += 1;
+            } else if (user_tags.indexOf(opbody.parent_permlink) > -1) {
+                let text = `${lng[user.lng].post_from_tag} <a href="https://dpos.space/golos/profiles/${opbody.author}">${opbody.author}</a>
+                <a href="https://golos.id/${opbody.parent_permlink}/@${opbody.author}/${opbody.permlink}">${opbody.title}</a>
+                ${lng[user.lng].post_from_tag}:${tags_list}`;
+                                       let btns = await keybord(user.lng, 'home');
+                            await botjs.sendMSG(user.id, text, btns, false);
             }
         }
 }

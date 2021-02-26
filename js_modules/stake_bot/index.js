@@ -124,9 +124,22 @@ try {
 	let winner = await methods.randomGenerator(start_block, end_block, bids.length);
 	console.log('Победитель: ' + winner);
 	let amount = bids.reduce(function(p,c){return p+c.amount;},0);
+	let fee = (amount - bids[winner].amount) * 0.1;
+if (fee > 0.002) amount -= fee;
 	amount = amount.toFixed(3) + ' GOLOS';
-	await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, bids[winner].user, amount, `Поздравляем! Вы выиграли в ставках https://t.me/golos_stake_bot. Пользуйтесь ботом, привлекайте друзей и делайте ставки! Участников: ${bids.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}. Congratulations! You won in the bets https://t.me/golos_stake_bot. Use a bot, get your friends and place your bets! Participants: ${bids.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}`);
-let members = [];
+			await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, bids[winner].user, amount, `Поздравляем! Вы выиграли в ставках https://t.me/golos_stake_bot. Пользуйтесь ботом, привлекайте друзей и делайте ставки! Участников: ${bids.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}. Congratulations! You won in the bets https://t.me/golos_stake_bot. Use a bot, get your friends and place your bets! Participants: ${bids.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}`);
+if (fee >= 0.002) {
+	let ju = await jdb.getJackpotUser(bids[winner].user);
+	let jamount = fee * 0.5;
+	jamount = jamount.toFixed(3);
+	jamount = parseFloat(jamount);
+	if (ju) {
+	jamount += ju.amount;
+	}
+	await jdb.updateJackpot(bids[winner].user, jamount);
+	}
+
+			let members = [];
 	for (let n in bids) {
 		if (parseInt(n) === parseInt(winner)) {
 	members.push({login: bids[n].user, status: true});
