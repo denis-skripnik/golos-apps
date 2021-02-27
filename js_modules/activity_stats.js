@@ -12,7 +12,7 @@ let upvote_count = 0;
 let all_flags_weight = 0;
 let all_upvotes_weight = 0;
 let timestamp_day = timestamp.split('-')[1];
-if (user && user.last_update && timestamp_day !== user.last_update.split('-')[1]) {
+if (user && user.last_update && timestamp_day === user.last_update.split('-')[1]) {
 content_count += user.content;
 flags_count += user.flags;
 upvote_count += user.upvotes;
@@ -37,7 +37,8 @@ if (opbody.weight < 0) {
 upvote_count += 1;
 all_upvotes_weight += opbody.weight;
 }
-if (user) {
+let timestamp_day = timestamp.split('-')[1];
+if (user && user.last_update && timestamp_day === user.last_update.split('-')[1]) {
 content_count += user.content;
 flags_count += user.flags;
 upvote_count += user.upvotes;
