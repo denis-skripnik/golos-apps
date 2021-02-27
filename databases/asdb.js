@@ -29,7 +29,7 @@ async function getUser(login) {
     }
 }
 
-async function updateUser(login, content, flags, upvotes, all_flags_weight, all_upvotes_weight) {
+async function updateUser(login, content, flags, upvotes, all_flags_weight, all_upvotes_weight, last_update) {
     let client = await pool.getClient()
 
     if (!client) {
@@ -51,7 +51,8 @@ async function updateUser(login, content, flags, upvotes, all_flags_weight, all_
                 flags,
                 upvotes,
                 all_flags_weight,
-                all_upvotes_weight
+                all_upvotes_weight,
+                last_update
             }
         }, {
             upsert: true

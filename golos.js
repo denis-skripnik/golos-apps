@@ -53,7 +53,7 @@ if (opbody.to !== 'ecurrex-t2g' && opbody.to !== 'tiptok') {
             ok_ops_count += await feed_bot.commentOperation(op, opbody, tr.timestamp);
             break;
             case "vote":
-            ok_ops_count += await as.voteOperation(op, opbody);
+            ok_ops_count += await as.voteOperation(op, opbody, tr.timestamp);
             break;
 case "producer_reward":
 ok_ops_count += await wr.producerRewardOperation(opbody, props.total_vesting_fund_steem, props.total_vesting_shares, tr.timestamp);
