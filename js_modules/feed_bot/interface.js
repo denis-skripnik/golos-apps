@@ -182,7 +182,11 @@ console.log('Результат: ' + JSON.stringify(res));
     await helpers.sleep(3000);
     await main(id, my_name, lng[user.lng].home, status);
 } else if (user.lng && lng[user.lng] && user.status === lng[user.lng].change_tags) {
-    await udb.updateUser(id, user.lng, user.status, lng[user.lng].home, message);
+    const searchRegExp = /—/g;
+const replaceWith = '--';
+
+const result = message.replace(searchRegExp, replaceWith);
+    await udb.updateUser(id, user.lng, user.status, lng[user.lng].home, result);
     let text = lng[user.lng].tags_changed;
             let btns = await keybord(user.lng, 'home');
                 await botjs.sendMSG(id, text, btns, false);
