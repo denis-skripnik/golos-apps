@@ -149,6 +149,10 @@ return assets;
     }
                 }
 
+async function getFeed(login, last_post) {
+return await golos.api.getFeedAsync(login, last_post, 100);
+}
+
       module.exports.getOpsInBlock = getOpsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
@@ -167,3 +171,4 @@ module.exports.wifToPublic = wifToPublic;
 module.exports.donate = donate;
 module.exports.randomGenerator = randomGenerator;
 module.exports.getBalances = getBalances;
+module.exports.getFeed = getFeed;
