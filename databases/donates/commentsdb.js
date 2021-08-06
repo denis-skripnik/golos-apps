@@ -73,7 +73,6 @@ async function updateComment(token, author, permlink, title, amount, prefix) {
       let collection = db.collection('comments' + prefix);
 
       let res = await collection.updateOne({token, author, permlink}, {$set: {token, author, permlink, title, amount}}, { upsert: true });
-console.log(JSON.stringify(res));
 return res;
 
   } catch (err) {
@@ -106,7 +105,7 @@ return res;
 
   } catch (err) {
 
-      console.log(err);
+      console.errorconsole.error(err);
   return err;
     } finally {
 
@@ -139,7 +138,7 @@ async function findAllComments(token, prefix) {
   return res;
     } catch (err) {
 
-      console.log(err);
+      console.errorconsole.error(err);
   return err;
     } finally {
 

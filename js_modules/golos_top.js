@@ -12,7 +12,6 @@ try {
 	while(1) {
 		//if(k++ > 10) break;
 
-console.log("Golos curr", curr_acc, Object.keys(gests).length);
 		const accs = await methods.lookupAccounts(curr_acc);
 		if (accs[0] === curr_acc) {
 			accs.splice(0, 1);

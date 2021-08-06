@@ -22,10 +22,10 @@ async function keybord(btn_list, inline) {
     }
             btns[row] = [];
             for (let btn of btn_list[row]) {
-    btns[row].push(bot.inlineButton(btn, {callback: btn}));
+    btns[row].push(bot.inlineButton(btn[1], {callback: btn[0]}));
     }
         }
-        
+
         replyMarkup = bot.inlineKeyboard(btns);
     } else {
         replyMarkup = bot.keyboard(btn_list, {resize: true});

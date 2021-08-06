@@ -17,6 +17,7 @@ const wr = require("./js_modules/witness_rewards");
 const helpers = require("./js_modules/helpers");
 const methods = require("./js_modules/methods");
 const asdb = require("./databases/asdb");
+const gsbpdb = require("./databases/golos_stakebot/postsdb");
 const bdb = require("./databases/blocksdb");
 const LONG_DELAY = 12000;
 const SHORT_DELAY = 3000;
@@ -51,9 +52,11 @@ if (opbody.to !== 'ecurrex-t2g' && opbody.to !== 'tiptok') {
             case "comment":
             ok_ops_count += await as.commentOperation(op, opbody, tr.timestamp);
             ok_ops_count += await feed_bot.commentOperation(op, opbody, tr.timestamp);
+            ok_ops_count += await stakebot.commentOperation(opbody);
             break;
             case "vote":
             ok_ops_count += await as.voteOperation(op, opbody, tr.timestamp);
+            ok_ops_count += await stakebot.voteOperation(opbody);
             break;
 case "producer_reward":
 ok_ops_count += await wr.producerRewardOperation(opbody, props.total_vesting_fund_steem, props.total_vesting_shares, tr.timestamp);
@@ -116,9 +119,11 @@ getNullTransfers()
 new CronJob('0 30 * * * *', top.run, null, true);
 new CronJob('0 0 0 * * *', stakebot.run, null, true);
 new CronJob('0 0 12 * * *', stakebot.run, null, true);    
+
 new CronJob('0 0 18 * * *', stakebot.selectBid, null, true);
 new CronJob('0 0 3 1 * *', stakebot.selectJackpotWinner, null, true);
 new CronJob('0 0 0 * * *', asdb.removeactivityStats, null, true);    
+new CronJob('0 0 0 * * 0', gsbpdb.removePosts, null, true);    
 new CronJob('0 0 3 * * *', wr.producersDay, null, true);    
 new CronJob('0 0 3 1 * *', wr.producersMonth, null, true);
 

@@ -67,7 +67,6 @@ async function updatePost(token, author, permlink, title, amount, prefix) {
       let collection = db.collection('posts' + prefix);
 
       let res = await collection.updateOne({token, author, permlink}, {$set: {token, author, permlink, title, amount}}, { upsert: true });
-console.log(JSON.stringify(res));
 return res;
 
   } catch (err) {
@@ -98,7 +97,7 @@ return res;
 
   } catch (err) {
 
-      console.log(err);
+      console.error(err);
   return err;
     } finally {
 
@@ -129,7 +128,7 @@ if (token !== '') {
   return res;
     } catch (err) {
 
-      console.log(err);
+      console.error(err);
   return err;
     } finally {
 

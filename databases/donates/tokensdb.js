@@ -17,12 +17,11 @@ async function getToken(token) {
         let query = {token}
 
         let res = await collection.findOne(query);
-console.log(JSON.stringify(res));
 return res;
 
     } catch (err) {
 
-        console.log(err);
+        console.errorconsole.error(err);
     return err;
       } finally {
 
@@ -50,7 +49,7 @@ async function updateTokens(token) {
 
     } catch (err) {
 
-        console.log(err);
+        console.errorconsole.error(err);
     return err;
       } finally {
 
@@ -81,7 +80,7 @@ async function findAllTokens() {
 
     } catch (err) {
 
-        console.log(err);
+        console.errorconsole.error(err);
     return err;
       } finally {
 

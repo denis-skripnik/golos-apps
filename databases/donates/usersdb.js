@@ -17,12 +17,11 @@ async function getUser(login, token, prefix) {
         let query = {login, token}
 
         let res = await collection.findOne(query);
-console.log(JSON.stringify(res));
 return res;
 
     } catch (err) {
 
-        console.log(err);
+        console.error(err);
     return err;
       } finally {
 
@@ -45,7 +44,6 @@ async function updateUser(login, token, amount, prefix) {
       let collection = db.collection('users' + prefix);
 
       let res = await collection.updateOne({login, token}, {$set: {login, token, amount}}, { upsert: true });
-console.log(JSON.stringify(res));
 return res;
 
   } catch (err) {
@@ -101,7 +99,6 @@ let query = {};
 if (token !== '') {
     query = {token};
 }
-console.log(query);      
 const res = [];
       let cursor = await collection.find(query).limit(500);
       let doc = null;
@@ -111,7 +108,7 @@ const res = [];
   return res;
     } catch (err) {
 
-      console.log(err);
+      console.error(err);
   return err;
     } finally {
 

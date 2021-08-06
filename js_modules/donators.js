@@ -39,7 +39,6 @@ if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
     await tdb.updateTokens(token)
 }
         
-console.log('Донатер: ' + from);
         let gdoc = await dcdb.getDonatorsOneContent(token, from, author, permlink, prefix)
     if (gdoc) {
         await dcdb.updateDonatorsOneContent(token, from, author, permlink, gdoc.amount+amount, prefix);
@@ -49,7 +48,6 @@ console.log('Донатер: ' + from);
 
     if (content.code === 1) {
         let user = await udb.getUser(from, token, prefix);
-        console.log('Пользователь: ' + JSON.stringify(user));
         if (user) {
             await udb.updateUser(from, token, user.amount+amount, prefix);
                     } else {
@@ -72,9 +70,7 @@ if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
     await tdb.updateTokens(token)
 }
             
-            console.log('Донатер: ' + from);
             let user = await udb.getUser(from, token, prefix);
-            console.log('Пользователь: ' + JSON.stringify(user));
             if (user) {
                 await udb.updateUser(from, token, user.amount+amount, prefix);
                         } else {
@@ -89,7 +85,6 @@ if (!get_token && token !== 'GOLOS' && token !== 'GBG') {
             }
             return 1;    
         } else {
-        console.log('Это не пост и не комментарий.');
         return 0;    
         } // End content types.
     } else {
@@ -106,14 +101,11 @@ async function donateOperation(op, opbody) {
         let donate = arr.target;
         let url;
         if (opbody.to === donate.author && donate.permlink !== '') {
-        console.log('автор: ' + donate.author + ', Пермлинк: ' + donate.permlink);
         let result = await workingDonate(opbody.from, donate.author, donate.permlink, opbody.amount);
         ok_ops_count += result;
         } else if (opbody.to === donate.author && donate.permlink === '' && arr.comment !== '') {
             let result = await workingDonateWithNoPost(opbody.from, opbody.amount);
             ok_ops_count += result;
-    }     else {
-        console.log('Получатель не совпадает с автором.');
         }
         } else {
             if (arr.comment !== '') {
@@ -124,7 +116,7 @@ async function donateOperation(op, opbody) {
             }
         }
             } catch(e) {
-            console.log(e);
+            console.error(e);
             }
 return ok_ops_count;
         }
@@ -147,11 +139,8 @@ let filtered_memo = donate.split('@')[1];
 url = filtered_memo.split('/');
 }
 if (opbody.to === url[0]) {
-console.log('автор: ' + url[0] + ', Пермлинк: ' + url[1]);
 let result = await workingDonate(opbody.from, url[0], url[1], opbody.amount);
 ok_ops_count += result;
-}     else {
-console.log('Получатель не совпадает с автором.');
 }
 }
 } else {
@@ -162,7 +151,7 @@ let memo = opbody.memo.toLowerCase();
     }
 }
 } catch(e) {
-console.log(e);
+console.error(e);
 }
 }
 

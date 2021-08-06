@@ -5,6 +5,7 @@ const udb = require(process.cwd() + "/databases/golos_stakebot/usersdb");
 const adb = require(process.cwd() + "/databases/golos_stakebot/accountsdb");
 const bidsdb = require(process.cwd() + "/databases/golos_stakebot/bidsdb");
 const jdb = require(process.cwd() + "/databases/golos_stakebot/jdb");
+const pdb = require(process.cwd() + "/databases/golos_stakebot/postsdb");
 const bdb = require(process.cwd() + "/databases/blocksdb");
 const helpers = require("../helpers");
 const conf = require(process.cwd() + '/config.json');
@@ -114,6 +115,144 @@ await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login,
 }
 }
 
+async function voteOperation(opbody) {
+	let accounts = await adb.findAllAccounts();
+	if (accounts && accounts.length > 0) {
+		var members = {};
+		for (let acc of accounts) {
+					try {
+				if (acc.posting_key !== '' && acc.curators && acc.curators !== '') {
+					let posting = sjcl.decrypt(acc.login + '_postingKey_stakebot', acc.posting_key);
+					if (acc.exclude_authors && acc.exclude_authors.indexOf(opbody.author) > -1) {
+						continue;
+					}
+					let get_account = await methods.getAccount(acc.login);
+					let account = get_account[0];
+					let config_mass = await methods.getConfig();
+					let props = await methods.getProps();
+					let last_vote_time = account.last_vote_time;
+						let current_time = new Date(props.time).getTime();
+						let last_vote_seconds = new Date(last_vote_time).getTime();
+						let fastpower = 10000 / config_mass.STEEMIT_VOTE_REGENERATION_SECONDS;
+						 let volume_not = (account.voting_power + ((current_time-last_vote_seconds)/1000)* fastpower)/100; //расчет текущей Voting Power
+						volume = volume_not.toFixed(2); // Округление до двух знаков после запятой
+						 let charge = 0;
+						if (volume>=100) {
+						charge = 100;
+						}
+						else {
+							charge=volume;
+						}
+if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
+	let curators = acc.curators.split(',');
+	let content = await methods.getContent(opbody.author, opbody.permlink)
+	if (curators.indexOf(opbody.voter) > -1 && content && content.code === 1 && content.votes && content.votes.indexOf(acc.login) === -1) {
+		var operations = [];
+	let weight = opbody.weight;
+	if (weight > 0) {
+		if (acc.curators_mode && acc.curators_mode !== 'replay') {
+			weight = 10000;
+		}
+		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
+		try {
+await methods.send(operations, posting);
+		if (!members[acc.id]) {
+		members[acc.id] = {};
+		members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
+		members[acc.id]['text'] = `🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
+	${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+	`;
+		} else {
+			members[acc.id] = {};
+			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
+			members[acc.id]['text'] = `🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
+		${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+		`;
+	}
+await pdb.updatePost(content.id, opbody.author, opbody.permlink);
+} catch(error) {
+		console.error('send vote', error);
+		}
+	
+	}
+	
+}
+	await helpers.sleep(1000);
+}
+	}
+	} catch(e) {
+		console.error('claining error: ' + e);
+			continue;
+		}
+	}
+	await i.sendReplayVoteNotify(members);
+	}
+	}
+
+	async function commentOperation(opbody) {
+		let accounts = await adb.findAllAccounts();
+		if (accounts && accounts.length > 0) {
+			var members = {};
+			for (let acc of accounts) {
+						try {
+					if (acc.posting_key !== '' && acc.favorits && acc.favorits !== '') {
+						let posting = sjcl.decrypt(acc.login + '_postingKey_stakebot', acc.posting_key);
+						let get_account = await methods.getAccount(acc.login);
+						let account = get_account[0];
+						let config_mass = await methods.getConfig();
+						let props = await methods.getProps();
+						let last_vote_time = account.last_vote_time;
+							let current_time = new Date(props.time).getTime();
+							let last_vote_seconds = new Date(last_vote_time).getTime();
+							let fastpower = 10000 / config_mass.STEEMIT_VOTE_REGENERATION_SECONDS;
+							 let volume_not = (account.voting_power + ((current_time-last_vote_seconds)/1000)* fastpower)/100; //расчет текущей Voting Power
+							volume = volume_not.toFixed(2); // Округление до двух знаков после запятой
+							 let charge = 0;
+							if (volume>=100) {
+							charge = 100;
+							}
+							else {
+								charge=volume;
+							}
+							if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
+		let favorits = acc.favorits.split(',');
+	let content = await methods.getContent(opbody.author, opbody.permlink)
+	if (favorits.indexOf(opbody.author) > -1 && content && content.edit === false && content.code === 1) {
+		var operations = [];
+		let weight = (acc.favorits_percent ? acc.favorits_percent : 1) * 100;
+		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
+		try {
+			await methods.send(operations, posting);
+		if (!members[acc.id]) {
+			members[acc.id] = {};
+			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
+			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+		`;
+		} else {
+			members[acc.id] = {};
+			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
+			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+		`;
+	}
+	await pdb.updatePost(content.id, opbody.author, opbody.permlink);
+} catch(error) {
+		console.error(error);
+		}
+		
+	}
+		await helpers.sleep(1000);
+	}
+		}
+		} catch(e) {
+			console.error('claining error: ' + e);
+				continue;
+			}
+		}
+		console.log('favorits,', JSON.stringify(members));
+		await i.sendFavoritsVoteNotify(members);
+		}
+		}
+
 async function selectBid() {
 	let bids = await bidsdb.findAllBids();
 if (bids && bids.length > 1) {
@@ -190,5 +329,7 @@ await jdb.removeJackpot();
 	botjs.allCommands();
 
 module.exports.run = run;
+module.exports.voteOperation = voteOperation;
+module.exports.commentOperation = commentOperation;
 module.exports.selectBid = selectBid;
 module.exports.selectJackpotWinner = selectJackpotWinner;

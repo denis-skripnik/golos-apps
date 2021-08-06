@@ -17,6 +17,10 @@ async function getOpsInBlock(bn) {
     return await golos.api.getTransactionAsync(trxId);
     }
   
+    async function getConfig() {
+        return await golos.api.getConfigAsync();
+        }
+
   async function getProps() {
       return await golos.api.getDynamicGlobalPropertiesAsync();
       }
@@ -47,11 +51,19 @@ let pk = '';
             
     async function getContent(author, permlink) {
 try {
-let post = await golos.api.getContentAsync(author, permlink, 0);
+let post = await golos.api.getContentAsync(author, permlink, 10000, 0);
+let edit = true;
+if (post.created === post.active) edit = false;
 if (post.parent_author === '') {
-return {code: 1, title: post.title, created: post.created};
+let votes = [];
+if (post.active_votes && post.active_votes.length > 0) {
+    for (let vote of post.active_votes) {
+        votes.push(vote.voter);
+    }
+}
+return {code: 1, title: post.title, created: post.created, edit, id: post.id, votes};
 } else {
-    return {code: 2, title: post.title, created: post.created};
+    return {code: 2, title: post.title, created: post.created, edit};
 }
 } catch(e) {
 return {code: -1, error: e};
@@ -102,6 +114,7 @@ async function getAccounts(accs) {
 }
 
 async function getReputation(reputation) {
+    if (reputation[reputation.length-1] === 0) reputation /= 10;
     return golos.formatter.reputation(reputation);
 }
 
@@ -156,6 +169,7 @@ return await golos.api.getFeedAsync(login, last_post, 100);
       module.exports.getOpsInBlock = getOpsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
+module.exports.getConfig = getConfig;
 module.exports.getProps = getProps;      
 module.exports.updateAccount = updateAccount;
 module.exports.getAccount = getAccount;

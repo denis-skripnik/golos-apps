@@ -17,12 +17,11 @@ async function getDonatorsOneContent(token, login, author, permlink, prefix) {
         let query = {token, login, author, permlink}
 
         let res = await collection.findOne(query);
-console.log(JSON.stringify(res));
 return res;
 
     } catch (err) {
 
-        console.log(err);
+        console.errorconsole.error(err);
     return err;
       } finally {
 
@@ -45,7 +44,6 @@ async function updateDonatorsOneContent(token, login, author, permlink, amount, 
       let collection = db.collection('donators_content' + prefix);
 
       let res = await collection.updateOne({token, login, author, permlink}, {$set: {token, login, author, permlink, amount}}, { upsert: true });
-console.log(JSON.stringify(res));
 return res;
 
   } catch (err) {
@@ -80,7 +78,7 @@ async function findAllDonatorContent(login, token, prefix) {
   return res;
     } catch (err) {
 
-      console.log(err);
+      console.errorconsole.error(err);
   return err;
     } finally {
 
