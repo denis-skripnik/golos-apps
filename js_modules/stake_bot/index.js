@@ -160,13 +160,13 @@ await methods.send(operations, posting);
 		members[acc.id] = {};
 		members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
 		members[acc.id]['text'] = `🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
-	${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+	${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 	`;
 		} else {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
 			members[acc.id]['text'] = `🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
-		${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+		${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 	}
 await pdb.updatePost(content.id, opbody.author, opbody.permlink);
@@ -226,12 +226,12 @@ await pdb.updatePost(content.id, opbody.author, opbody.permlink);
 		if (!members[acc.id]) {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 		} else {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${opbody.permlink}</a>  ${weight / 100}%.
+			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 	}
 	await pdb.updatePost(content.id, opbody.author, opbody.permlink);

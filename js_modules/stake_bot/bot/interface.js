@@ -219,9 +219,10 @@ await botjs.sendMSG(id, text, btns, true);
                                                     let btns = await keybord(user.lng, 'on_off');
                                                     await botjs.sendMSG(id, text, btns, false);
                                                                         } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1 && user.status.indexOf('postUrl_') === -1) {
-                                                                            let acc = await adb.getAccount(message.split('@')[1]);
+                                                                            let login = message.split('@')[1];
+                                                                            let acc = await adb.getAccount(login);
                                                                             if (acc && acc.id === id) {
-                                                                                let text = lng[user.lng].change_account + message;
+                                                                                let text = lng[user.lng].change_account + `<a href="https://dpos.space/golos/profiles/${login}">${message}</a>`;
                                                                                 let btns = await keybord(user.lng, message);
                                                                                                     await botjs.sendMSG(id, text, btns, false);
                                                                             }
