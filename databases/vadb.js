@@ -14,7 +14,6 @@ async function updateVa(vote_id, answer_id, login, gests) {
       let collection = db.collection('votesAnswers');
 
       let res = await collection.updateOne({vote_id, login}, {$set: {vote_id, answer_id, login, gests}}, { upsert: true });
-console.log(JSON.stringify(res));
 return res;
 
   } catch (err) {

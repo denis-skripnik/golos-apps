@@ -116,6 +116,11 @@ await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login,
 }
 
 async function voteOperation(opbody) {
+	let ok_ops_count = 0;
+	let content = await methods.getContent(opbody.author, opbody.permlink)
+if (!content || content && content.code !== 1) {
+return ok_ops_count;
+}
 	let accounts = await adb.findAllAccounts();
 	if (accounts && accounts.length > 0) {
 		var members = {};
@@ -143,10 +148,9 @@ async function voteOperation(opbody) {
 						else {
 							charge=volume;
 						}
-if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
-	let curators = acc.curators.split(',');
-	let content = await methods.getContent(opbody.author, opbody.permlink)
-	if (curators.indexOf(opbody.voter) > -1 && content && content.code === 1 && content.votes && content.votes.indexOf(acc.login) === -1) {
+						if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
+							let curators = acc.curators.split(',');
+	if (curators.indexOf(opbody.voter) > -1 && content.votes && content.votes.indexOf(acc.login) === -1) {
 		var operations = [];
 	let weight = opbody.weight;
 	if (weight > 0) {
@@ -155,7 +159,8 @@ if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 
 		}
 		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
 		try {
-await methods.send(operations, posting);
+console.log('test4');
+			await methods.send(operations, posting);
 		if (!members[acc.id]) {
 		members[acc.id] = {};
 		members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
@@ -169,7 +174,8 @@ await methods.send(operations, posting);
 		${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 	}
-await pdb.updatePost(content.id, opbody.author, opbody.permlink);
+	await pdb.updatePost(content.id, opbody.author, opbody.permlink);
+	ok_ops_count += 1;
 } catch(error) {
 		console.error('send vote', error);
 		}
@@ -185,11 +191,19 @@ await pdb.updatePost(content.id, opbody.author, opbody.permlink);
 			continue;
 		}
 	}
-	await i.sendReplayVoteNotify(members);
+	if (Object.keys(members).length > 0) {
+		await i.sendReplayVoteNotify(members);
 	}
 	}
+	return ok_ops_count;
+}
 
 	async function commentOperation(opbody) {
+		let ok_ops_count = 0
+		let content = await methods.getContent(opbody.author, opbody.permlink)
+		if (!content || content && content.code !== 1 && content.edit === false) {
+		return ok_ops_count;
+		}
 		let accounts = await adb.findAllAccounts();
 		if (accounts && accounts.length > 0) {
 			var members = {};
@@ -217,7 +231,7 @@ await pdb.updatePost(content.id, opbody.author, opbody.permlink);
 							if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
 		let favorits = acc.favorits.split(',');
 	let content = await methods.getContent(opbody.author, opbody.permlink)
-	if (favorits.indexOf(opbody.author) > -1 && content && content.edit === false && content.code === 1) {
+	if (favorits.indexOf(opbody.author) > -1) {
 		var operations = [];
 		let weight = (acc.favorits_percent ? acc.favorits_percent : 1) * 100;
 		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
@@ -235,6 +249,7 @@ await pdb.updatePost(content.id, opbody.author, opbody.permlink);
 		`;
 	}
 	await pdb.updatePost(content.id, opbody.author, opbody.permlink);
+	ok_ops_count += 1;
 } catch(error) {
 		console.error(error);
 		}
@@ -248,10 +263,12 @@ await pdb.updatePost(content.id, opbody.author, opbody.permlink);
 				continue;
 			}
 		}
-		console.log('favorits,', JSON.stringify(members));
-		await i.sendFavoritsVoteNotify(members);
+		if (Object.keys(members).length > 0) {
+			await i.sendFavoritsVoteNotify(members);
 		}
 		}
+		return ok_ops_count;
+	}
 
 async function selectBid() {
 	let bids = await bidsdb.findAllBids();

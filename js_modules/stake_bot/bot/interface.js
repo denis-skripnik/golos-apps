@@ -218,7 +218,7 @@ await botjs.sendMSG(id, text, btns, true);
                                                                             let text = lng[user.lng].delete_conferm + login;
                                                     let btns = await keybord(user.lng, 'on_off');
                                                     await botjs.sendMSG(id, text, btns, false);
-                                                                        } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1 && user.status.indexOf('postUrl_') === -1) {
+                                                                        } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1) {
                                                                             let login = message.split('@')[1];
                                                                             let acc = await adb.getAccount(login);
                                                                             if (acc && acc.id === id) {

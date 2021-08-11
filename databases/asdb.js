@@ -57,7 +57,6 @@ async function updateUser(login, content, flags, upvotes, all_flags_weight, all_
         }, {
             upsert: true
         });
-        console.log(JSON.stringify(res));
         return res;
 
     } catch (err) {

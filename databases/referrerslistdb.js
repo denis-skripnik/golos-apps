@@ -45,7 +45,6 @@ async function updateReferrer(login, referals) {
       let collection = db.collection('referrers_list');
 
       let res = await collection.updateOne({login}, {$set: {login, referals}}, { upsert: true });
-console.log(JSON.stringify(res));
 return res;
 
   } catch (err) {
