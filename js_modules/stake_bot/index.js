@@ -201,7 +201,7 @@ console.log('test4');
 	async function commentOperation(opbody) {
 		let ok_ops_count = 0
 		let content = await methods.getContent(opbody.author, opbody.permlink)
-		if (!content || content && content.code !== 1 && content.edit === false) {
+		if (!content || content && content.code !== 1 || content && content.code !== 1 && content.edit !== false || content && content.code === 1 && content.edit !== false) {
 		return ok_ops_count;
 		}
 		let accounts = await adb.findAllAccounts();
