@@ -17,7 +17,7 @@ me.initialize = async function(args){
         clients = await MongoClient.connect(me.url, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            poolSize: me.poolSize,
+            maxPoolSize: me.poolSize,
         }).catch(function(error){
             console.log('mongodb at connect', error)
             reconnect()

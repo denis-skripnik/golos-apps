@@ -150,8 +150,9 @@ return ok_ops_count;
 						}
 						if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
 							let curators = acc.curators.split(',');
-	if (curators.indexOf(opbody.voter) > -1 && content.votes && content.votes.indexOf(acc.login) === -1) {
-		var operations = [];
+							let votes = content.votes;
+							if (curators.indexOf(opbody.voter) > -1 && content.votes && votes.indexOf(acc.login) === -1) {
+								var operations = [];
 	let weight = opbody.weight;
 	if (weight > 0) {
 		if (acc.curators_mode && acc.curators_mode !== 'replay') {
@@ -175,7 +176,6 @@ console.log('test4');
 		`;
 	}
 	await pdb.updatePost(content.id, opbody.author, opbody.permlink);
-	ok_ops_count += 1;
 } catch(error) {
 		console.error('send vote', error);
 		}
@@ -194,7 +194,8 @@ console.log('test4');
 	if (Object.keys(members).length > 0) {
 		await i.sendReplayVoteNotify(members);
 	}
-	}
+	ok_ops_count += 1;
+}
 	return ok_ops_count;
 }
 
@@ -231,9 +232,12 @@ console.log('test4');
 							if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
 		let favorits = acc.favorits.split(',');
 	let content = await methods.getContent(opbody.author, opbody.permlink)
-	if (favorits.indexOf(opbody.author) > -1) {
+	let favorite_number = favorits.findIndex(el => el.split(':').indexOf(opbody.author) > -1);
+	if (favorite_number > -1) {
 		var operations = [];
 		let weight = (acc.favorits_percent ? acc.favorits_percent : 1) * 100;
+		let favorite_percent = favorits[favorite_number].split(':')[1];
+		if (favorite_percent) weight = parseInt(parseFloat(favorite_percent) * 100);
 		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
 		try {
 			await methods.send(operations, posting);

@@ -538,9 +538,9 @@ login += ' @' + user.status.split('_')[2];
         if (message === lng[user.lng].on) {
     text = lng[user.lng].curators_mode_on;
     mode = 'replay';
-    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, mode, acc.favorits_percent, acc.exclude_authors);
 }
-    }                        
+await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, mode, acc.favorits_percent, acc.exclude_authors);
+}                        
     await udb.updateUser(id, user.referers, user.lng, user.status, 'auto_curator@' + login, user.referer_code);
     let btns = await keybord(user.lng, 'home');
     await botjs.sendMSG(id, text, btns, false);
@@ -550,7 +550,12 @@ login += ' @' + user.status.split('_')[2];
     let text = '';
     if (acc && acc.id === id) {
 let favorits = message.split(',');
-let accs = await methods.getAccounts(favorits);
+let logins = [];
+for (let favorite of favorits) {
+    let login = favorite.split(':')[0];
+    logins.push(login);
+}
+let accs = await methods.getAccounts(logins);
 if (accs && accs.length === favorits.length) {
     await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, message, acc.curators_mode, acc.favorits_percent, acc.exclude_authors);
     text = lng[user.lng].favorits_saved;

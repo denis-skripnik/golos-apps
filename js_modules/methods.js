@@ -115,7 +115,7 @@ async function getAccounts(accs) {
 
 async function getReputation(reputation) {
     if (reputation[reputation.length-1] === 0) reputation /= 10;
-    return golos.formatter.reputation(reputation);
+    return golos.formatter.reputation(reputation, true);
 }
 
 async function send(operations, posting) {
