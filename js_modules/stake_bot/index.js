@@ -115,17 +115,16 @@ await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login,
 }
 }
 
-async function voteOperation(opbody) {
+async function voteOperation(content, opbody) {
 	let ok_ops_count = 0;
-	let content = await methods.getContent(opbody.author, opbody.permlink)
-if (!content || content && content.code !== 1) {
+if (!content || content && content.code !== 1 || content && content.ended === true) {
 return ok_ops_count;
 }
-	let accounts = await adb.findAllAccounts();
+let accounts = await adb.findAllAccounts();
 	if (accounts && accounts.length > 0) {
 		var members = {};
 		for (let acc of accounts) {
-					try {
+			try {
 				if (acc.posting_key !== '' && acc.curators && acc.curators !== '') {
 					let posting = sjcl.decrypt(acc.login + '_postingKey_stakebot', acc.posting_key);
 					if (acc.exclude_authors && acc.exclude_authors.indexOf(opbody.author) > -1) {
@@ -151,8 +150,8 @@ return ok_ops_count;
 						if (acc.min_energy && charge >= acc.min_energy || !acc.min_energy && charge === 100) {
 							let curators = acc.curators.split(',');
 							let votes = content.votes;
-							if (curators.indexOf(opbody.voter) > -1 && content.votes && votes.indexOf(acc.login) === -1) {
-								var operations = [];
+													if (curators && curators.length > 0 && curators.indexOf(opbody.voter) > -1 && content.votes && votes.indexOf(acc.login) === -1) {
+														var operations = [];
 	let weight = opbody.weight;
 	if (weight > 0) {
 		if (acc.curators_mode && acc.curators_mode !== 'replay') {
@@ -178,31 +177,31 @@ console.log('test4');
 	await pdb.updatePost(content.id, opbody.author, opbody.permlink);
 } catch(error) {
 		console.error('send vote', error);
-		}
+		continue;	
+	}
 	
 	}
 	
 }
-	await helpers.sleep(1000);
+await helpers.sleep(1000);
 }
 	}
 	} catch(e) {
-		console.error('claining error: ' + e);
+		console.error(e);
 			continue;
 		}
 	}
 	if (Object.keys(members).length > 0) {
 		await i.sendReplayVoteNotify(members);
+		ok_ops_count += 1;
 	}
-	ok_ops_count += 1;
 }
-	return ok_ops_count;
+return ok_ops_count;
 }
 
-	async function commentOperation(opbody) {
+	async function commentOperation(content, opbody) {
 		let ok_ops_count = 0
-		let content = await methods.getContent(opbody.author, opbody.permlink)
-		if (!content || content && content.code !== 1 || content && content.code !== 1 && content.edit !== false || content && content.code === 1 && content.edit !== false) {
+		if (!content || content && content.code !== 1 || content && content.code !== 1 && content.edit !== false || content && content.code === 1 && content.edit !== false || content && content.ended === true) {
 		return ok_ops_count;
 		}
 		let accounts = await adb.findAllAccounts();

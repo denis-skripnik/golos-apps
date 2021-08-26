@@ -245,9 +245,8 @@ await adb.updateAccount(acc.id, acc.login, acc.lng, last_post, acc.show_reblogs)
     }
 }
 
-async function commentOperation(op, opbody, timestamp) {
+async function commentOperation(content, op, opbody, timestamp) {
     let ok = 0;
-    let content = await methods.getContent(opbody.author, opbody.permlink);
     let users = await udb.findAllUsers();
     if (content && content.code === 1 && content.created === timestamp && users && users.length > 0 && opbody.json_metadata) {
         let metadata = JSON.parse(opbody.json_metadata);

@@ -27,7 +27,8 @@ async function processBlock(bn, props) {
     if (bn%7200 == 0) await feed_bot.run();
 
     const block = await methods.getOpsInBlock(bn);
-let ok_ops_count = 0;
+    let ok_ops_count = 0;
+    let posts = {};
     for(let tr of block) {
         const [op, opbody] = tr.op;
         switch(op) {
@@ -50,13 +51,19 @@ if (opbody.to !== 'ecurrex-t2g' && opbody.to !== 'tiptok') {
             ok_ops_count += await votes.customJsonOperation(op, opbody);
             break;
             case "comment":
-            ok_ops_count += await as.commentOperation(op, opbody, tr.timestamp);
-            ok_ops_count += await feed_bot.commentOperation(op, opbody, tr.timestamp);
-            ok_ops_count += await stakebot.commentOperation(opbody);
+                if (!posts[`${opbody.author}/${opbody.permlink}`]) {
+                    posts[`${opbody.author}/${opbody.permlink}`] = await methods.getContent(opbody.author, opbody.permlink)
+                }
+            ok_ops_count += await as.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
+            ok_ops_count += await feed_bot.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
+            ok_ops_count += await stakebot.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], opbody);
             break;
             case "vote":
             ok_ops_count += await as.voteOperation(op, opbody, tr.timestamp);
-            ok_ops_count += await stakebot.voteOperation(opbody);
+            if (!posts[`${opbody.author}/${opbody.permlink}`]) {
+                posts[`${opbody.author}/${opbody.permlink}`] = await methods.getContent(opbody.author, opbody.permlink)
+            }
+            ok_ops_count += await stakebot.voteOperation(posts[`${opbody.author}/${opbody.permlink}`], opbody);
             break;
 case "producer_reward":
 ok_ops_count += await wr.producerRewardOperation(opbody, props.total_vesting_fund_steem, props.total_vesting_shares, tr.timestamp);

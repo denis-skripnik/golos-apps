@@ -52,8 +52,11 @@ let pk = '';
     async function getContent(author, permlink) {
 try {
 let post = await golos.api.getContentAsync(author, permlink, 10000, 0);
+if (post.author === '' && post.permlink === '') return {code: -1, error: 'Post or comment was not found'};
 let edit = true;
 if (post.created === post.active) edit = false;
+let ended = false;
+if (post.last_payout !== '1970-01-01T00:00:00') ended = true;
 if (post.parent_author === '') {
 let votes = [];
 if (post.active_votes && post.active_votes.length > 0) {
@@ -61,9 +64,9 @@ if (post.active_votes && post.active_votes.length > 0) {
         votes.push(vote.voter);
     }
 }
-return {code: 1, title: post.title, created: post.created, edit, id: post.id, votes};
+return {code: 1, title: post.title, created: post.created, edit, ended, id: post.id, votes};
 } else {
-    return {code: 2, title: post.title, created: post.created, edit};
+    return {code: 2, title: post.title, created: post.created, edit, ended};
 }
 } catch(e) {
 return {code: -1, error: e};
@@ -71,10 +74,10 @@ return {code: -1, error: e};
 }
 
 async function publickPost(title, permlink, main_data, answers, end_date) {
-    let wif = conf.posting_key;
-    let parentAuthor = conf.login;
+    let wif = conf.votes.posting_key;
+    let parentAuthor = conf.votes.login;
     let parentPermlink = 'votes-list';
-    let author = conf.login;
+    let author = conf.votes.login;
     let now = new Date();
     let body = `## ${title}
 Опрос создан при помощи @${conf.login}.
