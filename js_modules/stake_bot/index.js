@@ -1,3 +1,4 @@
+const fs = require("fs");
 const botjs = require("./bot/bot");
 const methods = require("../methods");
 const i = require("./bot/interface");
@@ -131,11 +132,11 @@ ticket_number++;
 
 let tickets_text = '';
 for (let address in tickets_list) {
-tickets_text += `${address}: ${tickets_list[address].join(',')}
+tickets_text += `<a href="https://dpos.space/golos/profiles/${address}" target="_blank">${address}</a>: ${tickets_list[address].join(',')}<br>
 `;
 }
 
-fs.writeFileSync("tickets.txt", tickets_text);
+fs.writeFileSync("js_modules/stake_bot/tickets.txt", tickets_text);
 
 const get_block = await methods.getProps();
 const end_block = get_block.head_block_number;
@@ -147,7 +148,7 @@ let loto_amount = '20.000 GOLOS';
 if (bot_acc) {
 	loto_amount = (parseFloat(bot_acc.tip_balance) / 2).toFixed(3) + ' GOLOS';
 }
-await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, tickets[winner], loto_amount, `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Билетов: ${tickets.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Participants: ${lotery.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${tickets.length}`);
+await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, tickets[winner], loto_amount, `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Билетов: ${tickets.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${tickets.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Tickets: ${tickets.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${tickets.length}`);
 }
 }
 

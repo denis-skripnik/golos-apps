@@ -1,3 +1,4 @@
+const fs = require("fs");
 let express = require('express');
 let app = express();
 const helpers = require("./helpers");
@@ -253,6 +254,9 @@ if (type === 'bids') {
     } else {
         res.send({});
     }
+} else if (type === 'loto') {
+    let fileContent = fs.readFileSync("js_modules/stake_bot/tickets.txt", "utf8");
+    res.send(fileContent);
 }
 }
 });
