@@ -45,7 +45,7 @@ if (accounts && accounts.length > 0) {
 				let get_account = await methods.getAccount(user.login);
 				let acc = get_account[0];
 		if (parseFloat(acc.vesting_shares) >= 50000000 && user.login !== conf.stakebot.golos_login) {
-			lotery.push(user.login);
+			lotery.push({login: user.login, vesting_shares: parseFloat(acc.vesting_shares)});
 		}
 				let temp_balance = acc.accumulative_balance;
 if (parseFloat(temp_balance) >= 0.1) {
@@ -106,12 +106,48 @@ await helpers.sleep(1000);
 }
 await i.sendClaimNotify(members, referals);
 await helpers.sleep(1000);
-// Выбор победителя лотереи.
+
+// лотерея.
+let tickets = [];
+for (let member of lotery) {
+let n = member.vesting_shares / 10000000;
+n = parseInt(n);
+for (let i = 1; i <= n; i++) {
+	tickets.push(member.login);
+}
+}
+
+helpers.shuffle(tickets);
+
+let tickets_list = {};
+let ticket_number = 1;
+for(let ticket of tickets) {
+if (!tickets_list[ticket]) {
+	tickets_list[ticket] = [];
+}
+tickets_list[ticket].push(ticket_number);
+ticket_number++;
+}
+
+let tickets_text = '';
+for (let address in tickets_list) {
+tickets_text += `${address}: ${tickets_list[address].join(',')}
+`;
+}
+
+fs.writeFileSync("tickets.txt", tickets_text);
+
 const get_block = await methods.getProps();
 const end_block = get_block.head_block_number;
 const start_block = end_block - 1;
-let winner = await methods.randomGenerator(start_block, end_block, lotery.length);
-await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, lotery[winner], '20.000 GOLOS', `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Участников: ${lotery.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Participants: ${lotery.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}`);
+let winner = await methods.randomGenerator(start_block, end_block, tickets.length);
+let bot_account = await methods.getAccount(conf.stakebot.golos_login);
+let bot_acc = bot_account[0];
+let loto_amount = '20.000 GOLOS';
+if (bot_acc) {
+	loto_amount = (parseFloat(bot_acc.tip_balance) / 2).toFixed(3) + ' GOLOS';
+}
+await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, tickets[winner], loto_amount, `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Билетов: ${tickets.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${lotery.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Participants: ${lotery.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${tickets.length}`);
 }
 }
 

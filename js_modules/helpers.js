@@ -97,6 +97,13 @@ async function stringToHash(string) {
 	                return hash;
 	            }
 
+	function shuffle(array) {
+		for (let i = array.length - 1; i > 0; i--) {
+		  let j = Math.floor(Math.random() * (i + 1));
+		  [array[i], array[j]] = [array[j], array[i]];
+		}
+	  }
+
     module.exports.unixTime = unixTime;
 module.exports.sleep = sleep;
 module.exports.compareGests = compareGests;
@@ -108,3 +115,4 @@ module.exports.isJsonString = isJsonString;
 module.exports.generateRandomCode = generateRandomCode;
 module.exports.objectSearch = objectSearch;
 module.exports.stringToHash = stringToHash;
+module.exports.shuffle = shuffle;
