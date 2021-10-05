@@ -27,7 +27,7 @@ if (variant === 'lng') {
         buttons = [[lng[lang].min_energy, lng[lang].curators, lng[lang].favorits, lng[lang].curators_mode], [lng[lang].exclude_authors, lng[lang].favorits_percent, lng[lang].back, lng[lang].home]];
     } else if (variant.indexOf('unvote@') > -1) {
         let post = variant.split('@')[1];
-        buttons = [[[lng[lang].unvote + post, lng[lang].unvote_button]]];
+        buttons = [[[lng[lang].unvote + post, lng[lang].unvote_button], [lng[lang].rate_button + '@' + post.split('_')[0], lng[lang].rate_button]]];
     } else if (variant.indexOf('accounts_buttons') > -1) {
         buttons = JSON.parse(variant.split('accounts_buttons')[1]);
     }     else if (variant === 'back') {
@@ -218,7 +218,7 @@ await botjs.sendMSG(id, text, btns, true);
                                                                             let text = lng[user.lng].delete_conferm + login;
                                                     let btns = await keybord(user.lng, 'on_off');
                                                     await botjs.sendMSG(id, text, btns, false);
-                                                                        } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1) {
+                                                                        } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1 && message.indexOf(lng[user.lng].rate_button) === -1) {
                                                                             let login = message.split('@')[1];
                                                                             let acc = await adb.getAccount(login);
                                                                             if (acc && acc.id === id) {
@@ -337,6 +337,28 @@ ${lng[user.lng].favorits_percent}: ${acc.favorits_percent}.`;
                                                                     let btns = await keybord(user.lng, 'cancel');
                                                                 await botjs.sendMSG(id, text, btns, false);
                                                                 await udb.updateUser(id, user.referers, user.lng, user.status, 'excludeAuthors_' + login, user.referer_code);
+                                                            } else if ( user && user.lng && message !== lng[user.lng].rate_button && message.indexOf(lng[user.lng].rate_button) > -1) {
+                                                                let login = message.split('@')[1];
+                                                                let my_acc = await adb.getAccount(login);
+                                                                let text = '';
+                                                                let btns;
+                                                                if (my_acc && my_acc.id === id) {
+                                                                let get_account = await methods.getAccount(login);
+                                                                let acc = get_account[0]
+                                                                if (get_account && get_account.length > 0) {
+                                                                    text = lng[user.lng].type_rate + acc.tip_balance;
+                                                                    btns = await keybord(user.lng, 'cancel');
+                                                                    await udb.updateUser(id, user.referers, user.lng, user.status, 'typed_rate@' + login + ':' + parseFloat(acc.tip_balance), user.referer_code);
+                                                                } else {
+                                                                    await udb.updateUser(id, user.referers, user.lng, user.status, 'send_rate', user.referer_code);
+                                                                    text = lng[user.lng].not_account;
+                                                                    btns = await keybord(user.lng, 'home');
+                                                                }
+                                                            } else {
+                                                                text = lng[user.lng].account_not_add;
+                                                                btns = await keybord(user.lng, 'home');
+                                                            }
+                                                            await botjs.sendMSG(id, text, btns, false);
                                                             } else if (user && user.lng && message === lng[user.lng].rate_button && user.status.indexOf('@') > -1) {
                                                                 let login = user.status.split('@')[1];
                                                                 let my_acc = await adb.getAccount(login);
@@ -701,7 +723,7 @@ if (user) {
 text += referals[id];
 }    
 text += `
-${lng[user.lng].about_bids}`;
+${lng[user.lng].about_bids_in_claim}`;
 let btns = await keybord(user.lng, 'home');
     await botjs.sendMSG(parseInt(id), text, btns, false);
 await helpers.sleep(500);

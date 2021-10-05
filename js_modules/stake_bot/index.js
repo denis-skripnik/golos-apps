@@ -12,6 +12,7 @@ const helpers = require("../helpers");
 const conf = require(process.cwd() + '/config.json');
 
 var sjcl = require('sjcl');
+const { markAsUntransferable } = require("worker_threads");
 
 Number.prototype.toFixedNoRounding = function(n) {
 	const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g')
@@ -28,11 +29,12 @@ Number.prototype.toFixedNoRounding = function(n) {
   }
 
 async function run() {
-let accounts = await adb.findAllAccounts();
+let bids = {"Русский": "Ставка", "English": "Bid"};
+	let accounts = await adb.findAllAccounts();
 let users = await udb.findAllUsers();
 let telegram_users = {};
 for (let user of users) {
-	telegram_users[user.id] = user.referers;
+	telegram_users[user.id] = {referers: user.referers, lng: user.lng};
 }
 if (accounts && accounts.length > 0) {
 	var members = {};
@@ -52,13 +54,14 @@ if (accounts && accounts.length > 0) {
 if (parseFloat(temp_balance) >= 0.1) {
 var float_claim = parseFloat(temp_balance);
 var operations = [];
-if (telegram_users[user.id] && telegram_users[user.id].length > 0) {
+let tg_referers = telegram_users[user.id].referers;
+if (telegram_users[user.id] && tg_referers.length > 0) {
 	let id = 2;
-	for (let r in telegram_users[user.id]) {
+	for (let r in tg_referers) {
 		if (r === 1) {
 			id = 1;
 		}
-		let referer = await adb.getAccountsByRefererCode(telegram_users[user.id][r]);
+		let referer = await adb.getAccountsByRefererCode(tg_referers[r]);
 		if (referer && referer.length > 0) {
 			if (referer[0].login === 'denis-skripnik') {
 				referer[0].login = conf.stakebot.golos_login;
@@ -84,10 +87,10 @@ try {
 await methods.send(operations, posting);
 if (!members[user.id]) {
 	members[user.id] = '';
-	members[user.id] += `${user.login}: ${float_claim}
+	members[user.id] += `${user.login}: ${float_claim}, /${bids[telegram_users[user.id].lng]}@${user.login}
 `;
 } else {
-	members[user.id] += `${user.login}: ${float_claim}
+	members[user.id] += `${user.login}: ${float_claim}, /${bids[telegram_users[user.id].lng]}@${user.login}
 `;
 }
 } catch(error) {
