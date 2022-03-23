@@ -3,7 +3,6 @@ var golos = require('golos-classic-js');
 golos.config.set('websocket',conf.node);
 let keccak = require("keccak");
 let BigI = require("big-integer");
-const { start } = require('repl');
 
 async function getOpsInBlock(bn) {
     return await golos.api.getOpsInBlockAsync(bn, false);

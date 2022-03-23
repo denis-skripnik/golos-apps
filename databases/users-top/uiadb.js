@@ -40,7 +40,7 @@ async function getTop(token, page) {
     }
 }
 
-async function updateTop(login, token, summ_balance, main_balance, tip_balance) {
+async function updateTop(login, token, summ_balance, main_balance, tip_balance, market_balance) {
 
     let client = await pool.getClient()
     if (!client) {
@@ -58,7 +58,7 @@ async function updateTop(login, token, summ_balance, main_balance, tip_balance) 
             }
         });
 
-              let res = await collection.updateOne({login, token}, {$set: {login, token, summ_balance, main_balance, tip_balance}}, { upsert: true });
+              let res = await collection.updateOne({login, token}, {$set: {login, token, summ_balance, main_balance, tip_balance, market_balance}}, { upsert: true });
 
 return res;
     } catch (err) {

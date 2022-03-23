@@ -29,15 +29,15 @@ Number.prototype.toFixedNoRounding = function(n) {
   }
 
 async function run() {
-let bids = {"Русский": "Ставка", "English": "Bid"};
 	let accounts = await adb.findAllAccounts();
 let users = await udb.findAllUsers();
 let telegram_users = {};
 for (let user of users) {
-	telegram_users[user.id] = {referers: user.referers, lng: user.lng};
+	telegram_users[user.id] = {referers: user.referers};
 }
 if (accounts && accounts.length > 0) {
 	var members = {};
+	var bids_users = {};
 	var referals = {};
 	let lotery = []; // Массив аккаунтов для участия в лотерее.
 	for (let user of accounts) {
@@ -87,14 +87,18 @@ try {
 await methods.send(operations, posting);
 if (!members[user.id]) {
 	members[user.id] = '';
-	members[user.id] += `${user.login}: ${float_claim}, /${bids[telegram_users[user.id].lng]}@${user.login}
+	members[user.id] += `${user.login}: ${float_claim}
 `;
 } else {
-	members[user.id] += `${user.login}: ${float_claim}, /${bids[telegram_users[user.id].lng]}@${user.login}
+	members[user.id] += `${user.login}: ${float_claim}
 `;
 }
+if (!bids_users[user.id]) {
+	bids_users[user.id] = [];
+}
+bids_users[user.id].push(user.login);
 } catch(error) {
-	console.error('Ошибка отправки: ' + JSON.stringify(error));
+	console.error('Ошибка отправки: ' + error);
 }
 await helpers.sleep(1000);
 } else {
@@ -108,7 +112,7 @@ await helpers.sleep(1000);
 		continue;
 	}
 }
-await i.sendClaimNotify(members, referals);
+await i.sendClaimNotify(members, bids_users, referals);
 await helpers.sleep(1000);
 
 // лотерея.

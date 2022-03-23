@@ -185,7 +185,7 @@ if (user.referers.length > 0) {
                                             text += `
             @${acc.login}`;
                                                 }
-                                                                            btns = await keybord(user.lng, 'accounts');
+                                                                            btns = await keybord(user.lng, 'home');
                                                 } else {
                                                     let n = 1;
 let key = 0;
@@ -206,7 +206,7 @@ await botjs.sendMSG(id, text, btns, true);
 }
                                                         } else {
                                                             text += lng[user.lng].account_list_is_empty;
-                                                            btns = await keybord(user.lng, 'accounts');
+                                                            btns = await keybord(user.lng, 'home');
                                                             await botjs.sendMSG(id, text, btns, false);
                                                         }
                                                                         } else if (user && user.lng && message === lng[user.lng].delete && user.status.indexOf('@') > -1) {
@@ -265,12 +265,13 @@ await botjs.sendMSG(id, text, btns, true);
         let text = `${lng[user.lng].auto_curator_text}:
 ${lng[user.lng].min_energy}: ${acc.min_energy},
 ${lng[user.lng].curators}:
-<code>${acc.curators}</code>,
+<code>${acc.curators}</code>
+
 ${lng[user.lng].exclude_authors}:
-<code>${acc.exclude_authors}</code>,
+<code>${acc.exclude_authors}</code>
 
 ${lng[user.lng].favorits}:
-<code>${acc.favorits}</code>,
+<code>${acc.favorits}</code>
 
 ${lng[user.lng].curators_mode}: ${acc.curators_mode},
 ${lng[user.lng].favorits_percent}: ${acc.favorits_percent}.`;
@@ -707,7 +708,7 @@ await helpers.sleep(1000);
                     }
 }
 
-async function sendClaimNotify(members, referals) {
+async function sendClaimNotify(members, bids_users, referals) {
 var sended_referals = [];
     for (let id in members) {
         try {
@@ -722,14 +723,36 @@ if (user) {
 `;
 text += referals[id];
 }    
+let bids = bids_users[id];
 text += `
-${lng[user.lng].about_bids_in_claim}`;
-let btns = await keybord(user.lng, 'home');
-    await botjs.sendMSG(parseInt(id), text, btns, false);
+${lng[user.lng].about_bids_in_claim}. <a href="https://dpos.space/golos/stakebot">${lng[user.lng].bids_link}</a>`;
+if (bids.length > 12) {
+    for (let login of bids) {
+        text += `
+<code>/${lng[user.lng].rate_button}@${login}</code>`;
+            }
+                                        btns = await keybord(user.lng, 'home');
+            } else {
+                let n = 1;
+let key = 0;
+let buttons = [];
+for (let login of bids) {
+if (!buttons[key]) {
+buttons[key] = [];
+}
+buttons[key].push([`${lng[user.lng].rate_button}@${login}`, `${lng[user.lng].rate_button} @${login}`]);
+if (n % 2 == 0) {
+key++;
+}
+n++;
+}
+btns = await keybord(user.lng, 'accounts_buttons' + JSON.stringify(buttons));
+await botjs.sendMSG(id, text, btns, true);
+}
 await helpers.sleep(500);
 }
 } catch(e) {
-    console.log(JSON.stringify(e));
+    console.log(e);
     continue;
 }
 }
@@ -742,14 +765,12 @@ if (sended_referals.indexOf(id) === -1) {
         let text = lng[user.lng].from_referals + `
     `;
     text += referals[id];
-    text += `
-${lng[user.lng].about_bids}`;    
     let btns = await keybord(user.lng, 'home');
         await botjs.sendMSG(parseInt(id), text, btns, false);
     await helpers.sleep(500);
     }
     } catch(e) {
-        console.log(JSON.stringify(e));
+        console.log(e);
         continue;
     }
 }    
@@ -765,7 +786,7 @@ async function sendReplayVoteNotify(members) {
         let post = members[id].unvote_data;
         let text = `${info}
 
-${lng[user.lng].about_bids}`;
+${lng[user.lng].about_bids}. <a href="https://dpos.space/golos/stakebot">${lng[user.lng].bids_link}</a>`;
 let btns = await keybord(user.lng, 'unvote@' + post);
 await botjs.sendMSG(parseInt(id), text, btns, true);
 }    
@@ -786,7 +807,7 @@ await botjs.sendMSG(parseInt(id), text, btns, true);
         let post = members[id].unvote_data;
                 let text = `${info}
 
-${lng[user.lng].about_bids}`;
+${lng[user.lng].about_bids}. <a href="https://dpos.space/golos/stakebot">${lng[user.lng].bids_link}</a>`;
 let btns = await keybord(user.lng, 'unvote@' + post);
         await botjs.sendMSG(parseInt(id), text, btns, true);
     }
