@@ -47,7 +47,7 @@ return err;
     }
 }
 
-async function addUser(id, referers, lng, prev_status, status, referer_code) {
+async function addUser(id, referers, lng, prev_status, status, referer_code, tags) {
     let client = await pool.getClient()
 
     if (!client) {
@@ -60,7 +60,7 @@ async function addUser(id, referers, lng, prev_status, status, referer_code) {
 
         let collection = db.collection('users');
 
-        let res = await collection.insertOne({id, referers, lng, prev_status, status, referer_code});
+        let res = await collection.insertOne({id, referers, lng, prev_status, status, referer_code, tags});
 
 return res;
 
@@ -73,7 +73,7 @@ return res;
     }
 }
 
-async function updateUser(id, referers, lng, prev_status, status, referer_code) {
+async function updateUser(id, referers, lng, prev_status, status, referer_code, tags) {
 
     let client = await pool.getClient()
 
@@ -87,7 +87,7 @@ async function updateUser(id, referers, lng, prev_status, status, referer_code) 
 
       let collection = db.collection('users');
 
-      let res = await collection.updateOne({id}, {$set: {id, referers, lng, prev_status, status, referer_code}}, {});
+      let res = await collection.updateOne({id}, {$set: {id, referers, lng, prev_status, status, referer_code, tags}}, {});
 
 return res;
 

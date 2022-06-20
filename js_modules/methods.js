@@ -168,6 +168,38 @@ async function getFeed(login, last_post) {
 return await golos.api.getFeedAsync(login, last_post, 100);
 }
 
+async function getFollowing(login, start, fl) {
+    let f = await golos.api.getFollowingAsync(login, start, 'blog', 100);
+    let index = 0;
+if (start !== -1) index = 1;
+let following = '';
+    for (let i = index; i < f.length; i++) {
+following = f[i].following;
+fl.push(following);
+    }
+let l = fl;
+if (f.length === 1) {
+    l = await getFollowing(login, following, fl);
+}
+return l;
+}
+
+async function getFollowingList(login) {
+try {
+    return await getFollowing(login, -1, []);
+} catch(e) {
+    console.error(e);
+    return 'error';
+}
+}
+
+async function vote(posting_key, account, author, permlink, percent) {
+    percent *= 100;
+    percent = parseInt(percent);
+    if (percent > 100) percent = 100;
+    return golos.broadcast.voteAsync(posting_key, account, author, permlink, percent);
+}
+
       module.exports.getOpsInBlock = getOpsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
@@ -188,3 +220,5 @@ module.exports.donate = donate;
 module.exports.randomGenerator = randomGenerator;
 module.exports.getBalances = getBalances;
 module.exports.getFeed = getFeed;
+module.exports.getFollowingList = getFollowingList;
+module.exports.vote = vote;

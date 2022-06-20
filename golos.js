@@ -57,6 +57,7 @@ if (opbody.to !== 'ecurrex-t2g' && opbody.to !== 'tiptok') {
             ok_ops_count += await as.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
             ok_ops_count += await feed_bot.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
             ok_ops_count += await stakebot.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], opbody);
+            ok_ops_count += await stakebot.runScanner(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
             break;
             case "vote":
             ok_ops_count += await as.voteOperation(op, opbody, tr.timestamp);

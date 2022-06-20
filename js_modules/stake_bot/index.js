@@ -113,49 +113,6 @@ await helpers.sleep(1000);
 	}
 }
 await i.sendClaimNotify(members, bids_users, referals);
-await helpers.sleep(1000);
-
-// лотерея.
-let tickets = [];
-for (let member of lotery) {
-let n = member.vesting_shares / 10000000;
-n = parseInt(n);
-for (let i = 1; i <= n; i++) {
-	tickets.push(member.login);
-}
-}
-
-helpers.shuffle(tickets);
-
-let tickets_list = {};
-let ticket_number = 1;
-for(let ticket of tickets) {
-if (!tickets_list[ticket]) {
-	tickets_list[ticket] = [];
-}
-tickets_list[ticket].push(ticket_number);
-ticket_number++;
-}
-
-let tickets_text = '';
-for (let address in tickets_list) {
-tickets_text += `<a href="https://dpos.space/golos/profiles/${address}" target="_blank">${address}</a>: ${tickets_list[address].join(',')}<br>
-`;
-}
-
-fs.writeFileSync("js_modules/stake_bot/tickets.txt", tickets_text);
-
-const get_block = await methods.getProps();
-const end_block = get_block.head_block_number;
-const start_block = end_block - 1;
-let winner = await methods.randomGenerator(start_block, end_block, tickets.length);
-let bot_account = await methods.getAccount(conf.stakebot.golos_login);
-let bot_acc = bot_account[0];
-let loto_amount = '20.000 GOLOS';
-if (bot_acc) {
-	loto_amount = (parseFloat(bot_acc.tip_balance) / 2).toFixed(3) + ' GOLOS';
-}
-await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, tickets[winner], loto_amount, `Поздравляем! Вы выиграли в лотерее https://t.me/golos_stake_bot для пользователей от 50000000 GESTS (примерно 18000 СГ). Пользуйтесь ботом, привлекайте друзей и участвуйте в лотерее! Билетов: ${tickets.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${tickets.length}. Congratulations! You won the lottery https://t.me/golos_stake_bot for users from 50000000 GESTS (approximately 18000 GP). Use the bot, attract friends and participate in the lottery! Tickets: ${tickets.length}, proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${tickets.length}`);
 }
 }
 
@@ -299,7 +256,8 @@ return ok_ops_count;
 	ok_ops_count += 1;
 } catch(error) {
 		console.error(error);
-		}
+continue;
+	}
 		
 	}
 		await helpers.sleep(1000);
@@ -397,3 +355,4 @@ module.exports.voteOperation = voteOperation;
 module.exports.commentOperation = commentOperation;
 module.exports.selectBid = selectBid;
 module.exports.selectJackpotWinner = selectJackpotWinner;
+module.exports.runScanner = i.runScanner;

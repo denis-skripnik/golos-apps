@@ -1,6 +1,32 @@
 const pool = require('./../@db.js')
 
-async function addBid(user, amount) {
+async function getUserBid(user) {
+	let client = await pool.getClient()
+
+	if (!client) {
+		return;
+	}
+
+	try {
+
+		const db = client.db("golos_stakebot");
+
+		let collection = db.collection('bids');
+
+		let res = await collection.findOne({
+			user
+		});
+
+		return res;
+	} catch (err) {
+
+		return err;
+	} finally {
+
+	}
+}
+
+async function updateBid(user, amount) {
     let client = await pool.getClient()
 
     if (!client) {
@@ -12,8 +38,8 @@ async function addBid(user, amount) {
         const db = client.db("golos_stakebot");
 
         let collection = db.collection('bids');
-
-        let res = await collection.insertOne({user, amount});
+        
+                let res = await collection.updateOne({user}, {$set: {user, amount}}, {upsert: true});
 
 return res;
 
@@ -79,6 +105,7 @@ return err;
 }
 }
 
-module.exports.addBid = addBid;
+module.exports.getUserBid = getUserBid;
+module.exports.updateBid = updateBid;
 module.exports.removeBids = removeBids;
 module.exports.findAllBids = findAllBids;

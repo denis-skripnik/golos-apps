@@ -22,7 +22,9 @@ async function keybord(btn_list, inline) {
     }
             btns[row] = [];
             for (let btn of btn_list[row]) {
-    btns[row].push(bot.inlineButton(btn[1], {callback: btn[0]}));
+                let bytes = Buffer.from(btn[0]).length;
+                if (bytes > 64) continue;
+                btns[row].push(bot.inlineButton(btn[1], {callback: btn[0]}));
     }
         }
 
