@@ -120,15 +120,17 @@ res.send(data);
         let users = [];
         if (data && data.length > 0) {
             let collums = {};
-            collums['gp'] = ['gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
-            collums['delegated_gp'] = ['delegated_gp', 'gp', 'gp_percent', 'received_gp', 'effective_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
-            collums['received_gp'] = ['received_gp', 'gp', 'gp_percent', 'delegated_gp', 'effective_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
-            collums['effective_gp'] = ['effective_gp', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
-            collums['tip_balance'] = ['tip_balance', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'market_balance', 'reputation'];
-            collums['market_balance'] = ['market_balance', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'tip_balance', 'reputation'];
-            collums['golos'] = ['golos', 'golos_percent', 'gbg', 'gbg_percent', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'market_balance', 'reputation'];
-            collums['gbg'] = ['gbg', 'gbg_percent', 'golos', 'golos_percent', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'market_balance', 'reputation'];
-            collums['reputation'] = ['reputation', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'market_balance'];
+            collums['gp'] = ['gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['delegated_gp'] = ['delegated_gp', 'gp', 'gp_percent', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['received_gp'] = ['received_gp', 'gp', 'gp_percent', 'delegated_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['effective_gp'] = ['effective_gp', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['emission_received_gp'] = ['emission_received_gp', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_delegated_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['emission_delegated_gp'] = ['emission_delegated_gp', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'tip_balance', 'market_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'reputation'];
+            collums['tip_balance'] = ['tip_balance', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'market_balance', 'reputation'];
+            collums['market_balance'] = ['market_balance', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'tip_balance', 'reputation'];
+            collums['golos'] = ['golos', 'golos_percent', 'gbg', 'gbg_percent', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'market_balance', 'reputation'];
+            collums['gbg'] = ['gbg', 'gbg_percent', 'golos', 'golos_percent', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'market_balance', 'reputation'];
+            collums['reputation'] = ['reputation', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'market_balance'];
             let users_count = 0;
             for (let user of data) {
                     users[users_count] = {};

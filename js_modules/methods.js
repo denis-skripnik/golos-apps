@@ -20,8 +20,17 @@ async function getOpsInBlock(bn) {
         return await golos.api.getConfigAsync();
         }
 
-  async function getProps() {
-      return await golos.api.getDynamicGlobalPropertiesAsync();
+        let time_start = new Date().getTime();
+  let properties = {};
+        async function getProps() {
+      let old_time = time_start;
+    time_start = new Date().getTime();
+let time_call = time_start - old_time;
+    if (time_call < 0) time_call = 0;
+    if (time_call === 0 || time_call >= 3000 || Object.keys(properties).length === 0) {
+    properties = await golos.api.getDynamicGlobalPropertiesAsync();
+}
+return properties;
       }
 
       async function updateAccount(service) {
@@ -92,6 +101,14 @@ ${main_data}
     json_metadata.end_date = end_date;
     let jsonMetadata = JSON.stringify(json_metadata);
     let post = await golos.broadcast.commentAsync(wif, parentAuthor, parentPermlink, author, permlink, title, body, jsonMetadata);
+return post;
+}
+
+async function sendPost(wif, author, title, parent_permlink, permlink, body) {
+    let json_metadata = {};
+    json_metadata.app = 'golos-stake-bot/3.0';
+    let jsonMetadata = JSON.stringify(json_metadata);
+    let post = await golos.broadcast.commentAsync(wif, '', parent_permlink, author, permlink, title, body, jsonMetadata);
 return post;
 }
 
@@ -210,6 +227,7 @@ module.exports.getAccount = getAccount;
 module.exports.getTicker = getTicker;
 module.exports.getContent = getContent;
 module.exports.publickPost = publickPost;
+module.exports.sendPost = sendPost;
 module.exports.getDelegations = getDelegations;
 module.exports.lookupAccounts = lookupAccounts;
 module.exports.getAccounts = getAccounts;

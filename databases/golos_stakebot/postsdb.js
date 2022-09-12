@@ -26,7 +26,7 @@ async function getPost(id) {
 	}
 }
 
-async function updatePost(id, author, permlink) {
+async function updatePost(id, author, permlink, day) {
     let client = await pool.getClient()
 
     if (!client) {
@@ -39,7 +39,7 @@ async function updatePost(id, author, permlink) {
 
         let collection = db.collection('posts');
         
-                let res = await collection.updateOne({id}, {$set: {id, author, permlink}}, {upsert: true});
+                let res = await collection.updateOne({id}, {$set: {id, author, permlink, day}}, {upsert: true});
 
 return res;
 
@@ -77,6 +77,35 @@ async function removePosts() {
     }
 }
 
+async function getPostsByDay(day) {
+    let client = await pool.getClient()
+
+if (!client) {
+    return;
+}
+
+try {
+
+    const db = client.db("golos_stakebot");
+
+    let collection = db.collection('posts');
+
+    const res = [];
+    let cursor = await collection.find({day}).limit(500);
+    let doc = null;
+    while(null != (doc = await cursor.next())) {
+        res.push(doc);
+    }
+return res;
+  } catch (err) {
+
+    console.log(err);
+return err;
+  } finally {
+}
+}
+
 module.exports.getPost = getPost;
 module.exports.updatePost = updatePost;
 module.exports.removePosts = removePosts;
+module.exports.getPostsByDay = getPostsByDay;

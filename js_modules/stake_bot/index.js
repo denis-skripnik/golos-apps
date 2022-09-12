@@ -8,11 +8,11 @@ const bidsdb = require(process.cwd() + "/databases/golos_stakebot/bidsdb");
 const jdb = require(process.cwd() + "/databases/golos_stakebot/jdb");
 const pdb = require(process.cwd() + "/databases/golos_stakebot/postsdb");
 const bdb = require(process.cwd() + "/databases/blocksdb");
+const sdb = require(process.cwd() + "/databases/golos_stakebot/statdb");
 const helpers = require("../helpers");
 const conf = require(process.cwd() + '/config.json');
 
 var sjcl = require('sjcl');
-const { markAsUntransferable } = require("worker_threads");
 
 Number.prototype.toFixedNoRounding = function(n) {
 	const reg = new RegExp(`^-?\\d+(?:\\.\\d{0,${n}})?`, 'g')
@@ -28,93 +28,7 @@ Number.prototype.toFixedNoRounding = function(n) {
 	return b > 0 ? (a + '0'.repeat(b)) : a;
   }
 
-async function run() {
-	let accounts = await adb.findAllAccounts();
-let users = await udb.findAllUsers();
-let telegram_users = {};
-for (let user of users) {
-	telegram_users[user.id] = {referers: user.referers};
-}
-if (accounts && accounts.length > 0) {
-	var members = {};
-	var bids_users = {};
-	var referals = {};
-	let lotery = []; // Массив аккаунтов для участия в лотерее.
-	for (let user of accounts) {
-		console.log('claim для пользователя ' + user.login)
-				try {
-			if (user.posting_key !== '') {
-				let posting = sjcl.decrypt(user.login + '_postingKey_stakebot', user.posting_key);
-				let get_account = await methods.getAccount(user.login);
-				let acc = get_account[0];
-		if (parseFloat(acc.vesting_shares) >= 50000000 && user.login !== conf.stakebot.golos_login) {
-			lotery.push({login: user.login, vesting_shares: parseFloat(acc.vesting_shares)});
-		}
-				let temp_balance = acc.accumulative_balance;
-if (parseFloat(temp_balance) >= 0.1) {
-var float_claim = parseFloat(temp_balance);
-var operations = [];
-let tg_referers = telegram_users[user.id].referers;
-if (telegram_users[user.id] && tg_referers.length > 0) {
-	let id = 2;
-	for (let r in tg_referers) {
-		if (r === 1) {
-			id = 1;
-		}
-		let referer = await adb.getAccountsByRefererCode(tg_referers[r]);
-		if (referer && referer.length > 0) {
-			if (referer[0].login === 'denis-skripnik') {
-				referer[0].login = conf.stakebot.golos_login;
-			}
-			operations.push(["claim",{"from": user.login, "to": referer[0].login, "amount": (parseFloat(temp_balance) / 100 * id).toFixedNoRounding(3) + ' GOLOS', "to_vesting": referer[0].to_vesting_shares}]);
-			float_claim -= (parseFloat(temp_balance) / 100 * id);
-			if (!referals[referer[0].id]) {
-			referals[referer[0].id] = '';
-			referals[referer[0].id] += `${user.login}: ${(parseFloat(temp_balance) / 100 * id).toFixedNoRounding(3)} GOLOS
-`;
-		} else {
-			referals[referer[0].id] += `${user.login}: ${(parseFloat(temp_balance) / 100 * id).toFixedNoRounding(3)} GOLOS
-`;
-}
-}
-	}
-}
-float_claim = float_claim.toFixedNoRounding(3);
-console.log('Сумма пользователя: ' + parseFloat(float_claim));
-operations.push(["claim",{"from": user.login, "to": user.login, "amount": parseFloat(float_claim).toFixedNoRounding(3) + ' GOLOS', "to_vesting": user.to_vesting_shares}]);
-console.log('Операции: ' + JSON.stringify(operations));
-try {
-await methods.send(operations, posting);
-if (!members[user.id]) {
-	members[user.id] = '';
-	members[user.id] += `${user.login}: ${float_claim}
-`;
-} else {
-	members[user.id] += `${user.login}: ${float_claim}
-`;
-}
-if (!bids_users[user.id]) {
-	bids_users[user.id] = [];
-}
-bids_users[user.id].push(user.login);
-} catch(error) {
-	console.error('Ошибка отправки: ' + error);
-}
-await helpers.sleep(1000);
-} else {
-	console.log(temp_balance);
-}
-} else {
-	console.log('Постинг ключ пустой.');
-}
-} catch(e) {
-	console.error('claining error: ' + e);
-		continue;
-	}
-}
-await i.sendClaimNotify(members, bids_users, referals);
-}
-}
+
 
 async function voteOperation(content, opbody) {
 	let ok_ops_count = 0;
@@ -124,6 +38,9 @@ return ok_ops_count;
 let accounts = await adb.findAllAccounts();
 	if (accounts && accounts.length > 0) {
 		var members = {};
+		let config_mass = await methods.getConfig();
+		let props = await methods.getProps();
+
 		for (let acc of accounts) {
 			try {
 				if (acc.posting_key !== '' && acc.curators && acc.curators !== '') {
@@ -133,8 +50,6 @@ let accounts = await adb.findAllAccounts();
 					}
 					let get_account = await methods.getAccount(acc.login);
 					let account = get_account[0];
-					let config_mass = await methods.getConfig();
-					let props = await methods.getProps();
 					let last_vote_time = account.last_vote_time;
 						let current_time = new Date(props.time).getTime();
 						let last_vote_seconds = new Date(last_vote_time).getTime();
@@ -175,7 +90,8 @@ console.log('test4');
 		${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 	}
-	await pdb.updatePost(content.id, opbody.author, opbody.permlink);
+	let day = new Date().getDate();
+	await pdb.updatePost(content.id, opbody.author, opbody.permlink, day);
 } catch(error) {
 		console.error('send vote', error);
 		continue;	
@@ -200,22 +116,24 @@ await helpers.sleep(1000);
 return ok_ops_count;
 }
 
-	async function commentOperation(content, opbody) {
+	async function commentOperation(content, opbody, timestamp) {
 		let ok_ops_count = 0
 		if (!content || content && content.code !== 1 || content && content.code !== 1 && content.edit !== false || content && content.code === 1 && content.edit !== false || content && content.ended === true) {
 		return ok_ops_count;
 		}
+		let sended_users = {};
 		let accounts = await adb.findAllAccounts();
 		if (accounts && accounts.length > 0) {
 			var members = {};
+			let config_mass = await methods.getConfig();
+			let props = await methods.getProps();
+
 			for (let acc of accounts) {
 						try {
 					if (acc.posting_key !== '' && acc.favorits && acc.favorits !== '') {
 						let posting = sjcl.decrypt(acc.login + '_postingKey_stakebot', acc.posting_key);
 						let get_account = await methods.getAccount(acc.login);
 						let account = get_account[0];
-						let config_mass = await methods.getConfig();
-						let props = await methods.getProps();
 						let last_vote_time = account.last_vote_time;
 							let current_time = new Date(props.time).getTime();
 							let last_vote_seconds = new Date(last_vote_time).getTime();
@@ -252,7 +170,9 @@ return ok_ops_count;
 			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 	}
-	await pdb.updatePost(content.id, opbody.author, opbody.permlink);
+	let day = new Date().getDate();
+	await pdb.updatePost(content.id, opbody.author, opbody.permlink, day);
+	sended_users[acc.id] = true;
 	ok_ops_count += 1;
 } catch(error) {
 		console.error(error);
@@ -272,6 +192,7 @@ continue;
 			await i.sendFavoritsVoteNotify(members);
 		}
 		}
+		await i.runScanner(content, opbody, timestamp, sended_users);
 		return ok_ops_count;
 	}
 
@@ -287,9 +208,11 @@ try {
 	let amount = bids.reduce(function(p,c){return p+c.amount;},0);
 	let fee = (amount - bids[winner].amount) * 0.1;
 if (fee > 0.002) amount -= fee;
-	amount = amount.toFixed(3) + ' GOLOS';
+	await sdb.updateStat({bids_amount: amount});
+amount = amount.toFixed(3) + ' GOLOS';
 			await methods.donate(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, bids[winner].user, amount, `Поздравляем! Вы выиграли в ставках https://t.me/golos_stake_bot. Пользуйтесь ботом, привлекайте друзей и делайте ставки! Участников: ${bids.length}, доказательство: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}. Congratulations! You won in the bets https://t.me/golos_stake_bot. Use a bot, get your friends and place your bets! Participants: ${bids.length}, the proof: https://dpos.space/golos/randomblockchain/?block1=${start_block}&block2=${end_block}&participants=${bids.length}`);
-if (fee >= 0.002) {
+
+			if (fee >= 0.002) {
 	let ju = await jdb.getJackpotUser(bids[winner].user);
 	let jamount = fee * 0.5;
 	jamount = jamount.toFixed(3);
@@ -315,8 +238,14 @@ await bidsdb.removeBids();
 } catch(e) {
 	console.log('Ошибка в ставках: ' + e);
 }
-		}
-	}
+
+}
+let j = await jdb.getJackpot();
+if (j && j.length > 0) {
+	let amount = j.reduce(function(p,c){return p+c.amount;},0);
+await sdb.updateStat({jackpot_amount, amount})
+}
+}
 
 async function selectJackpotWinner() {
 	let j = await jdb.getJackpot();
@@ -348,11 +277,38 @@ await jdb.removeJackpot();
 		}
 	}
 
-	botjs.allCommands();
+// Публикация поста со статистикой:
+async function sendStat() {
+let text = `Напоминаем, что https://t.me/golos_stake_bot - это бот, получающий claim за вас, а также автоматически курирующий посты.
+Ниже будет статистика работы за последние сутки.
+`;
+let stat = await sdb.getStat();
+if (stat && Object.keys(stat).length > 0) {
+	text += `- Пользователей Голоса, получающих Claim: ${stat.accounts_count},
+- Сумма всех CLAIM: ${stat.claim_amount},
+- Пригласивше пользователей в Golos stake bot получили ${stat.refs_amount} GOLOS,
+- Сумма всех ставок: ${stat.bids_amount},
+- Джекпот на данный момент равен ${stat.jackpot_amount} GOLOS.
 
-module.exports.run = run;
+## Посты, которые проапаны были ботом сегодня
+`;
+let day = new Date().getDate();
+let posts = await pdb.getPostsByDay(day);
+if (posts && posts.length > 0) {
+	for (let post of posts) {
+		text += `- <a href="https://golos.id/@${post.author}/${post.permlink}">@${post.author}/${post.permlink}</a>
+`;
+	}
+}
+await methods.sendPost(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, 'Статистика работы Golos Stake bot','ru--statistika', 'stat' + new Date().getTime(), text);
+await sdb.updateStat({claim_amount: 0, refs_amount: 0, accounts_count: 0, bids_amount: 0, jackpot_amount: 0})
+}
+}
+
+botjs.allCommands();
+
 module.exports.voteOperation = voteOperation;
 module.exports.commentOperation = commentOperation;
 module.exports.selectBid = selectBid;
 module.exports.selectJackpotWinner = selectJackpotWinner;
-module.exports.runScanner = i.runScanner;
+module.exports.sendStat = sendStat;

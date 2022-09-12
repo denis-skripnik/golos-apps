@@ -11,7 +11,6 @@ const refs = require("./js_modules/referrers");
 const top = require("./js_modules/golos_top");
 const votes = require("./js_modules/votes");
 const stakebot = require("./js_modules/stake_bot");
-const feed_bot = require("./js_modules/feed_bot");
 const as = require("./js_modules/activity_stats");
 const wr = require("./js_modules/witness_rewards");
 const helpers = require("./js_modules/helpers");
@@ -24,8 +23,6 @@ const SHORT_DELAY = 3000;
 const SUPER_LONG_DELAY = 1000 * 60 * 15;
 
 async function processBlock(bn, props) {
-    if (bn%7200 == 0) await feed_bot.run();
-
     const block = await methods.getOpsInBlock(bn);
     let ok_ops_count = 0;
     let posts = {};
@@ -55,9 +52,7 @@ if (opbody.to !== 'ecurrex-t2g' && opbody.to !== 'tiptok') {
                     posts[`${opbody.author}/${opbody.permlink}`] = await methods.getContent(opbody.author, opbody.permlink)
                 }
             ok_ops_count += await as.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
-            ok_ops_count += await feed_bot.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
-            ok_ops_count += await stakebot.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], opbody);
-            ok_ops_count += await stakebot.runScanner(posts[`${opbody.author}/${opbody.permlink}`], op, opbody, tr.timestamp);
+            ok_ops_count += await stakebot.commentOperation(posts[`${opbody.author}/${opbody.permlink}`], opbody, tr.timestamp);
             break;
             case "vote":
             ok_ops_count += await as.voteOperation(op, opbody, tr.timestamp);
@@ -116,8 +111,10 @@ setInterval(() => {
     if(last_bn == bn) {
 
         try {
+            console.log('Global test1');
                 process.exit(1);
         } catch(e) {
+            console.log('Global test2');
             process.exit(1);
         }
     }
@@ -127,11 +124,11 @@ setInterval(() => {
 getNullTransfers()
 
 new CronJob('0 30 * * * *', top.run, null, true);
-new CronJob('0 0 0 * * *', stakebot.run, null, true);
-new CronJob('0 0 12 * * *', stakebot.run, null, true);    
 
+new CronJob('0 59 23 * * *', stakebot.sendStat, null, true);
 new CronJob('0 0 18 * * *', stakebot.selectBid, null, true);
 new CronJob('0 0 3 1 * *', stakebot.selectJackpotWinner, null, true);
+
 new CronJob('0 0 0 * * *', asdb.removeactivityStats, null, true);    
 new CronJob('0 0 0 * * 0', gsbpdb.removePosts, null, true);    
 new CronJob('0 0 3 * * *', wr.producersDay, null, true);    

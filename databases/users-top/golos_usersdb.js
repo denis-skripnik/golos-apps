@@ -11,7 +11,7 @@ async function getTop(type, page) {
 
         const db = client.db("blockchains");
 
-        let collection = db.collection('golos-top');
+        let collection = db.collection('native_top');
         const query = {}
         query[type] = { $exists: true }
         const sorting = {};
@@ -41,7 +41,7 @@ async function getTop(type, page) {
     }
 }
 
-async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, market_balance, reputation) {
+async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effective_gp, emission_delegated_gp, emission_received_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, market_balance, reputation) {
 
     let client = await pool.getClient()
     if (!client) {
@@ -52,14 +52,14 @@ async function updateTop(name, gp, gp_percent, delegated_gp, received_gp, effect
 
         const db = client.db("blockchains");
 
-        let collection = db.collection('golos-top');
+        let collection = db.collection('native_top');
         collection.createIndex({ name: -1 }, function (err) {
             if (err) {
             console.error(JSON.stringify(err));
             }
         });
 
-              let res = await collection.updateOne({name}, {$set: {name, gp, gp_percent, delegated_gp, received_gp, effective_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, market_balance, reputation}}, { upsert: true });
+              let res = await collection.updateOne({name}, {$set: {name, gp, gp_percent, delegated_gp, received_gp, effective_gp, emission_delegated_gp, emission_received_gp, golos, golos_percent, gbg, gbg_percent, tip_balance, market_balance, reputation}}, { upsert: true });
 
 return res;
     } catch (err) {

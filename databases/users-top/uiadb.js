@@ -11,7 +11,7 @@ async function getTop(token, page) {
 
         const db = client.db("blockchains");
 
-        let collection = db.collection('golos-uia-users');
+        let collection = db.collection('uia_top');
         const query = {token}
         const sorting = {};
         sorting['summ_balance'] = -1;
@@ -27,6 +27,7 @@ async function getTop(token, page) {
         let cursor = await collection.find(query).sort(sorting).skip(skip).limit(100);
         let doc = null;
         while(null != (doc = await cursor.next())) {
+            delete doc._id;
             res.push(doc);
         }
     return res;
@@ -51,7 +52,7 @@ async function updateTop(login, token, summ_balance, main_balance, tip_balance, 
 
         const db = client.db("blockchains");
 
-        let collection = db.collection('golos-uia-users');
+        let collection = db.collection('uia_top');
         collection.createIndex({ login: -1 }, function (err) {
             if (err) {
             console.error(JSON.stringify(err));
