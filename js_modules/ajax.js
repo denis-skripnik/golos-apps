@@ -133,9 +133,10 @@ res.send(data);
             collums['reputation'] = ['reputation', 'gp', 'gp_percent', 'delegated_gp', 'received_gp', 'effective_gp', 'emission_received_gp', 'emission_delegated_gp', 'tip_balance', 'golos', 'golos_percent', 'gbg', 'gbg_percent', 'market_balance'];
             let users_count = 0;
             for (let user of data) {
-                    users[users_count] = {};
+                    if (user[type] === 0) continue;
+                users[users_count] = {};
                     users[users_count]['name'] = user['name'];
-for (let collum of collums[type]) {
+                    for (let collum of collums[type]) {
     users[users_count][collum] = user[collum];
 }
             users_count++;
