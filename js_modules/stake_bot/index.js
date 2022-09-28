@@ -36,7 +36,8 @@ if (!content || content && content.code !== 1 || content && content.ended === tr
 return ok_ops_count;
 }
 let accounts = await adb.findAllAccounts();
-	if (accounts && accounts.length > 0) {
+	await sdb.updateStat({accounts_count: accounts.length});
+if (accounts && accounts.length > 0) {
 		var members = {};
 		let config_mass = await methods.getConfig();
 		let props = await methods.getProps();
@@ -123,6 +124,7 @@ return ok_ops_count;
 		}
 		let sended_users = {};
 		let accounts = await adb.findAllAccounts();
+		await sdb.updateStat({accounts_count: accounts.length});
 		if (accounts && accounts.length > 0) {
 			var members = {};
 			let config_mass = await methods.getConfig();
@@ -285,8 +287,6 @@ let text = `Напоминаем, что https://t.me/golos_stake_bot - это �
 let stat = await sdb.getStat();
 if (stat && Object.keys(stat).length > 0) {
 	text += `- Пользователей Голоса, получающих Claim: ${stat.accounts_count},
-- Сумма всех CLAIM: ${stat.claim_amount},
-- Пригласивше пользователей в Golos stake bot получили ${stat.refs_amount} GOLOS,
 - Сумма всех ставок: ${stat.bids_amount},
 - Джекпот на данный момент равен ${stat.jackpot_amount} GOLOS.
 
@@ -301,7 +301,7 @@ if (posts && posts.length > 0) {
 	}
 }
 await methods.sendPost(conf.stakebot.golos_posting_key, conf.stakebot.golos_login, 'Статистика работы Golos Stake bot','ru--statistika', 'stat' + new Date().getTime(), text);
-await sdb.updateStat({claim_amount: 0, refs_amount: 0, accounts_count: 0, bids_amount: 0, jackpot_amount: 0})
+await sdb.updateStat({accounts_count: 0, bids_amount: 0, jackpot_amount: 0})
 }
 }
 

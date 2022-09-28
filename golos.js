@@ -135,3 +135,8 @@ new CronJob('0 0 3 * * *', wr.producersDay, null, true);
 new CronJob('0 0 3 1 * *', wr.producersMonth, null, true);
 
 methods.updateAccount('votes');
+
+
+const cleanup = require("./databases/@db.js").cleanup;
+process.on('SIGINT', cleanup);
+process.on('SIGTERM', cleanup);

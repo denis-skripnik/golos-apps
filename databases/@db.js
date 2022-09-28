@@ -17,7 +17,7 @@ me.initialize = async function(args){
         clients = await MongoClient.connect(me.url, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            maxPoolSize: me.poolSize,
+            poolSize: me.PoolSize,
         }).catch(function(error){
             console.log('mongodb at connect', error)
             reconnect()
@@ -31,4 +31,8 @@ me.initialize = async function(args){
 
 const reconnect = function(){
     setTimeout(me.initialize, 1000)
+}
+
+me.cleanup = async function() {
+    await clients.close(); 
 }
