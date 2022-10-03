@@ -217,6 +217,18 @@ async function vote(posting_key, account, author, permlink, percent) {
     return golos.broadcast.voteAsync(posting_key, account, author, permlink, percent);
 }
 
+async function getWitnessByAccount(login) {
+    return await golos.api.getWitnessByAccountAsync(login)
+}
+
+async function getWitnessesByVote(login, limit) {
+    return await golos.api.getWitnessesByVoteAsync(login,limit);
+}
+
+async function getWitnessSchedule() {
+    return await golos.api.getWitnessScheduleAsync();
+}
+
       module.exports.getOpsInBlock = getOpsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
@@ -240,3 +252,6 @@ module.exports.getBalances = getBalances;
 module.exports.getFeed = getFeed;
 module.exports.getFollowingList = getFollowingList;
 module.exports.vote = vote;
+module.exports.getWitnessByAccount = getWitnessByAccount;
+module.exports.getWitnessesByVote = getWitnessesByVote;
+module.exports.getWitnessSchedule = getWitnessSchedule;

@@ -1,18 +1,18 @@
 {
-  "node": "wss://golos.lexai.host/ws",
+  "node": "https://golos.lexai.host",
   "votes": {
-    "login": "golos-votes",
-    "posting_key": "5",
+    "login": "THIS_ADD_ACCOUNT",
+    "posting_key": "THIS_ADD_POSTING_KEY",
     "vote_price": "2.000 GBG"
   },
   "stakebot": {
-      "admins": [1],
-  "bot_api_key": "x:y",
-  "golos_login": "",
-  "golos_posting_key": "5..."
-},
-"feed_bot": {
-  "admins": [1],
-  "bot_api_key": ""
-}
-}
+      "admins": [123456789],
+  "bot_api_key": "THIS_ADD_API_KEY",
+  "golos_login": "THIS_ADD_ACCOUNT",
+  "golos_posting_key": "THIS_ADD_POSTING_KEY"
+    },
+    "watchdog": {
+      "token": "THIS_ADD_API_TOKEN",
+      "admin_chat": 123456789
+  }
+  }

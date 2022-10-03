@@ -11,6 +11,7 @@ const refs = require("./js_modules/referrers");
 const top = require("./js_modules/golos_top");
 const votes = require("./js_modules/votes");
 const stakebot = require("./js_modules/stake_bot");
+const watchdog = require("./js_modules/watchdog");
 const as = require("./js_modules/activity_stats");
 const wr = require("./js_modules/witness_rewards");
 const helpers = require("./js_modules/helpers");
@@ -80,12 +81,14 @@ let last_bn = 0;
 let delay = SHORT_DELAY;
 
 async function getNullTransfers() {
+    await watchdog.runBot();
     PROPS = await methods.getProps();
             const block_n = await bdb.getBlock(PROPS.last_irreversible_block_num);
 bn = block_n.last_block;
 
 delay = SHORT_DELAY;
 while (true) {
+    await watchdog.getWitnessesByBlock();
     try {
         if (bn > PROPS.last_irreversible_block_num) {
             // console.log("wait for next blocks" + delay / 1000);
