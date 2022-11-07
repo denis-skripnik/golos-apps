@@ -16,12 +16,19 @@ async function checkMissed(witness, saved) {
     if(missed) {
 
         const inform = async (chat) => {
+try {
             if(!chat.isWatching(witness.owner)) {return};
             let username = (chat.witness == witness.owner?" (@"+chat.username+")":"");
             let text_blocks = m.get_text_blocks(missed);
             await telegram.send(chat.chat_id, `Делегат ${witness.owner}${username} пропустил ${missed} ${text_blocks}!
             /help - Список команд.`);
+        } catch(error) {
+            if (typeof error.error_code === 'undefined') console.error(JSON.stringify(error));
+            if (error.error_code === 403 && error.description === "Forbidden: bot was blocked by the user" || error.error_code === 403 && error.description === "Forbidden: user is deactivated" || error.error_code !== 400 && error.description === "Bad Request: user not found") {
+                await memory.removeChat(chat.chat_id);
+            }
         }
+    }
 
         let chats = await memory.loadChats();
         for(let chat of chats) {
@@ -69,12 +76,19 @@ ${versions}`);
 async function checkVersion(witness, saved) {
     ///CHECK VERSION
     const inform = async (chat) => {
+try {
         if(!chat.isWatching(witness.owner)) {return};
     
         let username = (chat.witness == witness.owner?" (@"+chat.username+")":"");
         await telegram.send(chat.chat_id, `Делегат ${witness.owner}${username} установил новую версию ${witness.running_version}`);
 
         await sendVersions(chat);
+    } catch(error) {
+        if (typeof error.error_code === 'undefined') console.error(JSON.stringify(error));
+        if (error.error_code === 403 && error.description === "Forbidden: bot was blocked by the user" || error.error_code === 403 && error.description === "Forbidden: user is deactivated" || error.error_code !== 400 && error.description === "Bad Request: user not found") {
+            await memory.removeChat(chat.chat_id);
+        }
+    }
     }
 
     if(saved.running_version != witness.running_version) {
@@ -90,6 +104,7 @@ const EMPTY_KEY = "GLS1111111111111111111111111111111114T1Anm";
 async function checkSigningKey(witness, saved) {
 
     const inform = async (chat) => {
+try {
         if(!chat.isWatching(witness.owner)) {return};
     
         const sactive = saved.signing_key != EMPTY_KEY;
@@ -106,6 +121,12 @@ async function checkSigningKey(witness, saved) {
                 await telegram.send(chat.chat_id, `Делегат ${witness.owner}${username} был деактивирован! ${witness.signing_key}`);
             }
         }
+    } catch(error) {
+        if (typeof error.error_code === 'undefined') console.error(JSON.stringify(error));
+        if (error.error_code === 403 && error.description === "Forbidden: bot was blocked by the user" || error.error_code === 403 && error.description === "Forbidden: user is deactivated" || error.error_code !== 400 && error.description === "Bad Request: user not found") {
+            await memory.removeChat(chat.chat_id);
+        }
+    }
     }
 
     if(saved.signing_key != witness.signing_key) {

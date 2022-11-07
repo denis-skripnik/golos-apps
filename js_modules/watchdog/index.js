@@ -59,6 +59,7 @@ async function onMsg(msg) {
 }
 
 async function getWitnessesByBlock() {
+try {
             const witnesses = await methods.getWitnessesByVote("",100);
             for(let w of witnesses) {
 
@@ -73,6 +74,9 @@ async function getWitnessesByBlock() {
 
                 await memory.saveWitness(w);
             }
+} catch(error) {
+// Error.
+}
 }
 
 async function runBot() {

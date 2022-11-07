@@ -106,6 +106,34 @@ async function getChat(chat_id) {
     }
 }
 
+async function removeChat(chat_id) {
+
+  let client = await pool.getClient()
+    if (!client) {
+        return;
+    }
+
+    try {
+
+        const db = client.db("goloswatchdog");
+
+        let collection = db.collection('chats');
+
+        let query = {chat_id}
+
+        let chat = await collection.deleteOne(query);
+
+return chat;
+    } catch (err) {
+
+        console.error(err);
+    return err;
+      } finally {
+
+
+    }
+}
+
 async function saveChat(chat) {
   if(!chat || !chat.chat_id) {
     throw Error("saveChat: chat.cha_id is empty!");
@@ -195,6 +223,7 @@ async function loadChats() {
 
 module.exports.saveChat = saveChat;
 module.exports.getChat = getChat;
+module.exports.removeChat = removeChat;
 module.exports.saveWitness = saveWitness;
 module.exports.loadChats = loadChats;
 module.exports.loadWitness = loadWitness;
