@@ -124,7 +124,7 @@ setInterval(() => {
     last_bn = bn;
 }, SUPER_LONG_DELAY);
 
-getNullTransfers()
+setTimeout(getNullTransfers, 3000);
 
 new CronJob('0 30 * * * *', top.run, null, true);
 

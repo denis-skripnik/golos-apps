@@ -47,7 +47,7 @@ for (let uia in b) {
 let reputation = await methods.getReputation(b.reputation);
 reputation = parseFloat(reputation);
 			await udb.updateTop(b.name, (parseFloat(b.vesting_shares.split(" ")[0]) / vpg), (parseFloat(b.vesting_shares.split(" ")[0]) / parseFloat(total_vests) * 100).toFixed(3), (parseFloat(b.delegated_vesting_shares.split(" ")[0]) / vpg), (parseFloat(b.received_vesting_shares.split(" ")[0]) / vpg), ((parseFloat(b.vesting_shares.split(" ")[0]) / vpg) - (parseFloat(b.delegated_vesting_shares.split(" ")[0]) / vpg) + (parseFloat(b.received_vesting_shares.split(" ")[0]) / vpg)),
-			(parseFloat(b.emission_received_vesting_shares.split(" ")[0]) / vpg), (parseFloat(b.emission_delegated_vesting_shares.split(" ")[0]) / vpg),
+			(parseFloat(b.emission_received_vesting_shares.split(" ")[0]) / vpg), (parseFloat(b.emission_delegated_vesting_shares.split(" ")[0]) / vpg), (parseFloat(b.vesting_withdraw_rate.split(" ")[0]) / vpg),
 			parseFloat(b.balance.split(" ")[0]), parseFloat(b.balance.split(" ")[0]) / parseFloat(all_golos) * 100, parseFloat(b.sbd_balance.split(" ")[0]), parseFloat(b.sbd_balance.split(" ")[0]) / parseFloat(current_sbd_supply) * 100, parseFloat(b.tip_balance.split(" ")[0]), parseFloat(b.market_balance.split(" ")[0]), reputation);
 			curr_acc = b.name;
 				}

@@ -79,7 +79,17 @@
 "unvote_button": "Remove the upvote",
 "unvote_ok": "You have successfully removed the upvote from this post",
    "unvote_failed": "Connection error with the node, there is no such account or another error.",
-"rate_button": "Bid",
+
+   "donate_button": "Donation",
+   "donate_select_account": "Select an account to send a donation.",
+   "type_donate": "Enter the amount of donation, the commission is 1%. Minimum 0.1 GOLOS, maximum: ",
+"donate_not_valid": "Donat is invalid, less than 0.1 GOLOS or more than the maximum.",
+"donate_confirm": "Do you really want to send a donation? Amount: ",
+"donate_false": "You canceled the donation.",
+"donate_true": "Donation was successfully sent.",
+"donate_error": "Error sending donation: ",
+
+   "rate_button": "Bid",
 "type_rate": "Enter the bid, the commission is 10%. Minimum 0.1 golos, maximum: ",
 "rate_not_valid": "The bid is invalid, less than 0.1 GOLOS or greater than the maximum.",
 "rate_conferm": "Do you really want to place a bet? Amount: ",

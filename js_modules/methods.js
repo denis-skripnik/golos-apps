@@ -72,7 +72,7 @@ if (post.active_votes && post.active_votes.length > 0) {
         votes.push(vote.voter);
     }
 }
-return {code: 1, title: post.title, created: post.created, edit, ended, id: post.id, votes};
+return {code: 1, title: post.title, created: post.created, edit, ended, id: post.id, votes, parent_permlink: post.parent_permlink};
 } else {
     return {code: 2, title: post.title, created: post.created, edit, ended};
 }
@@ -145,8 +145,13 @@ async function wifToPublic(key) {
     return golos.auth.wifToPublic(key);
 }
 
-async function donate(posting_key, account, donate_to, donate_amount, donate_memo) {
-    return golos.broadcast.donateAsync(posting_key, account, donate_to, donate_amount, {app: 'golos-stake-bot', version: 1, comment: donate_memo, target: {type: 'personal_donate'}}, []);
+async function donate(posting_key, account, donate_to, donate_amount, donate_memo, author, permlink) {
+let memo = {app: 'golos-stake-bot', version: 1, comment: donate_memo, target: {type: 'personal_donate'}}
+    if (typeof author !== 'undefined' && typeof permlink !== 'undefined') {
+        memo.version = 2;
+        memo.target = {type: 'content_donate', author, permlink}
+            }
+return golos.broadcast.donateAsync(posting_key, account, donate_to, donate_amount, memo, []);
 }
 
 async function getBlockSignature(block) {

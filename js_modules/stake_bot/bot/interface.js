@@ -27,12 +27,12 @@ if (variant === 'lng') {
         buttons = [[lng[lang].min_energy, lng[lang].curators, lng[lang].favorits, lng[lang].curators_mode], [lng[lang].exclude_authors, lng[lang].favorits_percent, lng[lang].back, lng[lang].home]];
     } else if (variant.indexOf('unvote@') > -1) {
         let post = variant.split('@')[1];
-        buttons = [[[lng[lang].unvote + post, lng[lang].unvote_button], [lng[lang].rate_button + '@' + post.split('_')[0], lng[lang].rate_button]]];
+        buttons = [[[lng[lang].unvote + post, lng[lang].unvote_button], [`${lng[lang].donate_button} ${post}`, lng[lang].donate_button], [lng[lang].rate_button + '@' + post.split('_')[0], lng[lang].rate_button]]];
     } else if (variant.indexOf('accounts_buttons') > -1) {
         buttons = JSON.parse(variant.split('accounts_buttons')[1]);
     }     else if (variant.indexOf('upvote_button@') > -1) {
         let post = variant.split('@')[1];
-        buttons = [[[`${lng[lang].vote} ${post}`, lng[lang].vote]]];
+        buttons = [[[`${lng[lang].vote} ${post}`, lng[lang].vote], [`${lng[lang].donate_button} ${post}`, lng[lang].donate_button], [lng[lang].rate_button + '@' + post.split('_')[0], lng[lang].rate_button]]];
     }     else if (variant === 'back') {
     buttons = [[lng[lang].back, lng[lang].home]];
 }     else if (variant === 'favorits_buttons') {
@@ -229,7 +229,7 @@ await botjs.sendMSG(id, text, btns, true);
                                                     let text = lng[user.lng].enter_tags + user.tags;
                                                     let btns = await keybord(user.lng, 'cancel');
                                                     await botjs.sendMSG(id, text, btns, false);
-                                                } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1 && message.indexOf(lng[user.lng].rate_button) === -1 && message.indexOf(lng[user.lng].vote) === -1) {
+                                                } else if (message.indexOf('@') > -1 && user.status.indexOf(lng[user.lng].news) === -1 && message.indexOf(lng[user.lng].rate_button) === -1 && message.indexOf(lng[user.lng].vote) === -1 && message.indexOf(lng[user.lng].donate_button) === -1) {
                                                                             let login = message.split('@')[1];
                                                                             let acc = await adb.getAccount(login);
                                                                             if (acc && acc.id === id) {
@@ -441,6 +441,46 @@ await botjs.sendMSG(364096327, text, btns, false);
     btns = await keybord(user.lng, 'no');
 }
     await botjs.sendMSG(id, text, btns, true);
+} else if (user && user.lng && message.indexOf(lng[user.lng].donate_button) > -1) {
+    let post_id = message.split(' ')[1].split('_')[1];
+    let text = lng[user.lng].donate_select_account;
+    let btns = await keybord(user.lng, 'no');
+    let accs = await adb.getAccounts(id);
+    if (accs && accs.length > 0) {
+    let n = 1;
+    let key = 0;
+    let buttons = [];
+    for (let acc of accs) {
+    if (!buttons[key]) {
+    buttons[key] = [];
+    }
+    buttons[key].push([`donatePost ${acc.login} ${post_id}`, `@${acc.login}`]);
+    if (n % 2 == 0) {
+    key++;
+    }
+    n++;
+    }
+    btns = await keybord(user.lng, 'accounts_buttons' + JSON.stringify(buttons));
+} else {
+    text = lng[user.lng].not_account;
+}
+await botjs.sendMSG(id, text, btns, true);
+} else if (user && user.lng && message.indexOf('donatePost ') > -1) {
+    let login = message.split(' ')[1];
+    let acc = await adb.getAccount(login);
+    if (acc && acc.id !== id) return;
+    let post_id = message.split(' ')[2];
+        let get_account = await methods.getAccount(login);
+    if (get_account && get_account.length > 0) {
+        let acc = get_account[0];
+        text = lng[user.lng].type_donate + acc.tip_balance;
+        btns = await keybord(user.lng, 'cancel');
+        await udb.updateUser(id, user.referers, user.lng, user.status, 'typedDonate_' + post_id + ':' + login + ':' + parseFloat(acc.tip_balance), user.referer_code, user.tags);
+    } else {
+        text = lng[user.lng].not_connection;
+        btns = await keybord(user.lng, 'home');
+    }
+await botjs.sendMSG(id, text, btns, false);
 } else if (user && user.lng && message.indexOf(lng[user.lng].news) > -1) {
                                                                 if (status === 2) {
                                                                     let text = lng[user.lng].type_news;
@@ -677,6 +717,25 @@ if (amount <= max && amount >= 0.1) {
     btns = await keybord(user.lng, 'home');
     await botjs.sendMSG(id, text, btns, false);
 }
+} else if (user.lng && lng[user.lng] && user.status.indexOf('typedDonate_') > -1) {
+    let arr = user.status.split('_')[1];
+    let post_id = arr.split(':')[0];
+    let login = arr.split(':')[1];
+let max = parseFloat(arr.split(':')[2]);
+let amount = parseFloat(message);
+    let text = '';
+let btns;
+if (amount <= max && amount >= 0.1) {
+await udb.updateUser(id, user.referers, user.lng, user.status, 'donate_' + login + ':' + amount + ':' + post_id, user.referer_code, user.tags);
+text = lng[user.lng].donate_confirm + amount + ' GOLOS';
+btns = await keybord(user.lng, 'on_off');
+await botjs.sendMSG(id, text, btns, false);
+} else {
+await udb.updateUser(id, user.referers, user.lng, user.status, lng[user.lng].home, user.referer_code, user.tags);
+text = lng[user.lng].donate_not_valid;
+btns = await keybord(user.lng, 'home');
+await botjs.sendMSG(id, text, btns, false);
+}
 } else if (user.lng && lng[user.lng] && user.status.indexOf('rate_') > -1) {
     let arr = user.status.split('_')[1];
     let login = arr.split(':')[0];
@@ -689,10 +748,11 @@ if (amount <= max && amount >= 0.1) {
 try {
     if (user.posting_key !== '') {
         let isBid = await biddb.getUserBid(login);
-        if (isBid && Object.keys(isBid).length > 0) amount += isBid.amount;
-                await biddb.updateBid(login, amount);
+        let bid_amount = amount;
+        if (isBid && Object.keys(isBid).length > 0) bid_amount += isBid.amount;
+                await biddb.updateBid(login, bid_amount);
 
-let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
+                let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
         await methods.donate(posting_key, login, conf.stakebot.golos_login, amount.toFixed(3) + ' GOLOS', 'Ставка в golos_stake_bot.');
             text = lng[user.lng].rate_true;
         } else {
@@ -708,6 +768,40 @@ let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
     await botjs.sendMSG(id, text, btns, false);
     await helpers.sleep(3000);
     await main(id, my_name, lng[user.lng].home, status);
+} else if (user.lng && lng[user.lng] && user.status.indexOf('donate_') > -1) {
+    let arr = user.status.split('_')[1];
+    let login = arr.split(':')[0];
+    let amount = parseFloat(arr.split(':')[1]);
+    let post_id = arr.split(':')[2];
+    let acc = await adb.getAccount(login);
+    let text = '';
+    if (acc) {
+        text = lng[user.lng].donate_false;
+        if (message === lng[user.lng].on) {
+try {
+    if (user.posting_key !== '') {
+let posting_key = sjcl.decrypt(login + '_postingKey_stakebot', acc.posting_key);
+let post = await pdb.getPost(parseInt(post_id));
+if (typeof post === 'undefined' || post && Object.keys(post).length === 0) return;
+let link = `${post.author}/${post.permlink}`;
+let [author, permlink] = link.split('/');        
+let full_amount = amount;
+amount *= 0.99;
+await methods.donate(posting_key, login, author, amount.toFixed(3) + ' GOLOS', 'https://t.me/golos_stake_bot', author, permlink);
+let fee = full_amount - amount;
+await methods.donate(posting_key, login, conf.stakebot.golos_login, fee.toFixed(3) + ' GOLOS', 'Комиссия.', author, permlink);            
+text = lng[user.lng].donate_true;
+        } else {
+            text = lng[user.lng].posting_not_valid;
+        }
+} catch(e) {
+    text = lng[user.lng].donate_error + e;
+}
+}
+    }                        
+    await udb.updateUser(id, user.referers, user.lng, user.status, lng[user.lng].home, user.referer_code, user.tags);
+    let btns = await keybord(user.lng, 'home');
+    await botjs.sendMSG(id, text, btns, false);
 } else if (user.lng && lng[user.lng] && user.status.indexOf('delete_') > -1) {
     let login = user.status.split('_')[1];
     if (user.status.split('_')[2]) {
@@ -733,7 +827,9 @@ console.log('Результат: ' + JSON.stringify(res));
     let json = user.status.split('voteing_')[1];
     let data = JSON.parse(json);
     let link = data.link;
-    let [author, permlink] = link.split('/');
+    let post_id = link.split('_')[1];
+    let post = await pdb.getPost(parseInt(post_id));
+    let {author, permlink} = post;
     let wif = sjcl.decrypt(data.login + '_postingKey_stakebot', data.postingKey);
     let text = '';
     try {
@@ -876,11 +972,11 @@ for (let tag of tags) {
         if (user.tags && user.tags !== '') {
             let user_tags = user.tags.split(',');
             if (user_tags && tags.some(item => user_tags.includes(item)) || user_tags.indexOf(opbody.parent_permlink) > -1) {
-                let text = `${lng[user.lng].post_from_tag} <a href="https://dpos.space/golos/profiles/${opbody.author}">${opbody.author}</a>
+                let text = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>${lng[user.lng].post_from_tag} <a href="https://dpos.space/golos/profiles/${opbody.author}">${opbody.author}</a>
     <a href="https://golos.id/${opbody.parent_permlink}/@${opbody.author}/${opbody.permlink}">${opbody.title}</a>
     ${lng[user.lng].tags}:${tags_list}`;
                            
-    let btns = await keybord(user.lng, `upvote_button@${opbody.author}/${opbody.permlink}`);
+    let btns = await keybord(user.lng, `upvote_button@${opbody.author}_${content.id}`);
     await botjs.sendMSG(user.id, text, btns, true);            
             ok += 1;
             }
@@ -888,7 +984,11 @@ for (let tag of tags) {
 }
 }
     }
-return ok;
+if (ok > 0) {
+    let day = new Date().getDate();
+    await pdb.updatePost(content.id, opbody.author, opbody.permlink, day);
+}
+    return ok;
 }
 
         module.exports.main = main;

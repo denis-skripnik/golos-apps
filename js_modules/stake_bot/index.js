@@ -76,18 +76,17 @@ if (accounts && accounts.length > 0) {
 		}
 		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
 		try {
-console.log('test4');
 			await methods.send(operations, posting);
 		if (!members[acc.id]) {
 		members[acc.id] = {};
 		members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-		members[acc.id]['text'] = `🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
+		members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${content.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
 	${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 	`;
 		} else {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-			members[acc.id]['text'] = `🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
+			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
 		${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 	}
@@ -164,12 +163,12 @@ return ok_ops_count;
 		if (!members[acc.id]) {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
+			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 		} else {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-			members[acc.id]['text'] = `💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
+			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 		`;
 	}
 	let day = new Date().getDate();
