@@ -24,7 +24,7 @@ const SHORT_DELAY = 3000;
 const SUPER_LONG_DELAY = 1000 * 60 * 15;
 
 async function processBlock(bn, props) {
-    const block = await methods.getOpsInBlock(bn);
+    const block = await methods.getEventsInBlock(bn);
     let ok_ops_count = 0;
     let posts = {};
     for(let tr of block) {

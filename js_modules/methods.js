@@ -4,8 +4,8 @@ golos.config.set('websocket',conf.node);
 let keccak = require("keccak");
 let BigI = require("big-integer");
 
-async function getOpsInBlock(bn) {
-    return await golos.api.getOpsInBlockAsync(bn, false);
+async function getEventsInBlock(bn) {
+    return await golos.api.getEventsInBlockAsync(bn, false);
   }
 
   async function getBlockHeader(block_num) {
@@ -234,7 +234,7 @@ async function getWitnessSchedule() {
     return await golos.api.getWitnessScheduleAsync();
 }
 
-      module.exports.getOpsInBlock = getOpsInBlock;
+      module.exports.getEventsInBlock = getEventsInBlock;
 module.exports.getBlockHeader = getBlockHeader;
 module.exports.getTransaction = getTransaction;
 module.exports.getConfig = getConfig;
