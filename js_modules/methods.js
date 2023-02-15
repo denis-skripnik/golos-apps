@@ -1,5 +1,5 @@
 var conf = require('../config.json');
-var golos = require('golos-classic-js');
+var golos = require('golos-lib-js');
 golos.config.set('websocket',conf.node);
 let keccak = require("keccak");
 let BigI = require("big-integer");
