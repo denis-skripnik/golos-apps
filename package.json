@@ -4,7 +4,7 @@
     "basescript": "0.0.4",
     "big-integer": "latest",
     "cron": "^1.8.2",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "golos-lib-js": "latest",
     "grammy": "^1.10.1",
     "keccak": "latest",
