@@ -61,8 +61,9 @@ async function onMsg(msg) {
 async function getWitnessesByBlock() {
 try {
             const witnesses = await methods.getWitnessesByVote("",100);
+            const working_block = witnesses[0].last_confirmed_block_num - 2592000;
             for(let w of witnesses) {
-
+if (w.last_confirmed_block_num <= working_block) continue;
                 let saved = await memory.loadWitness(w.owner);
 
                 log.debug("witness", w.owner, "missed", w.total_missed)

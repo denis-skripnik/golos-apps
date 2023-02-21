@@ -1,7 +1,7 @@
 const global = require("basescript");
 const conf = require(process.cwd() + '/config.json');
 const log = global.getLogger("telegram");
-
+const memory = require(process.cwd() + "/databases/watchdogdb");
 const { Bot } = require("grammy");
 
 let bot = null;
@@ -16,8 +16,12 @@ async function send(chat_id, msg, kbd) {
         }
         await bot.api.sendMessage(chat_id, msg, opts)
     } catch(e) {
-        log.error("unable to send message")
-        log.error(e);
+        if (e.error_code === 403 && e.description === "Forbidden: bot was blocked by the user" || e.error_code === 403 && e.description === "Forbidden: user is deactivated" || e.error_code !== 400 && e.description === "Bad Request: user not found") {
+            await memory.removeChat(chat.chat_id);
+        } else {
+            log.error("unable to send message")
+            log.error(e);
+        }
     }
 }
 

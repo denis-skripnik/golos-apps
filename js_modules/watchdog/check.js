@@ -23,10 +23,7 @@ try {
             await telegram.send(chat.chat_id, `Делегат ${witness.owner}${username} пропустил ${missed} ${text_blocks}!
             /help - Список команд.`);
         } catch(error) {
-            if (typeof error.error_code === 'undefined') console.error(JSON.stringify(error));
-            if (error.error_code === 403 && error.description === "Forbidden: bot was blocked by the user" || error.error_code === 403 && error.description === "Forbidden: user is deactivated" || error.error_code !== 400 && error.description === "Bad Request: user not found") {
-                await memory.removeChat(chat.chat_id);
-            }
+// Error.
         }
     }
 
@@ -84,14 +81,12 @@ try {
 
         await sendVersions(chat);
     } catch(error) {
-        if (typeof error.error_code === 'undefined') console.error(JSON.stringify(error));
-        if (error.error_code === 403 && error.description === "Forbidden: bot was blocked by the user" || error.error_code === 403 && error.description === "Forbidden: user is deactivated" || error.error_code !== 400 && error.description === "Bad Request: user not found") {
-            await memory.removeChat(chat.chat_id);
-        }
+// Error.
     }
     }
 
     if(saved.running_version != witness.running_version) {
+        log.debug(`Сравнение версий: ${saved.running_version}, ${witness.running_version}`, saved, witness);
         let chats = await memory.loadChats();
         for(let chat of chats) {
             await inform(chat, witness);
@@ -122,10 +117,7 @@ try {
             }
         }
     } catch(error) {
-        if (typeof error.error_code === 'undefined') console.error(JSON.stringify(error));
-        if (error.error_code === 403 && error.description === "Forbidden: bot was blocked by the user" || error.error_code === 403 && error.description === "Forbidden: user is deactivated" || error.error_code !== 400 && error.description === "Bad Request: user not found") {
-            await memory.removeChat(chat.chat_id);
-        }
+        // Error.
     }
     }
 
