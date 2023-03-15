@@ -35,6 +35,14 @@ async function voteOperation(content, opbody) {
 if (!content || content && content.code !== 1 || content && content.ended === true) {
 return ok_ops_count;
 }
+let metadata = JSON.parse(opbody.json_metadata);
+let tags_list = '';
+if (metadata && metadata.tags && metadata.tags.length > 0) {
+let tags = metadata.tags;
+for (let tag of tags) {
+tags_list += ` <a href="https://golos.id/created/${tag}">#${tag}</a>`;
+}
+}
 let accounts = await adb.findAllAccounts();
 	await sdb.updateStat({accounts_count: accounts.length});
 if (accounts && accounts.length > 0) {
@@ -81,14 +89,16 @@ if (accounts && accounts.length > 0) {
 		members[acc.id] = {};
 		members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
 		members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${content.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
-	${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
-	`;
+${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
+`;
+members[acc.id]['tags'] = tags_list;
 		} else {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
-		${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
-		`;
+		members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
+${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
+`;
+members[acc.id]['tags'] = tags_list;
 	}
 	let day = new Date().getDate();
 	await pdb.updatePost(content.id, opbody.author, opbody.permlink, day);
@@ -121,6 +131,14 @@ return ok_ops_count;
 		if (!content || content && content.code !== 1 || content && content.code !== 1 && content.edit !== false || content && content.code === 1 && content.edit !== false || content && content.ended === true) {
 		return ok_ops_count;
 		}
+		let metadata = JSON.parse(opbody.json_metadata);
+let tags_list = '';
+if (metadata && metadata.tags && metadata.tags.length > 0) {
+let tags = metadata.tags;
+for (let tag of tags) {
+tags_list += ` <a href="https://golos.id/created/${tag}">#${tag}</a>`;
+}
+}
 		let sended_users = {};
 		let accounts = await adb.findAllAccounts();
 		await sdb.updateStat({accounts_count: accounts.length});
@@ -164,12 +182,14 @@ return ok_ops_count;
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
 			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
-		`;
-		} else {
+`;
+members[acc.id]['tags'] = tags_list;
+} else {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
 			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
-		`;
+`;
+members[acc.id]['tags'] = tags_list;
 	}
 	let day = new Date().getDate();
 	await pdb.updatePost(content.id, opbody.author, opbody.permlink, day);

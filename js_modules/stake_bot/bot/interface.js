@@ -872,6 +872,7 @@ async function sendReplayVoteNotify(members) {
             let user = await udb.getUser(parseInt(id));
     if (user) {
         let info = members[id].text;
+        if (members[id].tags !== '') info += `${lng[user.lng].tags}:${members[id].tags}`;
         let post = members[id].unvote_data;
         let text = `${info}
 
@@ -893,6 +894,7 @@ await botjs.sendMSG(parseInt(id), text, btns, true);
             let user = await udb.getUser(parseInt(id));
     if (user) {
         let info = members[id].text;
+        if (members[id].tags !== '') info += `${lng[user.lng].tags}:${members[id].tags}`;
         let post = members[id].unvote_data;
                 let text = `${info}
 
@@ -974,7 +976,7 @@ for (let tag of tags) {
             if (user_tags && tags.some(item => user_tags.includes(item)) || user_tags.indexOf(opbody.parent_permlink) > -1) {
                 let text = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>${lng[user.lng].post_from_tag} <a href="https://dpos.space/golos/profiles/${opbody.author}">${opbody.author}</a>
     <a href="https://golos.id/${opbody.parent_permlink}/@${opbody.author}/${opbody.permlink}">${opbody.title}</a>
-    ${lng[user.lng].tags}:${tags_list}`;
+${lng[user.lng].tags}:${tags_list}`;
                            
     let btns = await keybord(user.lng, `upvote_button@${opbody.author}_${content.id}`);
     await botjs.sendMSG(user.id, text, btns, true);            
