@@ -72,7 +72,8 @@ if (post.active_votes && post.active_votes.length > 0) {
         votes.push(vote.voter);
     }
 }
-return {code: 1, title: post.title, created: post.created, edit, ended, id: post.id, votes, parent_permlink: post.parent_permlink};
+return {code: 1, title: post.title, created: post.created, edit, ended, id: post.id, votes, parent_permlink: post.parent_permlink, json_metadata: post.json_metadata};
+return {code: 1, title: post.title, created: post.created, edit, ended, id: post.id, votes, parent_permlink: post.parent_permlink, json_metadata: post.json_metadata};
 } else {
     return {code: 2, title: post.title, created: post.created, edit, ended};
 }

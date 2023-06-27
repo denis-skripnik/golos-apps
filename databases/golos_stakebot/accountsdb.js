@@ -86,7 +86,7 @@ async function getAccount(login) {
 	}
 }
 
-async function updateAccount(id, referer_code, login, posting_key, to_vesting_shares, min_energy, curators, favorits, curators_mode, favorits_percent, exclude_authors) {
+async function updateAccount(id, referer_code, login, posting_key, to_vesting_shares, min_energy, curators, favorits, curators_mode, favorits_percent, exclude_authors, keywords) {
 
 	let client = await pool.getClient()
 	if (!client) {
@@ -113,7 +113,8 @@ async function updateAccount(id, referer_code, login, posting_key, to_vesting_sh
 				favorits,
 				curators_mode,
 				favorits_percent,
-				exclude_authors
+				exclude_authors,
+				keywords
 			}
 		}, {
 			upsert: true

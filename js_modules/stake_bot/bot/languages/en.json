@@ -5,7 +5,8 @@
     "change_tags": "My tags",
 "enter_tags": "Enter the tags to change, separated by commas (no transliteration) or click 'cancel'. List of tags: ",
 "tags_changed": "Tags changed.",
-"post_from_tag": "A new post by one of the tags you subscribed to. Author: ",
+"post_from_tag": "🆕 Post by one of the specified tags from ",
+
 "tags": "Tags",
 "vote": "Vote",
 "type_vote": "Voting by account",
@@ -71,10 +72,16 @@
 "import_subs": "Import Subscriptions",
 "import_ok": "Successfully imported.",
 "import_failed": "Import error.",
-"exclude_authors": "Exceptions for repeating after curators",
+"exclude_authors": "Excluded authors",
 "exclude_authors_text": "Enter a list of usernames of authors that you want not to hide when repeating after the curator, separated by commas without spaces and @",
 "exclude_authors_saved": "The list of excluded authors is saved",
 "exclude_authors_not_valid": "The list of excluded authors is invalid. Check the entered data.",
+
+"keywords": "Keywords",
+"keywords_text": "Enter a list of keywords that you want to search for in the texts of posts. It is possible with spaces, separate the words with commas.",
+"keywords_saved": "The list of keywords is saved",
+"post_from_keyword": "🆕 post on the specified keywords from ",
+
 "unvote": "Unvote ",
 "unvote_button": "Remove the upvote",
 "unvote_ok": "You have successfully removed the upvote from this post",

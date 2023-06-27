@@ -35,12 +35,14 @@ async function voteOperation(content, opbody) {
 if (!content || content && content.code !== 1 || content && content.ended === true) {
 return ok_ops_count;
 }
-let metadata = JSON.parse(opbody.json_metadata);
 let tags_list = '';
+if (typeof content.json_metadata  !== 'undefined' && content.json_metadata !== '') {
+	let metadata = JSON.parse(content.json_metadata);
 if (metadata && metadata.tags && metadata.tags.length > 0) {
 let tags = metadata.tags;
 for (let tag of tags) {
 tags_list += ` <a href="https://golos.id/created/${tag}">#${tag}</a>`;
+}
 }
 }
 let accounts = await adb.findAllAccounts();
@@ -131,12 +133,14 @@ return ok_ops_count;
 		if (!content || content && content.code !== 1 || content && content.code !== 1 && content.edit !== false || content && content.code === 1 && content.edit !== false || content && content.ended === true) {
 		return ok_ops_count;
 		}
-		let metadata = JSON.parse(opbody.json_metadata);
-let tags_list = '';
+		let tags_list = '';
+if (typeof content.json_metadata  !== 'undefined' && content.json_metadata !== '') {
+	let metadata = JSON.parse(content.json_metadata);
 if (metadata && metadata.tags && metadata.tags.length > 0) {
 let tags = metadata.tags;
 for (let tag of tags) {
 tags_list += ` <a href="https://golos.id/created/${tag}">#${tag}</a>`;
+}
 }
 }
 		let sended_users = {};

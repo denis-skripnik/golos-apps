@@ -92,7 +92,7 @@ while (true) {
         if (bn > PROPS.last_irreversible_block_num) {
             // console.log("wait for next blocks" + delay / 1000);
             await helpers.sleep(delay);
-            watchdog.getWitnessesByBlock();
+            await watchdog.getWitnessesByBlock();
             PROPS = await methods.getProps();
         } else {
             if(0 < await processBlock(bn, PROPS)) {
@@ -104,7 +104,7 @@ while (true) {
             await bdb.updateBlock(bn);
         }
     } catch (e) {
-        console.log("error in work loop" + e);
+        console.log("error in work loop", e);
         await helpers.sleep(1000);
         }
     }

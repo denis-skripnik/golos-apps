@@ -24,15 +24,15 @@ if (variant === 'lng') {
         let login = variant.split('@')[1];
         buttons = [[lng[lang].change_posting, lng[lang].auto_curator, lng[lang].rate_button], [lng[lang].delete, lng[lang].back, lng[lang].home]];
     } else if (variant === 'auto_curator') {
-        buttons = [[lng[lang].min_energy, lng[lang].curators, lng[lang].favorits, lng[lang].curators_mode], [lng[lang].exclude_authors, lng[lang].favorits_percent, lng[lang].back, lng[lang].home]];
+        buttons = [[lng[lang].min_energy, lng[lang].curators, lng[lang].favorits, lng[lang].curators_mode, lng[lang].keywords], [lng[lang].exclude_authors, lng[lang].favorits_percent, lng[lang].back, lng[lang].home]];
     } else if (variant.indexOf('unvote@') > -1) {
         let post = variant.split('@')[1];
-        buttons = [[[lng[lang].unvote + post, lng[lang].unvote_button], [`${lng[lang].donate_button} ${post}`, lng[lang].donate_button], [lng[lang].rate_button + '@' + post.split('_')[0], lng[lang].rate_button]]];
+        buttons = [[[lng[lang].unvote + post, lng[lang].unvote_button], [`${lng[lang].donate_button} ${post}`, lng[lang].donate_button], [lng[lang].rate_button, lng[lang].rate_button]]];
     } else if (variant.indexOf('accounts_buttons') > -1) {
         buttons = JSON.parse(variant.split('accounts_buttons')[1]);
     }     else if (variant.indexOf('upvote_button@') > -1) {
         let post = variant.split('@')[1];
-        buttons = [[[`${lng[lang].vote} ${post}`, lng[lang].vote], [`${lng[lang].donate_button} ${post}`, lng[lang].donate_button], [lng[lang].rate_button + '@' + post.split('_')[0], lng[lang].rate_button]]];
+        buttons = [[[`${lng[lang].vote} ${post}`, lng[lang].vote], [`${lng[lang].donate_button} ${post}`, lng[lang].donate_button], [lng[lang].rate_button, lng[lang].rate_button]]];
     }     else if (variant === 'back') {
     buttons = [[lng[lang].back, lng[lang].home]];
 }     else if (variant === 'favorits_buttons') {
@@ -142,7 +142,7 @@ if (referer.referers.length > 0) {
             await udb.updateUser(id, user.referers, user.lng, user.prev_status, user.status, user.referer_code, user.tags);
         }        
     }
-    
+
     if (message.indexOf('start') > -1 || user && user.lng && message.indexOf(lng[user.lng].lang) > -1) {
 let text = '';
 let btns;
@@ -275,6 +275,9 @@ ${lng[user.lng].curators}:
 ${lng[user.lng].exclude_authors}:
 <code>${acc.exclude_authors}</code>
 
+${lng[user.lng].keywords}:
+<code>${acc.keywords}</code>
+
 ${lng[user.lng].favorits}:
 <code>${acc.favorits}</code>
 
@@ -295,7 +298,7 @@ ${lng[user.lng].favorits_percent}: ${acc.favorits_percent}.`;
                                                              let unvote_arr = unvote_data.split('_');
                                                              let login = unvote_arr[0];
                                                                     let post_id = parseInt(unvote_arr[1]);
-                                                                                                                                 let text = lng[user.lng].unvote_failed;
+                                                                    let text = lng[user.lng].unvote_failed;
                                                                     let acc = await adb.getAccount(login);
                                                                     if (acc && acc.id === id) {
                                                                         if (acc.posting_key !== '') {
@@ -343,18 +346,25 @@ ${lng[user.lng].favorits_percent}: ${acc.favorits_percent}.`;
                                                                     let btns = await keybord(user.lng, 'cancel');
                                                                 await botjs.sendMSG(id, text, btns, false);
                                                                 await udb.updateUser(id, user.referers, user.lng, user.status, 'excludeAuthors_' + login, user.referer_code, user.tags);
-                                                            } else if ( user && user.lng && message !== lng[user.lng].rate_button && message.indexOf(lng[user.lng].rate_button) > -1) {
-                                                                let login = message.split('@')[1];
-                                                                let my_acc = await adb.getAccount(login);
+                                                            } else if (user && user.lng && message === lng[user.lng].keywords && user.status.indexOf('auto_curator@') > -1) {
+                                                                let login = user.status.split('@')[1];
+                                                                    let text = lng[user.lng].keywords_text;
+                                                                    let btns = await keybord(user.lng, 'cancel');
+                                                                await botjs.sendMSG(id, text, btns, false);
+                                                                await udb.updateUser(id, user.referers, user.lng, user.status, 'keywords_' + login, user.referer_code, user.tags);
+                                                            } else if ( user && user.lng && message === lng[user.lng].rate_button && user.status.indexOf('@') === -1) {
+                                                                let accs = await adb.getAccounts(id);
+
                                                                 let text = '';
                                                                 let btns;
-                                                                if (my_acc && my_acc.id === id) {
-                                                                let get_account = await methods.getAccount(login);
+                                                                if (accs && accs.length > 0) {
+                                                                    let account = accs[0];
+                                                                    let get_account = await methods.getAccount(account.login);
                                                                 let acc = get_account[0]
                                                                 if (get_account && get_account.length > 0) {
                                                                     text = lng[user.lng].type_rate + acc.tip_balance;
                                                                     btns = await keybord(user.lng, 'cancel');
-                                                                    await udb.updateUser(id, user.referers, user.lng, user.status, 'typed_rate@' + login + ':' + parseFloat(acc.tip_balance), user.referer_code, user.tags);
+                                                                    await udb.updateUser(id, user.referers, user.lng, user.status, 'typed_rate@' + account.login + ':' + parseFloat(acc.tip_balance), user.referer_code, user.tags);
                                                                 } else {
                                                                     await udb.updateUser(id, user.referers, user.lng, user.status, 'send_rate', user.referer_code, user.tags);
                                                                     text = lng[user.lng].not_account;
@@ -528,7 +538,7 @@ let btns;
 try {
 const public_wif = await methods.wifToPublic(message);
 if (posting_public_keys.indexOf(public_wif) > -1) {
-await adb.updateAccount(id, user.referer_code, login, sjcl.encrypt(login + '_postingKey_stakebot', message), false, 100, '', '', 'replay', 0, '');
+await adb.updateAccount(id, user.referer_code, login, sjcl.encrypt(login + '_postingKey_stakebot', message), false, 100, '', '', 'replay', 0, '', "");
 await udb.updateUser(id, user.referers, user.lng, user.status, 'saved_data', user.referer_code, user.tags);
 text = lng[user.lng].saved_true;
 btns = await keybord(user.lng, 'home');
@@ -549,7 +559,7 @@ await botjs.sendMSG(id, text, btns, false);
     await helpers.sleep(1000);
     await main(id, my_name, lng[user.lng].change_posting + '@' + login, status);
 }    
-} else if (user.lng && lng[user.lng] && user.status.indexOf('changed_posting_') > -1) {
+} else if (user.status&& typeof user.status !== 'undefined' && user.lng && lng[user.lng] && user.status.indexOf('changed_posting_') > -1) {
     let arr = user.status.split('@')[1];
     let login = arr.split('_')[0];
     let text = '';
@@ -558,7 +568,18 @@ try {
     const public_wif = await methods.wifToPublic(message);
     let posting_public_keys = user.status.split('_')[3];
     if (posting_public_keys.indexOf(public_wif) > -1) {
-    await adb.updateAccount(id, user.referer_code, login, sjcl.encrypt(login + '_postingKey_stakebot', message), false, 100, '', '', 'replay', 0, '');
+    let acc = await adb.getAccount(login);
+    if (!acc) {
+        acc.to_vesting_shares = false;
+        acc.min_energy = 100;
+        acc.curators = '';
+        acc.favorits = '';
+        acc.curators_mode = 'replay';
+        acc.favorits_percent = 0;
+        acc.exclude_authors = '';
+        acc.keywords = '';
+    }
+        await adb.updateAccount(id, user.referer_code, login, sjcl.encrypt(login + '_postingKey_stakebot', message), acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, acc.curators_mode, acc.favorits_percent, acc.exclude_authors, acc.keywords);
                             await udb.updateUser(id, user.referers, user.lng, user.status, 'added_posting_key', user.referer_code, user.tags);
                             text = lng[user.lng].saved_posting_key + login;
     btns = await keybord(user.lng, 'home');
@@ -585,7 +606,7 @@ try {
     if (acc && acc.id === id) {
     let energy = parseFloat(message);
 if (energy && energy > 0) {
-    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, energy, acc.curators, acc.favorits, acc.curators_mode, acc.favorits_percent, acc.exclude_authors);
+    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, energy, acc.curators, acc.favorits, acc.curators_mode, acc.favorits_percent, acc.exclude_authors, acc.keywords);
     text = lng[user.lng].min_energy_saved;
 } else {
     text = lng[user.lng].min_energy_not_valid;
@@ -603,7 +624,7 @@ await botjs.sendMSG(id, text, btns, false);
 let curators = message.split(',');
 let accs = await methods.getAccounts(curators);
 if (accs && accs.length === curators.length) {
-    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, message, acc.favorits, acc.curators_mode, acc.favorits_percent, acc.exclude_authors);
+    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, message, acc.favorits, acc.curators_mode, acc.favorits_percent, acc.exclude_authors, acc.keywords);
     text = lng[user.lng].curators_saved;
 } else {
     text = lng[user.lng].curators_not_valid;
@@ -627,7 +648,7 @@ login += ' @' + user.status.split('_')[2];
     text = lng[user.lng].curators_mode_on;
     mode = 'replay';
 }
-await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, mode, acc.favorits_percent, acc.exclude_authors);
+await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, mode, acc.favorits_percent, acc.exclude_authors, acc.keywords);
 }                        
     await udb.updateUser(id, user.referers, user.lng, user.status, 'auto_curator@' + login, user.referer_code, user.tags);
     let btns = await keybord(user.lng, 'home');
@@ -639,7 +660,7 @@ await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_ve
     if (acc && acc.id === id && message === lng[user.lng].import_subs) {
         let following = await methods.getFollowingList(login);
         if (following !== 'error') {
-            await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, following.join(), acc.curators_mode, acc.favorits_percent, acc.exclude_authors);
+            await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, following.join(), acc.curators_mode, acc.favorits_percent, acc.exclude_authors, acc.keywords);
         text = lng[user.lng].import_ok;
         } else {
             text = lng[user.lng].import_failed;
@@ -653,7 +674,7 @@ for (let favorite of favorits) {
 }
 let accs = await methods.getAccounts(logins);
 if (accs && accs.length === favorits.length) {
-    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, message, acc.curators_mode, acc.favorits_percent, acc.exclude_authors);
+    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, message, acc.curators_mode, acc.favorits_percent, acc.exclude_authors, acc.keywords);
     text = lng[user.lng].favorits_saved;
 } else {
     text = lng[user.lng].favorits_not_valid;
@@ -671,7 +692,7 @@ await botjs.sendMSG(id, text, btns, false);
     if (acc && acc.id === id) {
     let percent = parseFloat(message);
 if (percent && percent > 0) {
-    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, acc.curators_mode, percent, acc.exclude_authors);
+    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, acc.curators_mode, percent, acc.exclude_authors, acc.keywords);
     text = lng[user.lng].favorits_percent_saved;
 } else {
     text = lng[user.lng].favorits_percent_not_valid;
@@ -689,13 +710,24 @@ await botjs.sendMSG(id, text, btns, false);
 let authors = message.split(',');
 let accs = await methods.getAccounts(authors);
 if (accs && accs.length === authors.length) {
-    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, acc.curators_mode, acc.favorits_percent, message);
+    await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, acc.curators_mode, acc.favorits_percent, message, acc.keywords);
     text = lng[user.lng].exclude_authors_saved;
 } else {
     text = lng[user.lng].exclude_authors_not_valid;
 }
 } else {
     text = lng[user.lng].account_not_add;
+}
+let btns = await keybord(user.lng, 'home');
+await botjs.sendMSG(id, text, btns, false);
+} else if (user.lng && lng[user.lng] && user.status.indexOf('keywords_') > -1) {
+    let login = user.status.split('_')[1];
+    let acc = await adb.getAccount(login);
+    let text = lng[user.lng].account_not_add;
+    if (acc && acc.id === id) {
+    console.log('test1', message)
+await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_vesting_shares, acc.min_energy, acc.curators, acc.favorits, acc.curators_mode, acc.favorits_percent, acc.exclude_authors, message);
+    text = lng[user.lng].keywords_saved;
 }
 let btns = await keybord(user.lng, 'home');
 await botjs.sendMSG(id, text, btns, false);
@@ -981,8 +1013,18 @@ ${lng[user.lng].tags}:${tags_list}`;
     let btns = await keybord(user.lng, `upvote_button@${opbody.author}_${content.id}`);
     await botjs.sendMSG(user.id, text, btns, true);            
             ok += 1;
-            }
         }
+    } else         if (user.keywords && user.keywords !== '') {
+        let user_keywords = user.keywords.split(',');
+        if (user_keywords && user_keywords.some(keyword => opbody.body.includes(keyword))) {
+            let text = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>${lng[user.lng].post_from_keyword} <a href="https://dpos.space/golos/profiles/${opbody.author}">${opbody.author}</a>
+<a href="https://golos.id/${opbody.parent_permlink}/@${opbody.author}/${opbody.permlink}">${opbody.title}</a>
+${lng[user.lng].tags}:${tags_list}`;
+                       let btns = await keybord(user.lng, `upvote_button@${opbody.author}_${content.id}`);
+await botjs.sendMSG(user.id, text, btns, true);            
+        ok += 1;
+        }
+    }
 }
 }
     }
