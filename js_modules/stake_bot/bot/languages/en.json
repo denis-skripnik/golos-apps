@@ -5,7 +5,7 @@
     "change_tags": "My tags",
 "enter_tags": "Enter the tags to change, separated by commas (no transliteration) or click 'cancel'. List of tags: ",
 "tags_changed": "Tags changed.",
-"post_from_tag": "🆕 Post by one of the specified tags from ",
+"post_from_tag": "🆕 Post by tags from ",
 
 "tags": "Tags",
 "vote": "Vote",
@@ -78,9 +78,9 @@
 "exclude_authors_not_valid": "The list of excluded authors is invalid. Check the entered data.",
 
 "keywords": "Keywords",
-"keywords_text": "Enter a list of keywords that you want to search for in the texts of posts. It is possible with spaces, separate the words with commas.",
+"keywords_text": "Enter a list of keywords that you want to search for in the texts of posts. It is possible with spaces, separate the words with commas. Currently installed: ",
 "keywords_saved": "The list of keywords is saved",
-"post_from_keyword": "🆕 post on the specified keywords from ",
+"post_from_keyword": "🆕 post on the keywords from ",
 
 "unvote": "Unvote ",
 "unvote_button": "Remove the upvote",
