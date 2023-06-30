@@ -60,7 +60,7 @@ async function addUser(id, referers, lng, prev_status, status, referer_code, tag
 
         let collection = db.collection('users');
 
-        let res = await collection.insertOne({id, referers, lng, prev_status, status, referer_code, tags, keywords: ""});
+        let res = await collection.insertOne({id, referers, lng, prev_status, status, referer_code, tags, keywords: "", exclude_authors: ""});
 
 return res;
 
@@ -73,7 +73,7 @@ return res;
     }
 }
 
-async function updateUser(id, referers, lng, prev_status, status, referer_code, tags, keywords) {
+async function updateUser(id, referers, lng, prev_status, status, referer_code, tags, keywords, exclude_authors) {
 
     let client = await pool.getClient()
 
@@ -87,7 +87,7 @@ async function updateUser(id, referers, lng, prev_status, status, referer_code, 
 
       let collection = db.collection('users');
 
-      let res = await collection.updateOne({id}, {$set: {id, referers, lng, prev_status, status, referer_code, tags, keywords}}, {});
+      let res = await collection.updateOne({id}, {$set: {id, referers, lng, prev_status, status, referer_code, tags, keywords, exclude_authors}}, {});
 
 return res;
 
@@ -128,7 +128,7 @@ async function removeUser(id) {
 	}
 }
 
-async function findAllUsers() {
+async function findAllUsers(isObject = false) {
     let client = await pool.getClient()
 
 if (!client) {
@@ -141,13 +141,21 @@ try {
 
     let collection = db.collection('users');
 
-    const res = [];
     let cursor = await collection.find({}).limit(500);
     let doc = null;
+if (isObject == false) {
+    const res = [];
     while(null != (doc = await cursor.next())) {
         res.push(doc);
     }
 return res;
+} else {
+    const res = {};
+    while(null != (doc = await cursor.next())) {
+        res[doc.id] = doc;
+    }
+return res;
+}
   } catch (err) {
 
     console.log(err);

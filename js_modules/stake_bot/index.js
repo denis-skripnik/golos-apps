@@ -51,14 +51,14 @@ if (accounts && accounts.length > 0) {
 		var members = {};
 		let config_mass = await methods.getConfig();
 		let props = await methods.getProps();
+let users = await udb.findAllUsers(true);
 
 		for (let acc of accounts) {
 			try {
 				if (acc.posting_key !== '' && acc.curators && acc.curators !== '') {
 					let posting = sjcl.decrypt(acc.login + '_postingKey_stakebot', acc.posting_key);
-					if (acc.exclude_authors && acc.exclude_authors.indexOf(opbody.author) > -1) {
-						continue;
-					}
+					let user = users[acc.id];
+					if (user && Object.keys(user).length > 0 && user.exclude_authors && user.exclude_authors.indexOf(opbody.author) > -1) continue;
 					let get_account = await methods.getAccount(acc.login);
 					let account = get_account[0];
 					let last_vote_time = account.last_vote_time;
@@ -105,7 +105,6 @@ members[acc.id]['tags'] = tags_list;
 	let day = new Date().getDate();
 	await pdb.updatePost(content.id, opbody.author, opbody.permlink, day);
 } catch(error) {
-		console.error('send vote', error);
 		continue;	
 	}
 	
@@ -200,7 +199,6 @@ members[acc.id]['tags'] = tags_list;
 	sended_users[acc.id] = true;
 	ok_ops_count += 1;
 } catch(error) {
-		console.error(error);
 continue;
 	}
 		
