@@ -18,7 +18,7 @@ async function checkMissed(witness, saved) {
         const inform = async (chat) => {
 try {
             if(!chat.isWatching(witness.owner)) {return};
-            let username = (chat.witness == witness.owner?" (@"+chat.username+")":"");
+            let username = (chat.watchall == true && chat.witnesses.indexOf(witness.owner) > -1?" (@"+chat.username+")":"");
             let text_blocks = m.get_text_blocks(missed);
             await telegram.send(chat.chat_id, `Делегат ${witness.owner}${username} пропустил ${missed} ${text_blocks}!
             /help - Список команд.`);
@@ -76,7 +76,7 @@ async function checkVersion(witness, saved) {
 try {
         if(!chat.isWatching(witness.owner)) {return};
     
-        let username = (chat.witness == witness.owner?" (@"+chat.username+")":"");
+        let username = (chat.watchall == true && chat.witnesses.indexOf(witness.owner) > -1?" (@"+chat.username+")":"");
         await telegram.send(chat.chat_id, `Делегат ${witness.owner}${username} установил новую версию ${witness.running_version}`);
 
         await sendVersions(chat);
@@ -105,7 +105,7 @@ try {
         const sactive = saved.signing_key != EMPTY_KEY;
         const wactive = witness.signing_key != EMPTY_KEY;
 
-        let username = (chat.witness == witness.owner?" (@"+chat.username+")":"");
+        let username = (chat.watchall == true && chat.witnesses.indexOf(witness.owner) > -1?" (@"+chat.username+")":"");
 
         if(sactive && wactive) {
             await telegram.send(chat.chat_id, `Делегат ${witness.owner}${username} сменил ключ ${witness.signing_key}`);
