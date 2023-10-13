@@ -24,8 +24,12 @@ async function keybord(btn_list, inline) {
     inline_keyboard[row] = [];
             for (let btn of btn_list[row]) {
                 let bytes = Buffer.from(btn[0]).length;
-                if (bytes > 64) continue;
+                if (btn[0].indexOf('web:') === -1 && bytes > 64) continue;
+            if (btn[0].indexOf('web:') > -1) {
+                inline_keyboard[row].push({text: btn[1], web_app: {url: btn[0].split('web:')[1]}});
+            } else {
                 inline_keyboard[row].push({text: btn[1], callback_data: btn[0]});
+        }
     }
         }
 

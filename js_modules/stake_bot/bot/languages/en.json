@@ -69,6 +69,18 @@
 "favorits_percent_text": "Enter % for favorites. By default, 0%.",
     "favorits_percent_saved": "The percentage of voting for favorites is saved.",
 "favorits_percent_not_valid": "The percentage for favorites is invalid. Enter a number without the %sign.",
+
+"curators_coeff": "Repeat coefficient",
+"curators_coeff_text": "Enter the repeat coefficient for the curator. The percentage of apa will be divided by it. For example, if the curator voted 100%, and you have a coefficient of 2, your percentage will be 50%.",
+"curators_coeff_saved": "The repeat coefficient is saved",
+"curators_coeff_not_valid": "The repeat coefficient is not valid. Specify a number, for example, 2 or 1.",
+
+"auto_donate": "Personal pool",
+"auto_donate_text": "With this function, you can use a personal pool of distribution between authors that you like. Specify the percentage of the daily issue that will be spent at 100% upvote, as well as the coefficient of change in the donation amount. Example: 10 1.1 (If it is different from 1, there will be a non-linear decrease in the amount of the donation depending on the percentage of the upvote. Minimum 1 1 (1% with a coefficient of 1). Also keep in mind that the minimum donation amount = 0.5 GOLOS (anything less will be skipped).",
+"auto_donate_saved": "Personal pool saved.",
+"auto_donate_not_valid": "Personal pool parameters specified incorrectly. Enter 2 numbers separated by a space or one if you want to leave a coefficient of 1. Example: 10 1.2 or just 10",
+"audo_donate_description": "Personal pool (percentage of issue and distribution coefficient)",
+
 "import_subs": "Import Subscriptions",
 "import_ok": "Successfully imported.",
 "import_failed": "Import error.",
@@ -87,9 +99,13 @@
 "unvote_ok": "You have successfully removed the upvote from this post",
    "unvote_failed": "Connection error with the node, there is no such account or another error.",
 
+   "skip": "Skip",
+
    "donate_button": "Donation",
-   "donate_select_account": "Select an account to send a donation.",
-   "type_donate": "Enter the amount of donation, the commission is 1%. Minimum 0.1 GOLOS, maximum: ",
+   
+   "postActions_button": "Vote and donate",
+   "postActions_select_account": "Select an account for actions with the post.",
+   "type_donate": "Enter the amount of donation, the commission is 0.2%. Minimum 0.1 GOLOS, maximum: ",
 "donate_not_valid": "Donat is invalid, less than 0.1 GOLOS or more than the maximum.",
 "donate_confirm": "Do you really want to send a donation? Amount: ",
 "donate_false": "You canceled the donation.",
@@ -107,13 +123,15 @@
 "rate_msg2": "was the winner because it was numbered",
 "rate_msg3": "Unfortunately, you did not win. Your number is",
 "rate_msg4": "The winner was the participant with the number",
-"about_bids": "To participate, click to the Bid button",
-"bids_link": "About bids",
+"charge": "Battery before upvote",
 "jackpot_msg1": "Congratulations! Your Golos user",
 "jackpot_msg2": "Got the jackpot because it was a number",
 "jackpot_msg3": "unfortunately, you did not get the jackpot. Your number is",
 "jackpot_msg4": "the participant Received it under the number",
 "proof": "Proof",
+
+"view_post": "View post",
+
 "type_news": "Enter a news item",
 "help": "Help",
 "help_text": "Overview of the bot in Russian: https://golos.id/ru--golos/@lllll1ll/rukovodstvo-po-podklyucheniyu-k-stake-bot. If you have any questions or problems, write to the chat @dpos_space or personal to @denis_skripnik"

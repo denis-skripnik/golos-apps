@@ -86,13 +86,19 @@ async function getNullTransfers() {
             const block_n = await bdb.getBlock(PROPS.last_irreversible_block_num);
 bn = block_n.last_block;
 
+let oldTime = new Date().getTime();
 delay = SHORT_DELAY;
 while (true) {
+    try {
+        let newTime = new Date().getTime();
+        let changeTime = newTime - oldTime;
+        if (changeTime >= 3000) await watchdog.getWitnessesByBlock();
+    oldTime = newTime;
+    } catch(er) {}
     try {
         if (bn > PROPS.last_irreversible_block_num) {
             // console.log("wait for next blocks" + delay / 1000);
             await helpers.sleep(delay);
-            await watchdog.getWitnessesByBlock();
             PROPS = await methods.getProps();
         } else {
             if(0 < await processBlock(bn, PROPS)) {

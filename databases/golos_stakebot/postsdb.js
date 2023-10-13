@@ -39,7 +39,7 @@ async function updatePost(id, author, permlink, day) {
 
         let collection = db.collection('posts');
         
-                let res = await collection.updateOne({id}, {$set: {id, author, permlink, day}}, {upsert: true});
+                let res = await collection.updateOne({id}, {$set: {id, author, permlink, day, timestamp: new Date().getTime()}}, {upsert: true});
 
 return res;
 
@@ -64,10 +64,20 @@ async function removePosts() {
 
         let collection = db.collection('posts');
     
-        let res = await collection.drop();
-
-        return res;
-
+        let res = 0;
+        let now_time = new Date().getTime();
+        let cursor = await collection.find({}).limit(500);
+        let doc = null;
+        while(null != (doc = await cursor.next())) {
+            let timestamp = doc.timestamp;
+            if (typeof timestamp === 'undefined') timestamp = now_time;
+            let time_difference = now_time - timestamp;
+            if (time_difference > 604800000) {
+                await collection.deleteOne({_id: doc._id});
+                res++;
+            }
+        }
+    return res;
     } catch (err) {
 
         console.log(err);
