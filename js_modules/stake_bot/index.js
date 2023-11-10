@@ -90,16 +90,7 @@ let users = await udb.findAllUsers(true);
 		if (weight < 1) continue;
 		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
 		if (typeof acc.auto_donate !== 'undefined' && acc.auto_donate !== '0 1' && weight > 0) {
-			let auto_donate = acc.auto_donate.split(' ');
-			let donate_percent = parseFloat(auto_donate[0]);
-			let coeff = parseFloat(auto_donate[1]);
-			let user_balance = parseFloat(account.vesting_shares) - parseFloat(account.emission_delegated_vesting_shares) + parseFloat(account.emission_received_vesting_shares);
-			let emission_per_day = (parseFloat(props.accumulative_emission_per_day) * user_balance) / parseFloat(props.total_vesting_shares);
-let part_from_emission = emission_per_day * (donate_percent / 100);
-  // Приводим процент голосования к диапазону от 0 до 1
-  const normalized_percent = weight / 10000;
-    // Вычисляем нелинейную сумму доната
-  const donate_amount = part_from_emission * Math.pow(normalized_percent, coeff);
+  const donate_amount = helpers.calcDonateFromEmission(acc, account, props, weight);
   if (donate_amount <= parseFloat(account.tip_balance) && donate_amount >= 0.5) {
 	let amount = (donate_amount * 0.998).toFixed(3) + ' GOLOS';
 	let fee_amount = (donate_amount * 0.002).toFixed(3) + ' GOLOS';
@@ -111,17 +102,24 @@ let part_from_emission = emission_per_day * (donate_percent / 100);
 		}
 		try {
 			await methods.send(operations, posting);
-		if (!members[acc.id]) {
+			let current_power = parseInt(charge * 100)
+			let used_power = (current_power * Math.abs(weight)) / 10000;
+			let max_vote_denom  = 10 
+			max_vote_denom = max_vote_denom * (5*60*60*24) / (60 * 60 * 24)
+			used_power = (used_power + max_vote_denom - 1) / max_vote_denom
+			let new_voting_power = parseInt(current_power - used_power) / 100;
+			
+			if (!members[acc.id]) {
 		members[acc.id] = {};
-		members[acc.id]['unvote_data'] = content.id;
-		members[acc.id]['charge'] = charge;
+		members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
+		members[acc.id]['charge'] = new_voting_power;
 		members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${content.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 `;
 members[acc.id]['tags'] = tags_list;
 		} else {
 			members[acc.id] = {};
-			members[acc.id]['unvote_data'] = content.id;
+			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
 					members[acc.id]['charge'] = charge;
 			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>🔁 <a href="https://dpos.space/golos/profiles/${opbody.voter}/votes">${opbody.voter}</a>
 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
@@ -207,16 +205,7 @@ tags_list += ` <a href="https://golos.id/created/${tag}">#${tag}</a>`;
 		if (favorite_percent) weight = parseInt(parseFloat(favorite_percent) * 100);
 		operations.push(["vote",{"voter": acc.login, "author": opbody.author, "permlink": opbody.permlink, "weight": weight}]);
 		if (typeof acc.auto_donate !== 'undefined' && acc.auto_donate !== '0 1' && acc.favorits_percent > 0) {
-			let auto_donate = acc.auto_donate.split(' ');
-			let donate_percent = parseFloat(auto_donate[0]);
-			let coeff = parseFloat(auto_donate[1]);
-			let user_balance = parseFloat(account.vesting_shares) - parseFloat(account.emission_delegated_vesting_shares) + parseFloat(account.emission_received_vesting_shares);
-			let emission_per_day = (parseFloat(props.accumulative_emission_per_day) * user_balance) / parseFloat(props.total_vesting_shares);
-let part_from_emission = emission_per_day * (donate_percent / 100);
-  // Приводим процент голосования к диапазону от 0 до 1
-  const normalized_percent = weight / 10000;
-    // Вычисляем нелинейную сумму доната
-  const donate_amount = part_from_emission * Math.pow(normalized_percent, coeff);
+			const donate_amount = helpers.calcDonateFromEmission(acc, account, props, weight);
   if (donate_amount <= parseFloat(account.tip_balance) && donate_amount >= 0.5) {
 	let amount = (donate_amount * 0.998).toFixed(3) + ' GOLOS';
 	let fee_amount = (donate_amount * 0.002).toFixed(3) + ' GOLOS';
@@ -228,10 +217,16 @@ let part_from_emission = emission_per_day * (donate_percent / 100);
 		}
 		try {
 			await methods.send(operations, posting);
-		if (!members[acc.id]) {
+			let current_power = parseInt(charge * 100)
+			let used_power = (current_power * Math.abs(weight)) / 10000;
+			let max_vote_denom  = 10 
+			max_vote_denom = max_vote_denom * (5*60*60*24) / (60 * 60 * 24)
+			used_power = (used_power + max_vote_denom - 1) / max_vote_denom
+			let new_voting_power = parseInt(current_power - used_power) / 100;
+			if (!members[acc.id]) {
 			members[acc.id] = {};
 			members[acc.id]['unvote_data'] = `${acc.login}_${content.id}`;
-			members[acc.id]['charge'] = charge;
+			members[acc.id]['charge'] = new_voting_power;
 			members[acc.id]['text'] = `<a href="https://t.me/iv?url=https%3A%2F%2Fgolos.id%2F${opbody.parent_permlink}%2F%40${opbody.author}%2F${opbody.permlink}&rhash=1d27d6e1501db6"> </a>💕 ${acc.login} ➡ <a href="https://golos.id/@${opbody.author}/${opbody.permlink}">@${opbody.author}/${content.title}</a>  ${weight / 100}%.
 `;
 members[acc.id]['tags'] = tags_list;

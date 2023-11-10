@@ -104,6 +104,20 @@ async function stringToHash(string) {
 		}
 	  }
 
+function calcDonateFromEmission(acc, account, props, weight) {
+	let auto_donate = acc.auto_donate.split(' ');
+	let donate_percent = parseFloat(auto_donate[0]);
+	let coeff = parseFloat(auto_donate[1]);
+	let user_balance = parseFloat(account.vesting_shares) - parseFloat(account.emission_delegated_vesting_shares) + parseFloat(account.emission_received_vesting_shares);
+	let emission_per_day = (parseFloat(props.accumulative_emission_per_day) * user_balance) / parseFloat(props.total_vesting_shares);
+let part_from_emission = emission_per_day * (donate_percent / 100);
+// Приводим процент голосования к диапазону от 0 до 1
+const normalized_percent = weight / 10000;
+// Вычисляем нелинейную сумму доната
+const donate_amount = part_from_emission * Math.pow(normalized_percent, coeff);
+return donate_amount;
+}
+
     module.exports.unixTime = unixTime;
 module.exports.sleep = sleep;
 module.exports.compareGests = compareGests;
@@ -116,3 +130,4 @@ module.exports.generateRandomCode = generateRandomCode;
 module.exports.objectSearch = objectSearch;
 module.exports.stringToHash = stringToHash;
 module.exports.shuffle = shuffle;
+module.exports.calcDonateFromEmission = calcDonateFromEmission;

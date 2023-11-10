@@ -80,6 +80,7 @@
 "auto_donate_saved": "Personal pool saved.",
 "auto_donate_not_valid": "Personal pool parameters specified incorrectly. Enter 2 numbers separated by a space or one if you want to leave a coefficient of 1. Example: 10 1.2 or just 10",
 "audo_donate_description": "Personal pool (percentage of issue and distribution coefficient)",
+"from_donate_pool": "By personal pool",
 
 "import_subs": "Import Subscriptions",
 "import_ok": "Successfully imported.",
@@ -123,7 +124,7 @@
 "rate_msg2": "was the winner because it was numbered",
 "rate_msg3": "Unfortunately, you did not win. Your number is",
 "rate_msg4": "The winner was the participant with the number",
-"charge": "Battery before upvote",
+"charge": "Battery after voting",
 "jackpot_msg1": "Congratulations! Your Golos user",
 "jackpot_msg2": "Got the jackpot because it was a number",
 "jackpot_msg3": "unfortunately, you did not get the jackpot. Your number is",

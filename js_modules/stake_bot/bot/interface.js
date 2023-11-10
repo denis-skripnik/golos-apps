@@ -41,7 +41,7 @@ if (variant === 'lng') {
 }     else if (variant === 'send_vote') {
     buttons = [[['-100', '-100'], ['-75', '-75'], ['-50', '-50'], ['-25', '-25'], ['-10', '-10']], [['0', '0'], ['10', '10'], ['25', '25']], [['50', '50'], ['75', '75'], ['100', '100']], [[lng[lang].skip, lng[lang].skip], [lng[lang].cancel, lng[lang].cancel]]];
 }     else if (variant === 'cancel_skip') {
-    buttons = [[lng[lang].skip], [lng[lang].cancel]];
+    buttons = [[lng[lang].from_donate_pool, lng[lang].skip], [lng[lang].cancel]];
 }     else if (variant === 'cancel') {
         buttons = [[lng[lang].cancel]];
     }
@@ -322,7 +322,7 @@ ${lng[user.lng].favorits_percent}: ${acc.favorits_percent}.`;
                                                                     let text = lng[user.lng].curators_text;
                                                                     let btns = await keybord(user.lng, 'cancel');
                                                                 await botjs.sendMSG(id, text, btns, false);
-                                                                await udb.updateUser(id, user.referers, user.lng, user.status, 'curators_' + login, user.referer_code, user.tags, user.keywords, user.exclude_authors);
+                                                                await udb.updateUser(id, user.referers, user.lng, user.status, 'curators|' + login, user.referer_code, user.tags, user.keywords, user.exclude_authors);
                                                             } else if (user && user.lng && message === lng[user.lng].curators_mode && user.status.indexOf('auto_curator@') > -1) {
                                                                 let login = user.status.split('@')[1];
                                                                     let text = lng[user.lng].curators_mode_text;
@@ -334,7 +334,7 @@ ${lng[user.lng].favorits_percent}: ${acc.favorits_percent}.`;
                                                                     let text = lng[user.lng].favorits_text;
                                                                     let btns = await keybord(user.lng, 'favorits_buttons');
                                                                 await botjs.sendMSG(id, text, btns, false);
-                                                                await udb.updateUser(id, user.referers, user.lng, user.status, 'favorits_' + login, user.referer_code, user.tags, user.keywords, user.exclude_authors);
+                                                                await udb.updateUser(id, user.referers, user.lng, user.status, 'favorits|' + login, user.referer_code, user.tags, user.keywords, user.exclude_authors);
                                                             } else if (user && user.lng && message === lng[user.lng].auto_donate && user.status.indexOf('auto_curator@') > -1) {
                                                                 let login = user.status.split('@')[1];
                                                                     let text = lng[user.lng].auto_donate_text;
@@ -383,7 +383,7 @@ ${lng[user.lng].favorits_percent}: ${acc.favorits_percent}.`;
                                                                     btns = await keybord(user.lng, 'home');
                                                                 }
                                                             } else {
-                                                                text = lng[user.lng].account_not_add;
+                                                                text = lng[user.lng].account_not_add + ` ${message}`;
                                                                 btns = await keybord(user.lng, 'home');
                                                             }
                                                             await botjs.sendMSG(id, text, btns, false);
@@ -470,8 +470,9 @@ await botjs.sendMSG(id, text, btns, true);
                 charge=volume;
             }
         let award_data = {};
-        award_data.login = account.login;
-        award_data.postingKey = account.posting_key;
+        award_data.acc = account;
+        award_data.account = acc;
+        award_data.props = props;
         award_data.postId = postId;
             text = `${lng[user.lng].type_vote} ${account.login}. ${lng[user.lng].type_vote_percent}: ${charge}%`;
                 btns = await keybord(user.lng, 'send_vote');
@@ -604,8 +605,8 @@ if (energy && energy > 0) {
 }
 let btns = await keybord(user.lng, 'home');
 await botjs.sendMSG(id, text, btns, false);
-} else if (user.lng && lng[user.lng] && user.status.indexOf('curators_') > -1) {
-    let login = user.status.split('_')[1];
+} else if (user.lng && lng[user.lng] && user.status.indexOf('curators|') > -1) {
+    let login = user.status.split('|')[1];
     let acc = await adb.getAccount(login);
     let text = '';
     if (acc && acc.id === id) {
@@ -641,8 +642,8 @@ await adb.updateAccount(id, user.referer_code, login, acc.posting_key, acc.to_ve
     await udb.updateUser(id, user.referers, user.lng, user.status, 'auto_curator@' + login, user.referer_code, user.tags, user.keywords, user.exclude_authors);
     let btns = await keybord(user.lng, 'home');
     await botjs.sendMSG(id, text, btns, false);
-} else if (user.lng && lng[user.lng] && user.status.indexOf('favorits_') > -1) {
-    let login = user.status.split('_')[1];
+} else if (user.lng && lng[user.lng] && user.status.indexOf('favorits|') > -1) {
+    let login = user.status.split('|')[1];
     let acc = await adb.getAccount(login);
     let text = '';
     if (acc && acc.id === id && message === lng[user.lng].import_subs) {
@@ -760,16 +761,17 @@ if (amount <= max && amount >= 0.1) {
 } else if (user.lng && lng[user.lng] && user.status.indexOf('typedActions~') > -1) {
     let json = user.status.split('~')[1];
     let data = JSON.parse(json);
-let {postId, login, voted, tip_balance} = data;
+let {postId, acc, account, props, voted} = data;
+let login = acc.login;
+let posting_key = acc.posting_key;
 let text = '';
 let post = await pdb.getPost(parseInt(postId));
 if (!post || Object.keys(post).length === 0) return;
     let {author, permlink} = post;
-    let wif = sjcl.decrypt(data.login + '_postingKey_stakebot', data.postingKey);
-
+    let wif = sjcl.decrypt(login + '_postingKey_stakebot', posting_key);
 if (voted !== lng[user.lng].skip) {
     try {
-        await methods.vote(wif, data.login, author, permlink, parseFloat(voted));
+        await methods.vote(wif, login, author, permlink, parseFloat(voted));
     text += lng[user.lng].vote_sended;
     } catch(e) {
         text += lng[user.lng].vote_error + e;
@@ -777,16 +779,21 @@ if (voted !== lng[user.lng].skip) {
     text += `
 `;
 }
-
 if (message !== lng[user.lng].skip) {
-let amount = parseFloat(message);
-if (amount <= parseFloat(tip_balance) && amount >= 0.1) {
+    let amount = 0;
+if (voted !== lng[user.lng].skip && message === lng[user.lng].from_donate_pool) {
+    const donate_amount = helpers.calcDonateFromEmission(acc, account, props, parseInt((parseFloat(voted) * 100)));
+    amount = donate_amount;
+} else if (!isNaN(message)) {
+    amount = parseFloat(message);
+}
+if (amount <= parseFloat(account.tip_balance) && amount >= 0.1) {
     try {
     let full_amount = amount;
     amount *= 0.998;
-    await methods.donate(wif, data.login, author, amount.toFixed(3) + ' GOLOS', 'https://t.me/golos_stake_bot', author, permlink);
+    await methods.donate(wif, login, author, amount.toFixed(3) + ' GOLOS', 'https://t.me/golos_stake_bot', author, permlink);
     let fee = full_amount - amount;
-    if (fee > 0.001) await methods.donate(wif, data.login, conf.stakebot.golos_login, fee.toFixed(3) + ' GOLOS', 'Комиссия.', author, permlink);            
+    if (fee > 0.001) await methods.donate(wif, login, conf.stakebot.golos_login, fee.toFixed(3) + ' GOLOS', 'Комиссия.', author, permlink);            
     text += lng[user.lng].donate_true;
     } catch(e) {
         text += lng[user.lng].donate_error + e;
@@ -857,22 +864,14 @@ console.log('Результат: ' + JSON.stringify(res));
     let json = user.status.split('voteing_')[1];
     let data = JSON.parse(json);
     let postId = data.postId;
-    let login = data.login;
-    let account = await adb.getAccount(login);
-    if (account && account.id !== id) return;
-        let get_account = await methods.getAccount(login);
-    if (get_account && get_account.length > 0) {
-        let acc = get_account[0];
-
-text = lng[user.lng].type_donate + acc.tip_balance;
+    let acc = data.acc;
+    let account = data.account;
+    let login = acc.login;
+    if (acc && acc.id !== id || account && account.length === 0) return;
+text = lng[user.lng].type_donate + account.tip_balance;
 btns = await keybord(user.lng, 'cancel_skip');
 data.voted = message;
-data.tip_balance = parseFloat(acc.tip_balance);
 await udb.updateUser(id, user.referers, user.lng, user.status, `typedActions~${JSON.stringify(data)}`, user.referer_code, user.tags, user.keywords, user.exclude_authors);
-} else {
-text = lng[user.lng].not_connection;
-btns = await keybord(user.lng, 'home');
-}
 await botjs.sendMSG(id, text, btns, false);
 } else if (user.lng && lng[user.lng] && user.status === lng[user.lng].change_tags) {
     const searchRegExp = /—/g;
