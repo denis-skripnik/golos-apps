@@ -40,7 +40,7 @@ let pk = '';
         metadata.profile={};
                 if (service === 'votes') {
         metadata.profile.name = 'Опросы и референдумы';
-            metadata.profile.about= `Опросы и референдумы на Голосе. Создание путём отправки к null от ${conf.vote_price} с определённым кодом (рекомендуем пользоваться интерфейсом на dpos.space)`;
+            metadata.profile.about= `Опросы и референдумы на Голосе. Создание путём отправки к null от ${conf.votes.vote_price} с определённым кодом (рекомендуем пользоваться интерфейсом на dpos.space)`;
             metadata.profile.website = 'https://dpos.space/golos-polls';
         test_user = conf[service].login;
         pk = conf[service].posting_key;
